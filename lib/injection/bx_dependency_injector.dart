@@ -9,6 +9,9 @@ import 'package:tayara/data/data_source/local/bx_shared_preferences_datasource.d
 import 'package:tayara/data/data_source/remote/bx_system_remote_data_source.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tayara/data/repositories/bx_firebase_login_repositories_impl.dart';
+import 'package:tayara/domain/repositories/bx_firebase_login_repositories.dart';
+import 'package:tayara/domain/usecase/bx_firebase_login_usecase.dart';
 
 /// Central dependency injection container based on [GetIt].
 ///
@@ -68,8 +71,13 @@ class BxDependencyInjector {
     );
 
     // Repositories
-
+    _getIt.registerLazySingleton<BxFirebaseLoginRepositories>(
+      () => BxFirebaseLoginRepositoriesImpl(bxsystemRemoteDataSource: _getIt()),
+    );
     // UseCases
+    _getIt.registerLazySingleton<BxFirebaseLoginUsecase>(
+      () => BxFirebaseLoginUsecase(_getIt()),
+    );
   }
 
   /// Retrieves a previously registered dependency of type [T].

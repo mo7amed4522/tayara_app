@@ -1,5 +1,7 @@
 // Copyright (c) 2026 Tayara. All rights reserved.
 //
+import 'package:tayara/core/constant/bx_app_constant.dart';
+
 /// Centralised definition of the application's base URL and all REST API
 /// endpoint paths.
 ///
@@ -12,8 +14,7 @@
 /// Purpose: Define the API endpoints for the application
 class BxAppConfig {
   /// The Test URL of the backend API (staging environment).
-  static const String baseUrl =
-      'https://sys.optilinksys.com/'; // Base URL for the API, can be switched to production when needed
+  static const String baseUrl = 'http://localhost:8888'; // Base URL for the API, can be switched to production when needed
 }
 
 /// Provides static getters for every API endpoint used by the application.
@@ -31,5 +32,5 @@ class BxApiEndpoints {
 
   // login url endpoint
   /// POST endpoint for user login.
-  static String get loginUrl => 'api/v1/auth/login';
+  static String get loginUrl => '/api/${BxAppData.appVersion}/user/firebase-login';
 }

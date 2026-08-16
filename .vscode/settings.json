@@ -5,7 +5,8 @@
         "editor.rulers": [252],
         "editor.formatOnPaste": true
     },
-    "dart.lineLength": 252,
+
+    
     "dart.insertTrailingCommas": true,
     "cSpell.words": [
      

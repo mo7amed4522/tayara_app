@@ -19,7 +19,16 @@
 /// Purpose: Handle Phone Number Sign‑In via Firebase Authentication
 library;
 
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
+
+/// Returns `true` when running on the iOS simulator.
+bool get _isSimulator =>
+    Platform.isIOS &&
+    Process.runSync('sysctl', ['-n', 'hw.model']).stdout.toString().contains(
+      'Simulator',
+    );
 
 /// Represents the outcome of a phone authentication attempt.
 ///
@@ -161,6 +170,11 @@ class BxPhoneAuthFirebaseServices {
     void Function(BxPhoneAuthState state)? verifyStateChanged,
     Duration timeout = const Duration(seconds: 30),
   }) async {
+    if (_isSimulator) {
+      return BxPhoneAuthResult.failure(
+        'Phone authentication is not available on the iOS simulator. Please use a physical device.',
+      );
+    }
     try {
       String? verificationId;
 
@@ -228,6 +242,11 @@ class BxPhoneAuthFirebaseServices {
     required String smsCode,
     required String verificationId,
   }) async {
+    if (_isSimulator) {
+      return BxPhoneAuthResult.failure(
+        'Phone authentication is not available on the iOS simulator. Please use a physical device.',
+      );
+    }
     try {
       // 1. Create a PhoneAuthCredential from the verification ID and code.
       final PhoneAuthCredential credential = PhoneAuthProvider.credential(
