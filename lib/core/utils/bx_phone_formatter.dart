@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 /// Utility that formats phone numbers for display, adapting to the
 /// current locale and text direction.
 ///

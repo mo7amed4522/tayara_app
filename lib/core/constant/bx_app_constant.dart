@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 /// Defines the application's core constants: images, app metadata,
 /// fonts, tokens and runtime data holders.
 ///
@@ -35,6 +37,27 @@ class BxAppConstant {
   // logo images
   /// Application logo image.
   static const String appLogo = '${baseImageUrl}app_logo.png';
+  // on boarding images
+  /// Application on boarding image.
+  static const String onBoarding1 = '${baseImageUrl}on_boarding_1.png';
+  static const String onBoarding2 = '${baseImageUrl}on_boarding_2.png';
+  static const String onBoarding3 = '${baseImageUrl}on_boarding_3.png';
+  static const String onBoarding4 = '${baseImageUrl}on_boarding_4.png';
+  static const String onBoarding5 = '${baseImageUrl}on_boarding_5.png';
+  // active and not active images
+  /// Application active and not active images.
+  static const String active = '${baseImageUrl}active.png';
+  static const String notActive = '${baseImageUrl}no_active.png';
+  // social media logos
+  /// Application social media logos.
+  /// Login logo
+  /// Google logo image.
+  /// Apple logo image.
+  /// Facebook logo image.
+  static const String loginLogo = '${baseImageUrl}login_logo.png';
+  static const String googleLogo = '${baseImageUrl}google_logo.png';
+  static const String appleLogo = '${baseImageUrl}apple_logo.png';
+  static const String facebookLogo = '${baseImageUrl}facebook_logo.png';
   // app animation in loading
   /// Lottie animation file shown during loading states.
   static const String loadingIcon = '${baseImageUrl}lf30_editor_pdbikagl.json';

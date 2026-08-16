@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 // File: lib/core/network/exceptions/bx_network_exception.dart
 
 import 'package:dio/dio.dart';

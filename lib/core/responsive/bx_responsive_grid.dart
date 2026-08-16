@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 // File: lib/core/responsive/widgets/bx_responsive_grid.dart
 // Architecture: Core Responsive - Widgets
 // Purpose: Responsive grid layout system with both normal and sliver versions

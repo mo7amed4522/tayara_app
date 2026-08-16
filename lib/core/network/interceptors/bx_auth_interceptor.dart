@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 // File: lib/core/network/interceptors/bx_auth_interceptor.dart
 // Architecture: Core Layer - Bx Auth Interceptor
 // Purpose: Define the auth interceptor for the application

@@ -60,6 +60,18 @@ dependencies:
   intl_phone_selector: ^1.0.0
   # lottie animation for app
   lottie: ^3.3.3
+  # firebase connection
+  firebase_core: ^4.9.0
+  # firebase auth for social & phone login
+  firebase_auth: ^6.1.1
+  # firebase messaging for notification
+  firebase_messaging: ^16.2.2
+  # google sign in for login
+  google_sign_in: ^7.2.0
+  # apple sign in for login
+  sign_in_with_apple: ^8.1.0
+  # facebook sign in for login
+  flutter_facebook_auth: ^7.2.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

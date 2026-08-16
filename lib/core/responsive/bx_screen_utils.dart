@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 // File: lib/core/responsive/bx_screen_utils.dart
 // Architecture: Core Responsive - Screen Utilities
 // Purpose: Utility functions for screen size and orientation

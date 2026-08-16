@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 /// Centralised application router providing static navigation helpers,
 /// deep link handling, custom transition builders, modal dialogs and
 /// a [RouterConfig] for use with `MaterialApp.router`.

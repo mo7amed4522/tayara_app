@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 // File: lib/presentation/bloc/bx_theme_controller/bx_theme_controller_event.dart
 // Architecture: Presentation Layer - Theme Controller
 // Purpose: Define events for theme controller BLoC

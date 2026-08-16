@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Base Project</string>
+	<string>Tayara</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -65,6 +65,34 @@
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<!--
+	  Google Sign-In – required for the google_sign_in plugin.
+	  The scheme is derived from the reversed client ID in GoogleService-Info.plist.
+	-->
+	<key>CFBundleURLSchemes</key>
+	<array>
+		<string>com.googleusercontent.apps.271442722424-1j87kcguj8oaoqorhdkb3mjogn0po1i2</string>
+	</array>
+	<!--
+	  Facebook SDK – required for the flutter_facebook_auth plugin.
+	  Replace FACEBOOK_APP_ID and FACEBOOK_DISPLAY_NAME with your own values
+	  from the Facebook Developer Console.
+	-->
+	<key>FacebookAppID</key>
+	<string>{YOUR_FACEBOOK_APP_ID}</string>
+	<key>FacebookDisplayName</key>
+	<string>Tayara</string>
+	<key>FacebookAutoInitEnabled</key>
+	<true/>
+	<key>FacebookAutoLogAppEventsEnabled</key>
+	<true/>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>fbapi</string>
+		<string>fb-messenger-share-api</string>
+		<string>fbauth</string>
+		<string>fbshareextension</string>
 	</array>
 </dict>
 </plist>

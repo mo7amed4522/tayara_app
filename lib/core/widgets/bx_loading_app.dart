@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 // File: lib/core/widgets/bx_loading_app.dart
 // Architecture: Core Layer - Bx Custom Loading
 // Purpose: Custom Loading support for dark/light themes

@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 /// Centralised definition of the application's base URL and all REST API
 /// endpoint paths.
 ///

@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 // File: lib/bx_app_widget.dart
 // Architecture: Bx Widgets for the entire application
 // purpose: To provide a single widget that can be used to render the entire application

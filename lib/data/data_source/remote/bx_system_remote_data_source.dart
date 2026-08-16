@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 // File: lib/core/data/data_sources/remote/bx_system_remote_data_source.dart
 // Architecture: Core -> Data -> Data Sources -> Remote -> Bx System Remote Data Source - Error Handler
 // Purpose: Centralized error handling and logging for system-related remote data source operations
