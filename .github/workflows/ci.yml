@@ -7,8 +7,9 @@ on:
     branches: [main, master]
 
 env:
-  FLUTTER_VERSION: "3.32.8"
-  DART_VERSION: "3.9.2"
+  # Flutter 3.38.3 ships with Dart 3.12.2, satisfying pubspec's `sdk: ^3.12.2`
+  # constraint. pinned to a specific patch release for reproducible CI builds.
+  FLUTTER_VERSION: "3.38.3"
 
 jobs:
   # ------------------------------------------------------------------
