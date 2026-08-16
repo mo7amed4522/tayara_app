@@ -48,6 +48,12 @@ class BxAppConstant {
   /// Application active and not active images.
   static const String active = '${baseImageUrl}active.png';
   static const String notActive = '${baseImageUrl}no_active.png';
+  // bottom nav bar images
+  /// Application bottom nav bar images.
+  static const String homeIcon = '${baseImageUrl}home_icon.png';
+  static const String exploreIcon = '${baseImageUrl}explore_icon.png';
+  static const String bookingsIcon = '${baseImageUrl}booking_icon.png';
+  static const String profileIcon = '${baseImageUrl}profile_icon.png';
   // social media logos
   /// Application social media logos.
   /// Login logo

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# NMMC  - Android Release Build Script
+# taiyara  - Android Release Build Script
 # This script automates the Android build process for release deployment
 
 set -e  # Exit on error
@@ -12,7 +12,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 echo -e "${GREEN}========================================${NC}"
-echo -e "${GREEN}  NMMC - Android Build Script${NC}"
+echo -e "${GREEN}  taiyara - Android Build Script${NC}"
 echo -e "${GREEN}========================================${NC}"
 echo ""
 
@@ -119,7 +119,7 @@ if [ ! -f "$KEYSTORE_ABS" ]; then
       -keyalg RSA \
       -keysize 2048 \
       -validity 9125 \
-      -dname "CN=NMMC , OU=Mobile, O=NMMC, L=Dubai, S=Dubai, C=AE" \
+      -dname "CN=taiyara , OU=Mobile, O=taiyara, L=Dubai, S=Dubai, C=AE" \
       -storepass "$STORE_PASS" \
       -keypass "$KEY_PASS" \
       >/dev/null

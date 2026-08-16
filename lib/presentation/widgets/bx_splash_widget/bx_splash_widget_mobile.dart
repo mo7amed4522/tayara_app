@@ -44,7 +44,7 @@ class BxSplashWidgetMobile extends StatelessWidget {
                 if (state.onBoardingCompleted == true) {
                   BxAppRouter.pushReplacement(
                     context,
-                    BxRouteNames.bxLoginScreen,
+                    BxRouteNames.bxHomeScreen,
                   );
                 } else {
                   BxAppRouter.pushReplacement(

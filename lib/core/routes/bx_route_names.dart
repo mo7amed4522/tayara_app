@@ -24,6 +24,9 @@ class BxRouteNames {
   /// Login screen route.
   static const String bxLoginScreen = '/login-screen';
 
+  /// Home screen route.
+  static const String bxHomeScreen = '/home-screen';
+
   // Route groups
   /// All publicly accessible routes in the application.
   static const List<String> publicRoutes = [
@@ -31,6 +34,9 @@ class BxRouteNames {
     bxOnBoardingScreen,
     bxLoginScreen,
   ];
+
+  /// All authenticated (protected) routes in the application.
+  static const List<String> protectedRoutes = [bxHomeScreen];
 
   /// Routes that are shown as modals (currently empty).
   static const List<String> modalRoutes = [];
@@ -137,6 +143,8 @@ class BxRouteNames {
         return 'Bx-On-boarding-screen';
       case bxLoginScreen:
         return 'Bx-Login-screen';
+      case bxHomeScreen:
+        return 'Bx-Home-screen';
       default:
         return 'Bx-Unknown-screen';
     }
