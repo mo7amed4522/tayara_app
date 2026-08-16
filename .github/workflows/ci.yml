@@ -160,18 +160,18 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Clean stale iOS dependencies
+        run: rm -rf ios/Pods ios/Podfile.lock
+
       - name: Resolve iOS dependencies
         run: pod install --repo-update
         working-directory: ios
 
       - name: Build iOS (simulator)
-        run: |
-          flutter build ios \
-            --release \
-            --no-codesign \
-            --simulator
+        # Simulator builds must be debug — release mode is unsupported.
+        run: flutter build ios --no-codesign --simulator
 
-      - name: Upload IPA
+      - name: Upload iOS build
         uses: actions/upload-artifact@v4
         with:
           name: app-ios-debug
