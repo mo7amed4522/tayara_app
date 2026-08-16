@@ -47,13 +47,20 @@ abstract class BxSystemRemoteDataSource {
 class BxSystemRemoteDataSourceImpl implements BxSystemRemoteDataSource {
   final BxDioClient _dioClient;
 
-  BxSystemRemoteDataSourceImpl({required BxDioClient dioClient}) : _dioClient = dioClient;
+  BxSystemRemoteDataSourceImpl({required BxDioClient dioClient})
+    : _dioClient = dioClient;
 
   @override
-  Future<BxFirebaseLoginResponse> loginUser(BxFirebaseLoginRequest request) async {
+  Future<BxFirebaseLoginResponse> loginUser(
+    BxFirebaseLoginRequest request,
+  ) async {
     try {
       final options = Options(headers: {'Content-Type': 'application/json'});
-      final response = await _dioClient.post(BxApiEndpoints.loginUrl, options: options, data: request.toJson());
+      final response = await _dioClient.post(
+        BxApiEndpoints.loginUrl,
+        options: options,
+        data: request.toJson(),
+      );
 
       if (response is Map<String, dynamic> && response['code'] == 0) {
         return BxFirebaseLoginResponse.fromJson(response);
@@ -70,11 +77,23 @@ class BxSystemRemoteDataSourceImpl implements BxSystemRemoteDataSource {
         }
       }
 
-      return BxFirebaseLoginResponse(code: 7, message: response['msg'], data: null);
+      return BxFirebaseLoginResponse(
+        code: 7,
+        message: response['msg'],
+        data: null,
+      );
     } on BxNetworkException catch (e) {
-      return BxFirebaseLoginResponse(code: e.statusCode, message: e.message, data: null);
+      return BxFirebaseLoginResponse(
+        code: e.statusCode,
+        message: e.message,
+        data: null,
+      );
     } catch (e) {
-      return BxFirebaseLoginResponse(code: 7, message: 'login failed. Please try again.', data: null);
+      return BxFirebaseLoginResponse(
+        code: 7,
+        message: 'login failed. Please try again.',
+        data: null,
+      );
     }
   }
 }

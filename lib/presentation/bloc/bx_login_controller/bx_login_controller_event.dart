@@ -38,7 +38,10 @@ class BxLoginWithPhoneCode extends BxLoginControllerEvent {
   final String phoneNumber;
   final String smsCode;
 
-  const BxLoginWithPhoneCode({required this.phoneNumber, required this.smsCode});
+  const BxLoginWithPhoneCode({
+    required this.phoneNumber,
+    required this.smsCode,
+  });
 
   @override
   List<Object?> get props => [phoneNumber, smsCode];

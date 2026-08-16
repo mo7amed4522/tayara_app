@@ -28,9 +28,10 @@ import 'package:google_sign_in/google_sign_in.dart';
 /// Returns `true` when running on the iOS simulator.
 bool get _isSimulator =>
     Platform.isIOS &&
-    Process.runSync('sysctl', [' -n', 'hw.model']).stdout.toString().contains(
-      'Simulator',
-    );
+    Process.runSync('sysctl', [
+      ' -n',
+      'hw.model',
+    ]).stdout.toString().contains('Simulator');
 
 /// Represents the outcome of a Google authentication attempt.
 ///
