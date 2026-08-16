@@ -22,7 +22,12 @@ class BxLoginControllerState extends Equatable {
   });
 
   @override
-  List<Object?> get props => [status, errorMessage, loginResponse, phoneVerificationId];
+  List<Object?> get props => [
+    status,
+    errorMessage,
+    loginResponse,
+    phoneVerificationId,
+  ];
 
   BxLoginControllerState copyWith({
     BxLoginControllerStatus? status,

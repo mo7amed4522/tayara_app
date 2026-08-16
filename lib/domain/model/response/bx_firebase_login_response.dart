@@ -19,7 +19,8 @@ class BxFirebaseLoginResponse {
 
   BxFirebaseLoginResponse({this.code, this.message, this.data});
 
-  factory BxFirebaseLoginResponse.fromJson(Map<String, dynamic> json) => _$BxFirebaseLoginResponseFromJson(json);
+  factory BxFirebaseLoginResponse.fromJson(Map<String, dynamic> json) =>
+      _$BxFirebaseLoginResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$BxFirebaseLoginResponseToJson(this);
 }
@@ -37,7 +38,8 @@ class BxFirebaseLoginData {
 
   BxFirebaseLoginData({this.user, this.token, this.expiresAt});
 
-  factory BxFirebaseLoginData.fromJson(Map<String, dynamic> json) => _$BxFirebaseLoginDataFromJson(json);
+  factory BxFirebaseLoginData.fromJson(Map<String, dynamic> json) =>
+      _$BxFirebaseLoginDataFromJson(json);
 
   Map<String, dynamic> toJson() => _$BxFirebaseLoginDataToJson(this);
 }
@@ -123,7 +125,8 @@ class BxFirebaseUser {
     this.updatedAt,
   });
 
-  factory BxFirebaseUser.fromJson(Map<String, dynamic> json) => _$BxFirebaseUserFromJson(json);
+  factory BxFirebaseUser.fromJson(Map<String, dynamic> json) =>
+      _$BxFirebaseUserFromJson(json);
 
   Map<String, dynamic> toJson() => _$BxFirebaseUserToJson(this);
 }

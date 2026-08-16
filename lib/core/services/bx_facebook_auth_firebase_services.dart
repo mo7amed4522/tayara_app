@@ -27,9 +27,10 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 /// Returns `true` when running on the iOS simulator.
 bool get _isSimulator =>
     Platform.isIOS &&
-    Process.runSync('sysctl', ['-n', 'hw.model']).stdout.toString().contains(
-      'Simulator',
-    );
+    Process.runSync('sysctl', [
+      '-n',
+      'hw.model',
+    ]).stdout.toString().contains('Simulator');
 
 /// Represents the outcome of a Facebook authentication attempt.
 ///

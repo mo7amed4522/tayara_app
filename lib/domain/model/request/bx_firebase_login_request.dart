@@ -13,7 +13,8 @@ class BxFirebaseLoginRequest {
 
   BxFirebaseLoginRequest({required this.idToken});
 
-  factory BxFirebaseLoginRequest.fromJson(Map<String, dynamic> json) => _$BxFirebaseLoginRequestFromJson(json);
+  factory BxFirebaseLoginRequest.fromJson(Map<String, dynamic> json) =>
+      _$BxFirebaseLoginRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$BxFirebaseLoginRequestToJson(this);
 }
