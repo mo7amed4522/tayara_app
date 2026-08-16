@@ -1,29 +1,56 @@
-// This is a basic Flutter widget test.
+// Copyright (c) 2026 Tayara. All rights reserved.
 //
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
+// File: test/widget_test.dart
+// Architecture: Tests – Widget smoke tests
+// Purpose: Verify the app widget tree renders without crashing
+//          after dependency injection is initialised.
 
-import 'package:tayara/bx_app_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tayara/bx_app_widget.dart';
+import 'package:tayara/injection/bx_dependency_injector.dart';
 
+/// Main entry point for all widget tests.
+///
+/// [setUpAll] runs once before any test and ensures:
+/// 1. Flutter bindings are initialised.
+/// 2. [SharedPreferences] is available (required by the DI).
+/// 3. [BxDependencyInjector] is registered with all core dependencies.
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const BxAppWidget());
+  setUpAll(() async {
+    // Required by the flutter_test binding.
+    WidgetsFlutterBinding.ensureInitialized();
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // SharedPreferences must be initialised before the DI setup so the
+    // injector can register it as a singleton.
+    SharedPreferences.setMockInitialValues({});
+    await BxDependencyInjector.instance.setup();
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+  /// Verifies that the root [BxAppWidget] builds without throwing when
+  /// wrapped in [ScreenUtilInit], which is required because the theme
+  /// uses [flutter_screenutil] size extensions (`.sp`).
+  ///
+  /// The splash-screen BLoC dispatches a 3-second timer; we fast-forward
+  /// past it with [fakeAsync] so the tree reaches a steady state before
+  /// asserting.
+  testWidgets('BxAppWidget renders without crashing', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      ScreenUtilInit(
+        designSize: const Size(375, 812),
+        minTextAdapt: true,
+        splitScreenMode: true,
+        builder: (context, child) => const BxAppWidget(),
+      ),
+    );
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Advance past the 3-second splash-screen timer.
+    await tester.pump(const Duration(seconds: 3));
+    await tester.pumpAndSettle();
+
+    // The MaterialApp should be present in the rendered tree.
+    expect(find.byType(MaterialApp), findsOneWidget);
   });
 }

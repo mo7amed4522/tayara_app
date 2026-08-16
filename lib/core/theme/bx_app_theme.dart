@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 // File: lib/core/themes/bx_app_theme.dart
 // Architecture: Core Layer - Bx App Theme
 // Purpose: Define the app theme for the application

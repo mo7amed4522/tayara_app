@@ -1,53 +1,45 @@
-Here's the updated changelog with "NMMC Noor Al Mamzar" and config file references removed:
-
-```markdown
 # Changelog
 
-All notable changes to the NMMC Noor Al Mamzar app will be documented in this file.
+All notable changes to the Tayara app will be documented in this file.
 
 ## [Unreleased]
 
 ### Added
+
 - Initial project setup with Flutter
-- Basic app architecture with Clean Architecture pattern
-- BLoC state management implementation
-- API integration with Dio client
-- Firebase integration for analytics and crashlytics
-- User authentication system
-- Patient management features
-- Appointment scheduling functionality
-- Medical record management
-- Responsive UI design for mobile platforms
+- Firebase Authentication integration (Google, Apple, Facebook, Phone)
+- Core services layer with dependency injection
+- Clean Architecture pattern with BLoC state management
+- Responsive UI design for mobile and tablet
 - Cross-platform support (iOS and Android)
-- End-to-end encryption for sensitive data
-- Offline mode capability
-- Environment-based configuration (dev/staging/prod)
+- Local notification support
+- Network layer with Dio client and interceptors
+- Shared preferences data source
+- Localization support (English, Arabic)
 
 ### Changed
-- Updated project name to "NMMC Noor Al Mamzar"
-- Enhanced security with encryption
-- Improved error handling and exception management
-- Added comprehensive logging system
+
+- Updated project name to Tayara
 
 ### Fixed
-- Various UI responsiveness issues
-- Security vulnerabilities in data transmission
-- Performance improvements in data handling
 
-### Removed
-- Placeholder content from initial template
-- Unnecessary dependencies
+- Firebase initialization on both platforms
+- Google Sign-In using google_sign_in v7.x singleton API
+- Facebook authentication with flutter_facebook_auth v7.x
+- Apple Sign-In credential handling
+- Phone authentication with correct callback signatures
 
-## [1.0.0] - 2024-XX-XX
+## [1.0.0] - 2026-08-16
 
 ### Added
-- Initial release of NMMC Noor Al Mamzar app
-- Core functionality for patient care
-- Secure login and authentication system
-- Basic appointment scheduling
-- Patient information management
+
+- Initial release of Tayara app
+- Authentication screens (login, onboarding, splash)
+- Firebase configuration and options
+- Core services for social and phone authentication
+- Dependency injection setup
+- Theme and color system
 
 ---
 
-**NMMC Noor Al Mamzar** | https://nooralmamzar.com/en/
-```
+**Tayara**

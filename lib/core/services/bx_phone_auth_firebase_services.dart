@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 /// Phone number authentication service using Firebase Auth.
 ///
 /// This service wraps the [FirebaseAuth] phone authentication APIs to

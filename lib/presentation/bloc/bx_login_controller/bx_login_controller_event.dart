@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 // File: lib/presentation/bloc/bx_login_controller/bx_login_controller_event.dart
 // Architecture: Presentation Layer - Login Controller
 // Purpose: Events for managing login state and actions

@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 // File: lib/core/data/data_sources/local/bx_shared_preferences_data_source.dart
 // Architecture: Core -> Data -> Data Sources -> Local -> Bx Shared Preferences Data Source
 // Purpose: Provides methods to save and retrieve data using SharedPreferences

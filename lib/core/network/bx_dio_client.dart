@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 /// Singleton [Dio] HTTP client wrapper that provides a centralised way to
 /// perform network requests (GET, POST, PUT, PATCH, DELETE) with automatic
 /// error handling, authentication interceptor and logging.

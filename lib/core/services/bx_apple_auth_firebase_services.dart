@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 /// Apple authentication service using Firebase Auth.
 ///
 /// This service wraps the [SignInWithApple] and [FirebaseAuth] packages to

@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 /// Builds responsive layouts by selecting a builder function based on the
 /// current screen size (mobile, tablet, desktop) and orientation.
 ///

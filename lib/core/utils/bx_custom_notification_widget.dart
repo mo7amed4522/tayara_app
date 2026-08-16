@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 /// Custom in‑app notification widgets styled with a glass‑morphism effect,
 /// plus a [NotificationHelper] that displays them as overlay entries.
 ///

@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 // File: lib/core/widgets/bx_custom_snack_bar.dart
 // Architecture: Core Layer - Bx Custom Snack Bar
 // Purpose: Custom snack bar with logo support for dark/light themes

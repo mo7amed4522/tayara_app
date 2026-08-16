@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 // File: lib/core/themes/bx_app_colors.dart
 // Architecture: Core Layer - Bx App Colors
 // Purpose: Define the colors for the application

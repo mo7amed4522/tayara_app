@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 // File: lib/presentation/views/bx_login_screen/bx_login_screen.dart
 // Architecture: Presentation Layer - Bx Login Screen
 // Purpose: Main login screen that delegates to mobile/tablet widgets

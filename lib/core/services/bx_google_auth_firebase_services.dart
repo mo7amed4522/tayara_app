@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 /// Google authentication service using Firebase Auth.
 ///
 /// This service wraps the [GoogleSignIn] and [FirebaseAuth] packages to

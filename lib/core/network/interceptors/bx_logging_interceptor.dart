@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 /// Dio interceptor that logs HTTP request, response and error details
 /// to the debug console via [debugPrint].
 ///

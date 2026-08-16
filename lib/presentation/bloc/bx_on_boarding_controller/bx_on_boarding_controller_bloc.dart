@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 // File: lib/presentation/bloc/bx_on_boarding_controller/bx_on_boarding_controller_bloc.dart
 // Architecture: Presentation Layer - On Boarding Controller
 // Purpose: BLoC for managing on boarding state and persistence

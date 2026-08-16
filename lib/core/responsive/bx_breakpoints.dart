@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 // File: lib/core/responsive/bx_breakpoints.dart
 // Architecture: Core Responsive - Breakpoints
 // Purpose: Define screen size breakpoints for responsive design

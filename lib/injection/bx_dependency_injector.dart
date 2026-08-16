@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 // File: lib/injection/bx_dependency_injector.dart
 // Architecture: Dependency Injection - Main Injector
 // Pattern: Dependency injection setup for the entire app

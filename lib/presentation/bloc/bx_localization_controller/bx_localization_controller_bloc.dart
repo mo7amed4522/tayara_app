@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 // File: lib/presentation/bloc/bx_localization_controller/bx_localization_controller_bloc.dart
 // Architecture: Presentation Layer - Localization Controller
 // Purpose: BLoC for managing localization state and persistence

@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 // File: lib/presentation/widgets/bx_splash_widget/bx_splash_widget_mobile.dart
 // Architecture: Presentation Layer - Bx Splash Widget
 // Purpose: Professional Bx Splash widget for mobile devices with static blurred background

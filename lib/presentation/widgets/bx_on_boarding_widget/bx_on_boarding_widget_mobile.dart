@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 // File: lib/presentation/widgets/bx_on_boarding_widget/bx_on_boarding_widget_mobile.dart
 // Architecture: Presentation Layer - Bx On Boarding Widget
 // Purpose: Professional Bx On Boarding widget for mobile devices

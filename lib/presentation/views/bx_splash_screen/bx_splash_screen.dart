@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 // File: lib/presentation/views/bx_splash_screen/bx_splash_screen.dart
 // Architecture: Presentation Layer - Bx Splash Screen
 // Purpose: Main bx splash screen that delegates to mobile/tablet widgets

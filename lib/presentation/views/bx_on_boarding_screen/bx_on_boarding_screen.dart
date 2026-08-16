@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 // File: lib/presentation/views/bx_on_boarding_screen/bx_on_boarding_screen.dart
 // Architecture: Presentation Layer - Bx On Boarding Screen
 // Purpose: Main bx on boarding screen that delegates to mobile/tablet widgets

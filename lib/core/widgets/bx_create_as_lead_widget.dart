@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 // File: lib/core/widgets/bx_create_as_lead_widget.dart
 // Description: A widget that displays a lead creation form card with gradient background,
 // includes name field, international phone selector (default UAE), specialty dropdown,

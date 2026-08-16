@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 // File: lib/presentation/bloc/bx_on_boarding_controller/bx_on_boarding_controller_state.dart
 // Architecture: Presentation Layer - On Boarding Controller
 // Purpose: State management for on boarding functionality

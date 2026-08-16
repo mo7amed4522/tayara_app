@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 // File: lib/presentation/widgets/bx_login_widget/bx_login_widget_mobile.dart
 // Architecture: Presentation Layer - Bx Login Widget
 // Purpose: Professional Bx Login widget for mobile devices

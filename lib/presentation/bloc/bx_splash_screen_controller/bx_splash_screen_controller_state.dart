@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 // File: lib/presentation/bloc/bx_splash_screen_controller/bx_splash_screen_controller_state.dart
 // Architecture: Presentation Layer - Bx Splash Screen Controller
 // Purpose: BLoC for managing splash screen state and persistence

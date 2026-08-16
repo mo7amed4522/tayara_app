@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 // File: lib/presentation/bloc/theme_controller/theme_controller_bloc.dart
 // Architecture: Presentation Layer - Theme Controller
 // Purpose: BLoC for managing theme state and persistence

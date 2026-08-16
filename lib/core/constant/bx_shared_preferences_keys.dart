@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 /// Defines the keys used to read and write data in shared preferences.
 ///
 /// All keys are grouped in a single, non‑instantiable class to avoid

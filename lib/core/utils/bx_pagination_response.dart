@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 /// Pagination response helper for managing paginated data
 ///
 /// Handles pagination metadata and provides utility methods to:

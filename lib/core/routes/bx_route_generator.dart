@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 /// Generates application routes from [RouteSettings] and provides
 /// static helpers for navigation, deep linking, analytics and route
 /// metadata (title and icon).

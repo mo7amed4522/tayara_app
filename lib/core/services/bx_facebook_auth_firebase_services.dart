@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 /// Facebook authentication service using Firebase Auth.
 ///
 /// This service wraps the [FlutterFacebookAuth] and [FirebaseAuth] packages

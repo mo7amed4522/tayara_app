@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 /// Centralised route name constants used by [BxRouteGenerator] and
 /// [BxAppRouter] to navigate between screens.
 ///

@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 // File: lib/presentation/bloc/bx_login_controller/bx_login_controller_state.dart
 // Architecture: Presentation Layer - Login Controller
 // Purpose: State management for login functionality

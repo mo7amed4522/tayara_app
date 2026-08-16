@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
 /// Defines the application's core constants: images, app metadata,
 /// fonts, tokens and runtime data holders.
 ///
