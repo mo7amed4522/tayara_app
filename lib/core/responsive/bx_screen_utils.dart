@@ -107,7 +107,8 @@ class BxScreenUtils {
 
   /// Convenience check for tablet or desktop screens.
   static bool isLargeScreen(BuildContext context) {
-    return getScreenSize(context) == BxScreenSize.tablet || getScreenSize(context) == BxScreenSize.desktop;
+    return getScreenSize(context) == BxScreenSize.tablet ||
+        getScreenSize(context) == BxScreenSize.desktop;
   }
 
   /// Convenience check for desktop-sized screens.
@@ -206,8 +207,16 @@ class BxScreenUtils {
   /// Requires a value for each of `mobile`, `tablet`, `desktop` and `watch`.
   /// If a [context] is provided it is used to determine the size; otherwise
   /// [currentScreenSize] is used.
-  static T responsiveValue<T>({required T mobile, required T tablet, required T desktop, required T watch, BuildContext? context}) {
-    final screenSize = context != null ? getScreenSize(context) : currentScreenSize;
+  static T responsiveValue<T>({
+    required T mobile,
+    required T tablet,
+    required T desktop,
+    required T watch,
+    BuildContext? context,
+  }) {
+    final screenSize = context != null
+        ? getScreenSize(context)
+        : currentScreenSize;
 
     switch (screenSize) {
       case BxScreenSize.mobile:
@@ -224,7 +233,10 @@ class BxScreenUtils {
   /// The [builder] callback receives the current width (in logical pixels)
   /// and must return a value of type [T]. If no context is provided, it
   /// attempts to use the global context; otherwise it falls back to 360.0.
-  static T responsiveValueFromWidth<T>({required T Function(double width) builder, BuildContext? context}) {
+  static T responsiveValueFromWidth<T>({
+    required T Function(double width) builder,
+    BuildContext? context,
+  }) {
     final width = context != null
         ? getScreenWidth(context)
         : _globalContext != null
@@ -241,7 +253,11 @@ class BxScreenUtils {
 
   /// Returns `true` if the screen width is between `min` (inclusive)
   /// and `max` (exclusive).
-  static bool isBetweenBreakpoints(BuildContext context, double min, double max) {
+  static bool isBetweenBreakpoints(
+    BuildContext context,
+    double min,
+    double max,
+  ) {
     final width = getScreenWidth(context);
     return width >= min && width < max;
   }

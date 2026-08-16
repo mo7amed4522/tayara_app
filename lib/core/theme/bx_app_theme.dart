@@ -54,24 +54,40 @@ class BxAppTheme {
         elevation: 0,
         backgroundColor: BxAppColors.primary,
         foregroundColor: BxAppColors.onPrimary,
-        titleTextStyle: TextStyle(color: BxAppColors.onPrimary, fontSize: 20.sp, fontWeight: FontWeight.w600),
+        titleTextStyle: TextStyle(
+          color: BxAppColors.onPrimary,
+          fontSize: 20.sp,
+          fontWeight: FontWeight.w600,
+        ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: BxAppColors.primary,
           foregroundColor: BxAppColors.onPrimary, // This ensures text is white
           minimumSize: const Size(double.infinity, 48),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          textStyle: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold, letterSpacing: 1.2),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          textStyle: TextStyle(
+            fontSize: 16.sp,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.2,
+          ),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: BxAppColors.surface,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: BxAppColors.onBackground.withOpacity(0.2), width: 1),
+          borderSide: BorderSide(
+            color: BxAppColors.onBackground.withOpacity(0.2),
+            width: 1,
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -85,20 +101,44 @@ class BxAppTheme {
         hintStyle: TextStyle(color: BxAppColors.onBackground.withOpacity(0.5)),
       ),
       textTheme: TextTheme(
-        displayLarge: TextStyle(color: BxAppColors.onBackground, fontSize: 57.sp),
-        displayMedium: TextStyle(color: BxAppColors.onBackground, fontSize: 45.sp),
-        displaySmall: TextStyle(color: BxAppColors.onBackground, fontSize: 36.sp),
-        headlineLarge: TextStyle(color: BxAppColors.onBackground, fontSize: 32.sp),
-        headlineMedium: TextStyle(color: BxAppColors.onBackground, fontSize: 28.sp),
-        headlineSmall: TextStyle(color: BxAppColors.onBackground, fontSize: 24.sp),
+        displayLarge: TextStyle(
+          color: BxAppColors.onBackground,
+          fontSize: 57.sp,
+        ),
+        displayMedium: TextStyle(
+          color: BxAppColors.onBackground,
+          fontSize: 45.sp,
+        ),
+        displaySmall: TextStyle(
+          color: BxAppColors.onBackground,
+          fontSize: 36.sp,
+        ),
+        headlineLarge: TextStyle(
+          color: BxAppColors.onBackground,
+          fontSize: 32.sp,
+        ),
+        headlineMedium: TextStyle(
+          color: BxAppColors.onBackground,
+          fontSize: 28.sp,
+        ),
+        headlineSmall: TextStyle(
+          color: BxAppColors.onBackground,
+          fontSize: 24.sp,
+        ),
         titleLarge: TextStyle(color: BxAppColors.onBackground, fontSize: 22.sp),
-        titleMedium: TextStyle(color: BxAppColors.onBackground, fontSize: 18.sp),
+        titleMedium: TextStyle(
+          color: BxAppColors.onBackground,
+          fontSize: 18.sp,
+        ),
         titleSmall: TextStyle(color: BxAppColors.onBackground, fontSize: 16.sp),
         bodyLarge: TextStyle(color: BxAppColors.onBackground, fontSize: 16.sp),
         bodyMedium: TextStyle(color: BxAppColors.onBackground, fontSize: 14.sp),
         bodySmall: TextStyle(color: BxAppColors.onBackground, fontSize: 12.sp),
         labelLarge: TextStyle(color: BxAppColors.onBackground, fontSize: 14.sp),
-        labelMedium: TextStyle(color: BxAppColors.onBackground, fontSize: 12.sp),
+        labelMedium: TextStyle(
+          color: BxAppColors.onBackground,
+          fontSize: 12.sp,
+        ),
         labelSmall: TextStyle(color: BxAppColors.onBackground, fontSize: 11.sp),
       ),
       cardTheme: CardThemeData(
@@ -140,24 +180,40 @@ class BxAppTheme {
         elevation: 0,
         backgroundColor: BxAppColors.primaryDark,
         foregroundColor: BxAppColors.onPrimary,
-        titleTextStyle: TextStyle(color: BxAppColors.onPrimary, fontSize: 20.sp, fontWeight: FontWeight.w600),
+        titleTextStyle: TextStyle(
+          color: BxAppColors.onPrimary,
+          fontSize: 20.sp,
+          fontWeight: FontWeight.w600,
+        ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: BxAppColors.primary,
           foregroundColor: BxAppColors.onPrimary, // This ensures text is white
           minimumSize: const Size(double.infinity, 48),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          textStyle: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold, letterSpacing: 1.2),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          textStyle: TextStyle(
+            fontSize: 16.sp,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.2,
+          ),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: BxAppColors.darkSurface,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: BxAppColors.darkOnBackground.withOpacity(0.2), width: 1),
+          borderSide: BorderSide(
+            color: BxAppColors.darkOnBackground.withOpacity(0.2),
+            width: 1,
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -167,25 +223,74 @@ class BxAppTheme {
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: BxAppColors.error, width: 1.5),
         ),
-        labelStyle: TextStyle(color: BxAppColors.darkOnBackground.withOpacity(0.7)),
-        hintStyle: TextStyle(color: BxAppColors.darkOnBackground.withOpacity(0.5)),
+        labelStyle: TextStyle(
+          color: BxAppColors.darkOnBackground.withOpacity(0.7),
+        ),
+        hintStyle: TextStyle(
+          color: BxAppColors.darkOnBackground.withOpacity(0.5),
+        ),
       ),
       textTheme: TextTheme(
-        displayLarge: TextStyle(color: BxAppColors.darkOnBackground, fontSize: 57.sp),
-        displayMedium: TextStyle(color: BxAppColors.darkOnBackground, fontSize: 45.sp),
-        displaySmall: TextStyle(color: BxAppColors.darkOnBackground, fontSize: 36.sp),
-        headlineLarge: TextStyle(color: BxAppColors.darkOnBackground, fontSize: 32.sp),
-        headlineMedium: TextStyle(color: BxAppColors.darkOnBackground, fontSize: 28.sp),
-        headlineSmall: TextStyle(color: BxAppColors.darkOnBackground, fontSize: 24.sp),
-        titleLarge: TextStyle(color: BxAppColors.darkOnBackground, fontSize: 22.sp),
-        titleMedium: TextStyle(color: BxAppColors.darkOnBackground, fontSize: 18.sp),
-        titleSmall: TextStyle(color: BxAppColors.darkOnBackground, fontSize: 16.sp),
-        bodyLarge: TextStyle(color: BxAppColors.darkOnBackground, fontSize: 16.sp),
-        bodyMedium: TextStyle(color: BxAppColors.darkOnBackground, fontSize: 14.sp),
-        bodySmall: TextStyle(color: BxAppColors.darkOnBackground, fontSize: 12.sp),
-        labelLarge: TextStyle(color: BxAppColors.darkOnBackground, fontSize: 14.sp),
-        labelMedium: TextStyle(color: BxAppColors.darkOnBackground, fontSize: 12.sp),
-        labelSmall: TextStyle(color: BxAppColors.darkOnBackground, fontSize: 11.sp),
+        displayLarge: TextStyle(
+          color: BxAppColors.darkOnBackground,
+          fontSize: 57.sp,
+        ),
+        displayMedium: TextStyle(
+          color: BxAppColors.darkOnBackground,
+          fontSize: 45.sp,
+        ),
+        displaySmall: TextStyle(
+          color: BxAppColors.darkOnBackground,
+          fontSize: 36.sp,
+        ),
+        headlineLarge: TextStyle(
+          color: BxAppColors.darkOnBackground,
+          fontSize: 32.sp,
+        ),
+        headlineMedium: TextStyle(
+          color: BxAppColors.darkOnBackground,
+          fontSize: 28.sp,
+        ),
+        headlineSmall: TextStyle(
+          color: BxAppColors.darkOnBackground,
+          fontSize: 24.sp,
+        ),
+        titleLarge: TextStyle(
+          color: BxAppColors.darkOnBackground,
+          fontSize: 22.sp,
+        ),
+        titleMedium: TextStyle(
+          color: BxAppColors.darkOnBackground,
+          fontSize: 18.sp,
+        ),
+        titleSmall: TextStyle(
+          color: BxAppColors.darkOnBackground,
+          fontSize: 16.sp,
+        ),
+        bodyLarge: TextStyle(
+          color: BxAppColors.darkOnBackground,
+          fontSize: 16.sp,
+        ),
+        bodyMedium: TextStyle(
+          color: BxAppColors.darkOnBackground,
+          fontSize: 14.sp,
+        ),
+        bodySmall: TextStyle(
+          color: BxAppColors.darkOnBackground,
+          fontSize: 12.sp,
+        ),
+        labelLarge: TextStyle(
+          color: BxAppColors.darkOnBackground,
+          fontSize: 14.sp,
+        ),
+        labelMedium: TextStyle(
+          color: BxAppColors.darkOnBackground,
+          fontSize: 12.sp,
+        ),
+        labelSmall: TextStyle(
+          color: BxAppColors.darkOnBackground,
+          fontSize: 11.sp,
+        ),
       ),
       cardTheme: CardThemeData(
         color: BxAppColors.darkSurface,

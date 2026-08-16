@@ -26,7 +26,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// final loginUsecase = injector.get<BxLoginUserUsecase>();
 /// ```
 class BxDependencyInjector {
-  static final BxDependencyInjector _singleton = BxDependencyInjector._internal();
+  static final BxDependencyInjector _singleton =
+      BxDependencyInjector._internal();
   static final GetIt _getIt = GetIt.instance;
 
   /// Returns the singleton instance of the injector.
@@ -59,8 +60,12 @@ class BxDependencyInjector {
     _getIt.registerSingleton<SharedPreferences>(sharedPreferences);
 
     // Data Sources
-    _getIt.registerLazySingleton<BxSystemRemoteDataSource>(() => BxSystemRemoteDataSourceImpl(dioClient: _getIt()));
-    _getIt.registerLazySingleton<BxSharedPreferencesDataSource>(() => BxSharedPreferencesDataSourceImpl(_getIt()));
+    _getIt.registerLazySingleton<BxSystemRemoteDataSource>(
+      () => BxSystemRemoteDataSourceImpl(dioClient: _getIt()),
+    );
+    _getIt.registerLazySingleton<BxSharedPreferencesDataSource>(
+      () => BxSharedPreferencesDataSourceImpl(_getIt()),
+    );
 
     // Repositories
 

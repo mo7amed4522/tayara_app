@@ -11,19 +11,25 @@ import 'package:equatable/equatable.dart';
 part 'bx_theme_controller_event.dart';
 part 'bx_theme_controller_state.dart';
 
-class BxThemeControllerBloc extends Bloc<BxThemeControllerEvent, BxThemeControllerState> {
+class BxThemeControllerBloc
+    extends Bloc<BxThemeControllerEvent, BxThemeControllerState> {
   final BxSharedPreferencesDataSource _bxSharedPreferencesDataSource;
 
-  BxThemeControllerBloc(this._bxSharedPreferencesDataSource) : super(const BxThemeControllerState()) {
+  BxThemeControllerBloc(this._bxSharedPreferencesDataSource)
+    : super(const BxThemeControllerState()) {
     on<BxLoadThemeEvent>(_onLoadTheme);
     on<BxChangeThemeEvent>(_onChangeTheme);
   }
 
-  Future<void> _onLoadTheme(BxLoadThemeEvent event, Emitter<BxThemeControllerState> emit) async {
+  Future<void> _onLoadTheme(
+    BxLoadThemeEvent event,
+    Emitter<BxThemeControllerState> emit,
+  ) async {
     try {
       emit(state.copyWith(status: BxThemeStatus.loading));
 
-      final savedThemeMode = await _bxSharedPreferencesDataSource.getThemeMode();
+      final savedThemeMode = await _bxSharedPreferencesDataSource
+          .getThemeMode();
       final themeMode = _parseThemeMode(savedThemeMode);
 
       emit(state.copyWith(status: BxThemeStatus.success, themeMode: themeMode));
@@ -32,14 +38,24 @@ class BxThemeControllerBloc extends Bloc<BxThemeControllerEvent, BxThemeControll
     }
   }
 
-  Future<void> _onChangeTheme(BxChangeThemeEvent event, Emitter<BxThemeControllerState> emit) async {
+  Future<void> _onChangeTheme(
+    BxChangeThemeEvent event,
+    Emitter<BxThemeControllerState> emit,
+  ) async {
     try {
       emit(state.copyWith(status: BxThemeStatus.loading));
 
       // Save theme mode to shared preferences
-      await _bxSharedPreferencesDataSource.saveThemeMode(_themeModeToString(event.themeMode));
+      await _bxSharedPreferencesDataSource.saveThemeMode(
+        _themeModeToString(event.themeMode),
+      );
 
-      emit(state.copyWith(status: BxThemeStatus.success, themeMode: event.themeMode));
+      emit(
+        state.copyWith(
+          status: BxThemeStatus.success,
+          themeMode: event.themeMode,
+        ),
+      );
     } catch (e) {
       emit(state.copyWith(status: BxThemeStatus.error, error: e.toString()));
     }

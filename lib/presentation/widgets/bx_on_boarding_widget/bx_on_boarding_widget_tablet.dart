@@ -18,11 +18,18 @@ class BxOnBoardingWidgetTablet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<BxOnBoardingControllerBloc, BxOnBoardingControllerState>(
+    return BlocConsumer<
+      BxOnBoardingControllerBloc,
+      BxOnBoardingControllerState
+    >(
       listener: (context, state) {
         final current = _pageController.page?.round() ?? 0;
         if (state.currentPage != current && _pageController.hasClients) {
-          _pageController.animateToPage(state.currentPage, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+          _pageController.animateToPage(
+            state.currentPage,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+          );
         }
       },
       builder: (context, state) {
@@ -40,21 +47,31 @@ class BxOnBoardingWidgetTablet extends StatelessWidget {
                     controller: _pageController,
                     itemCount: pages.length,
                     onPageChanged: (index) {
-                      context.read<BxOnBoardingControllerBloc>().add(BxOnBoardingPageChanged(index));
+                      context.read<BxOnBoardingControllerBloc>().add(
+                        BxOnBoardingPageChanged(index),
+                      );
                     },
                     itemBuilder: (context, index) {
                       final page = pages[index];
                       return Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Image.asset(page.imagePath, width: 380, height: 480, fit: BoxFit.contain),
+                          Image.asset(
+                            page.imagePath,
+                            width: 380,
+                            height: 480,
+                            fit: BoxFit.contain,
+                          ),
                           const SizedBox(height: 40),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 48),
                             child: Text(
                               page.title,
                               textAlign: TextAlign.center,
-                              style: theme.textTheme.headlineMedium?.copyWith(color: colorScheme.onBackground, fontWeight: FontWeight.bold),
+                              style: theme.textTheme.headlineMedium?.copyWith(
+                                color: colorScheme.onBackground,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                           const SizedBox(height: 16),
@@ -63,7 +80,11 @@ class BxOnBoardingWidgetTablet extends StatelessWidget {
                             child: Text(
                               page.description,
                               textAlign: TextAlign.center,
-                              style: theme.textTheme.bodyLarge?.copyWith(color: colorScheme.onBackground.withOpacity(0.7)),
+                              style: theme.textTheme.bodyLarge?.copyWith(
+                                color: colorScheme.onBackground.withOpacity(
+                                  0.7,
+                                ),
+                              ),
                             ),
                           ),
                         ],
@@ -81,11 +102,24 @@ class BxOnBoardingWidgetTablet extends StatelessWidget {
                           final isActive = index == state.currentPage;
                           return GestureDetector(
                             onTap: () {
-                              _pageController.animateToPage(index, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+                              _pageController.animateToPage(
+                                index,
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                              );
                             },
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 6),
-                              child: Image.asset(isActive ? BxAppConstant.active : BxAppConstant.notActive, width: 28, height: 28, fit: BoxFit.contain),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                              ),
+                              child: Image.asset(
+                                isActive
+                                    ? BxAppConstant.active
+                                    : BxAppConstant.notActive,
+                                width: 28,
+                                height: 28,
+                                fit: BoxFit.contain,
+                              ),
                             ),
                           );
                         }),
@@ -93,18 +127,35 @@ class BxOnBoardingWidgetTablet extends StatelessWidget {
                       ElevatedButton(
                         onPressed: () {
                           if (state.currentPage < pages.length - 1) {
-                            context.read<BxOnBoardingControllerBloc>().add(BxOnBoardingNextPage());
+                            context.read<BxOnBoardingControllerBloc>().add(
+                              BxOnBoardingNextPage(),
+                            );
                           } else {
-                            context.read<BxOnBoardingControllerBloc>().add(BxOnBoardingSkip(context));
+                            context.read<BxOnBoardingControllerBloc>().add(
+                              BxOnBoardingSkip(context),
+                            );
                           }
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: colorScheme.primary,
                           foregroundColor: colorScheme.onPrimary,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(56)),
-                          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(56),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 32,
+                            vertical: 16,
+                          ),
                         ),
-                        child: Text(state.currentPage == pages.length - 1 ? 'Get Started' : 'Next', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                        child: Text(
+                          state.currentPage == pages.length - 1
+                              ? 'Get Started'
+                              : 'Next',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
                       ),
                     ],
                   ),

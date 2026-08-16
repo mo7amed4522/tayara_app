@@ -15,12 +15,24 @@ class BxSplashScreenControllerState extends Equatable {
   final bool onBoardingCompleted;
   final String? errorMessage;
 
-  const BxSplashScreenControllerState({this.status = BxSplashScreenStatus.initial, this.onBoardingCompleted = false, this.errorMessage});
+  const BxSplashScreenControllerState({
+    this.status = BxSplashScreenStatus.initial,
+    this.onBoardingCompleted = false,
+    this.errorMessage,
+  });
 
   @override
   List<Object?> get props => [status, errorMessage, onBoardingCompleted];
 
-  BxSplashScreenControllerState copyWith({BxSplashScreenStatus? status, bool? onBoardingCompleted, String? errorMessage}) {
-    return BxSplashScreenControllerState(status: status ?? this.status, onBoardingCompleted: onBoardingCompleted ?? this.onBoardingCompleted, errorMessage: errorMessage ?? this.errorMessage);
+  BxSplashScreenControllerState copyWith({
+    BxSplashScreenStatus? status,
+    bool? onBoardingCompleted,
+    String? errorMessage,
+  }) {
+    return BxSplashScreenControllerState(
+      status: status ?? this.status,
+      onBoardingCompleted: onBoardingCompleted ?? this.onBoardingCompleted,
+      errorMessage: errorMessage ?? this.errorMessage,
+    );
   }
 }

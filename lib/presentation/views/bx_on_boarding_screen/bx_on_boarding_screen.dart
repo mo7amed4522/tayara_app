@@ -18,7 +18,10 @@ class BxOnBoardingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => BxOnBoardingControllerBloc(sharedPreferencesDataSource: BxDependencyInjector.instance.get<BxSharedPreferencesDataSource>()),
+      create: (_) => BxOnBoardingControllerBloc(
+        sharedPreferencesDataSource: BxDependencyInjector.instance
+            .get<BxSharedPreferencesDataSource>(),
+      ),
       child: LayoutBuilder(
         builder: (context, constraints) {
           if (constraints.maxWidth < 600) {

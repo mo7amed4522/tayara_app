@@ -23,11 +23,15 @@ class BxChangeLanguageEvent extends BxLocalizationControllerEvent {
 }
 
 /// Event to reload the app with new localization settings
-class BxReloadAppWithNewLocalizationEvent extends BxLocalizationControllerEvent {
+class BxReloadAppWithNewLocalizationEvent
+    extends BxLocalizationControllerEvent {
   final String languageCode;
   final dynamic context;
 
-  BxReloadAppWithNewLocalizationEvent({required this.languageCode, required this.context});
+  BxReloadAppWithNewLocalizationEvent({
+    required this.languageCode,
+    required this.context,
+  });
 
   @override
   List<Object?> get props => [languageCode, context];

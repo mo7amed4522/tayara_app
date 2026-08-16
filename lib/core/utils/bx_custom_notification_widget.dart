@@ -58,7 +58,16 @@ class BxCustomNotificationWidget extends StatelessWidget {
   /// An optional widget to replace the default leading icon.
   final Widget? leadingIcon;
 
-  const BxCustomNotificationWidget({super.key, required this.title, required this.message, this.priority = NotificationPriority.normal, this.onTap, this.onDismiss, this.imageUrl, this.leadingIcon});
+  const BxCustomNotificationWidget({
+    super.key,
+    required this.title,
+    required this.message,
+    this.priority = NotificationPriority.normal,
+    this.onTap,
+    this.onDismiss,
+    this.imageUrl,
+    this.leadingIcon,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -69,14 +78,27 @@ class BxCustomNotificationWidget extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 20, spreadRadius: 2, offset: const Offset(0, 6)),
-            BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10, offset: const Offset(0, 3)),
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              blurRadius: 20,
+              spreadRadius: 2,
+              offset: const Offset(0, 6),
+            ),
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 10,
+              offset: const Offset(0, 3),
+            ),
           ],
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(16),
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaY: 15, sigmaX: 15, tileMode: TileMode.clamp),
+            filter: ImageFilter.blur(
+              sigmaY: 15,
+              sigmaX: 15,
+              tileMode: TileMode.clamp,
+            ),
             child: Stack(
               children: [
                 // Background with enhanced gradient overlay
@@ -85,7 +107,11 @@ class BxCustomNotificationWidget extends StatelessWidget {
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                      colors: [Theme.of(context).primaryColor.withOpacity(0.95), Theme.of(context).primaryColor.withOpacity(0.85), Theme.of(context).primaryColor.withOpacity(0.75)],
+                      colors: [
+                        Theme.of(context).primaryColor.withOpacity(0.95),
+                        Theme.of(context).primaryColor.withOpacity(0.85),
+                        Theme.of(context).primaryColor.withOpacity(0.75),
+                      ],
                       stops: const [0.0, 0.5, 1.0],
                     ),
                   ),
@@ -94,8 +120,20 @@ class BxCustomNotificationWidget extends StatelessWidget {
                 // Enhanced glass morphs effect with better shine
                 Container(
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Colors.white.withOpacity(0.25), Colors.white.withOpacity(0.1), Colors.white.withOpacity(0.05)], stops: const [0.0, 0.5, 1.0]),
-                    border: Border.all(color: Colors.white.withOpacity(0.4), width: 2.0),
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Colors.white.withOpacity(0.25),
+                        Colors.white.withOpacity(0.1),
+                        Colors.white.withOpacity(0.05),
+                      ],
+                      stops: const [0.0, 0.5, 1.0],
+                    ),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.4),
+                      width: 2.0,
+                    ),
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
@@ -125,7 +163,10 @@ class BxCustomNotificationWidget extends StatelessWidget {
                                     width: 8,
                                     height: 8,
                                     margin: EdgeInsets.only(right: 6),
-                                    decoration: const BoxDecoration(color: Colors.redAccent, shape: BoxShape.circle),
+                                    decoration: const BoxDecoration(
+                                      color: Colors.redAccent,
+                                      shape: BoxShape.circle,
+                                    ),
                                   ),
                                 Expanded(
                                   child: Text(
@@ -138,7 +179,13 @@ class BxCustomNotificationWidget extends StatelessWidget {
                                       decorationColor: Colors.transparent,
                                       letterSpacing: 0.3,
                                       height: 1.2,
-                                      shadows: [Shadow(color: Colors.black.withOpacity(0.3), offset: const Offset(0, 1), blurRadius: 2)],
+                                      shadows: [
+                                        Shadow(
+                                          color: Colors.black.withOpacity(0.3),
+                                          offset: const Offset(0, 1),
+                                          blurRadius: 2,
+                                        ),
+                                      ],
                                     ),
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
@@ -159,7 +206,13 @@ class BxCustomNotificationWidget extends StatelessWidget {
                                 decoration: TextDecoration.none,
                                 decorationColor: Colors.transparent,
                                 letterSpacing: 0.2,
-                                shadows: [Shadow(color: Colors.black.withOpacity(0.2), offset: const Offset(0, 1), blurRadius: 1)],
+                                shadows: [
+                                  Shadow(
+                                    color: Colors.black.withOpacity(0.2),
+                                    offset: const Offset(0, 1),
+                                    blurRadius: 1,
+                                  ),
+                                ],
                               ),
                               maxLines: 3,
                               overflow: TextOverflow.ellipsis,
@@ -179,10 +232,23 @@ class BxCustomNotificationWidget extends StatelessWidget {
                             decoration: BoxDecoration(
                               color: Colors.white.withOpacity(0.25),
                               shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white.withOpacity(0.3), width: 1),
-                              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.15), blurRadius: 4, offset: const Offset(0, 2))],
+                              border: Border.all(
+                                color: Colors.white.withOpacity(0.3),
+                                width: 1,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.15),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
                             ),
-                            child: Icon(Icons.close_rounded, color: Colors.white, size: 20),
+                            child: Icon(
+                              Icons.close_rounded,
+                              color: Colors.white,
+                              size: 20,
+                            ),
                           ),
                         ),
                     ],
@@ -194,7 +260,12 @@ class BxCustomNotificationWidget extends StatelessWidget {
                   Positioned.fill(
                     child: Material(
                       color: Colors.transparent,
-                      child: InkWell(onTap: onTap, borderRadius: BorderRadius.circular(16), splashColor: Colors.white.withOpacity(0.25), highlightColor: Colors.white.withOpacity(0.15)),
+                      child: InkWell(
+                        onTap: onTap,
+                        borderRadius: BorderRadius.circular(16),
+                        splashColor: Colors.white.withOpacity(0.25),
+                        highlightColor: Colors.white.withOpacity(0.15),
+                      ),
                     ),
                   ),
               ],
@@ -215,7 +286,13 @@ class BxCustomNotificationWidget extends StatelessWidget {
           color: Colors.white.withOpacity(0.3),
           shape: BoxShape.circle,
           border: Border.all(color: Colors.white.withOpacity(0.4), width: 2),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.15), blurRadius: 6, offset: const Offset(0, 2))],
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.15),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: leadingIcon,
       );
@@ -229,10 +306,18 @@ class BxCustomNotificationWidget extends StatelessWidget {
           height: 48,
           decoration: BoxDecoration(
             color: Colors.white.withOpacity(0.2),
-            border: Border.all(color: Colors.white.withOpacity(0.3), width: 1.5),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.3),
+              width: 1.5,
+            ),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Image.network(imageUrl!, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => _buildDefaultIcon(context)),
+          child: Image.network(
+            imageUrl!,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) =>
+                _buildDefaultIcon(context),
+          ),
         ),
       );
     }
@@ -248,9 +333,20 @@ class BxCustomNotificationWidget extends StatelessWidget {
         color: Colors.white.withOpacity(0.3),
         shape: BoxShape.circle,
         border: Border.all(color: Colors.white.withOpacity(0.4), width: 2),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.15), blurRadius: 6, offset: const Offset(0, 2))],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
-      child: Image.asset(BxAppConstant.appLogo, color: Colors.white, width: 26, height: 26),
+      child: Image.asset(
+        BxAppConstant.appLogo,
+        color: Colors.white,
+        width: 26,
+        height: 26,
+      ),
     );
   }
 }
@@ -266,7 +362,13 @@ class CompactNotificationWidget extends StatelessWidget {
   final VoidCallback? onTap;
   final VoidCallback? onDismiss;
 
-  const CompactNotificationWidget({super.key, required this.title, required this.message, this.onTap, this.onDismiss});
+  const CompactNotificationWidget({
+    super.key,
+    required this.title,
+    required this.message,
+    this.onTap,
+    this.onDismiss,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -276,17 +378,37 @@ class CompactNotificationWidget extends StatelessWidget {
         margin: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Theme.of(context).primaryColor.withOpacity(0.7), Theme.of(context).primaryColor.withOpacity(0.5)]),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Theme.of(context).primaryColor.withOpacity(0.7),
+              Theme.of(context).primaryColor.withOpacity(0.5),
+            ],
+          ),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: Colors.white.withOpacity(0.3), width: 1),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 8, offset: const Offset(0, 2))],
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Row(
           children: [
             Container(
               padding: EdgeInsets.all(8),
-              decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), shape: BoxShape.circle),
-              child: Icon(Icons.notifications_active, color: Colors.white, size: 18),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.notifications_active,
+                color: Colors.white,
+                size: 18,
+              ),
             ),
             SizedBox(width: 12),
             Expanded(
@@ -296,14 +418,23 @@ class CompactNotificationWidget extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold, decoration: TextDecoration.none),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      decoration: TextDecoration.none,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   SizedBox(height: 2),
                   Text(
                     message,
-                    style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 12, decoration: TextDecoration.none),
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.9),
+                      fontSize: 12,
+                      decoration: TextDecoration.none,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -313,7 +444,11 @@ class CompactNotificationWidget extends StatelessWidget {
             if (onDismiss != null)
               GestureDetector(
                 onTap: onDismiss,
-                child: Icon(Icons.close, color: Colors.white.withOpacity(0.7), size: 16),
+                child: Icon(
+                  Icons.close,
+                  color: Colors.white.withOpacity(0.7),
+                  size: 16,
+                ),
               ),
           ],
         ),
@@ -436,14 +571,40 @@ class NotificationHelper {
   /// Convenience method to show a high‑priority notification.
   ///
   /// Uses [NotificationPriority.high] and a 6‑second display duration.
-  static void showHighPriority({required BuildContext context, required String title, required String message, VoidCallback? onTap, String? imageUrl}) {
-    show(context: context, title: title, message: message, priority: NotificationPriority.high, onTap: onTap, imageUrl: imageUrl, duration: const Duration(seconds: 6));
+  static void showHighPriority({
+    required BuildContext context,
+    required String title,
+    required String message,
+    VoidCallback? onTap,
+    String? imageUrl,
+  }) {
+    show(
+      context: context,
+      title: title,
+      message: message,
+      priority: NotificationPriority.high,
+      onTap: onTap,
+      imageUrl: imageUrl,
+      duration: const Duration(seconds: 6),
+    );
   }
 
   /// Convenience method to show a compact notification.
   ///
   /// The overlay uses [CompactNotificationWidget] and a 3‑second duration.
-  static void showCompact({required BuildContext context, required String title, required String message, VoidCallback? onTap}) {
-    show(context: context, title: title, message: message, onTap: onTap, compact: true, duration: const Duration(seconds: 3));
+  static void showCompact({
+    required BuildContext context,
+    required String title,
+    required String message,
+    VoidCallback? onTap,
+  }) {
+    show(
+      context: context,
+      title: title,
+      message: message,
+      onTap: onTap,
+      compact: true,
+      duration: const Duration(seconds: 3),
+    );
   }
 }

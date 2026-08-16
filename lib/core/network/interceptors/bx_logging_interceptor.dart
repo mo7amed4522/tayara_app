@@ -57,7 +57,8 @@ class BxLoggingInterceptor extends Interceptor {
   /// (or the calling code) via [handler.next].
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
-    final fullUrl = '${response.requestOptions.baseUrl}${response.requestOptions.path}';
+    final fullUrl =
+        '${response.requestOptions.baseUrl}${response.requestOptions.path}';
     debugPrint('\n┏━━━ RESPONSE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     debugPrint('┃ Status  : ${response.statusCode}');
     debugPrint('┃ URL     : $fullUrl');

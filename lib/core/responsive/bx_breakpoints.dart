@@ -53,30 +53,39 @@ class BxResponsiveBreakpoints {
   /// ```dart
   /// const BxResponsiveBreakpoints(mobile: 600, tablet: 1200)
   /// ```
-  const BxResponsiveBreakpoints({this.mobile = 600, this.tablet = 1200, this.desktop = double.infinity});
+  const BxResponsiveBreakpoints({
+    this.mobile = 600,
+    this.tablet = 1200,
+    this.desktop = double.infinity,
+  });
 
   // Material Design breakpoints (using ScreenUtil)
 
   /// Breakpoints inspired by Material Design guidelines.
-  static BxResponsiveBreakpoints get material => BxResponsiveBreakpoints(mobile: 600, tablet: 1240, desktop: 1440);
+  static BxResponsiveBreakpoints get material =>
+      BxResponsiveBreakpoints(mobile: 600, tablet: 1240, desktop: 1440);
 
   // Bootstrap breakpoints (using ScreenUtil)
 
   /// Breakpoints matching the Bootstrap 5 responsive breakpoints.
-  static BxResponsiveBreakpoints get bootstrap => BxResponsiveBreakpoints(mobile: 768, tablet: 992, desktop: 1200);
+  static BxResponsiveBreakpoints get bootstrap =>
+      BxResponsiveBreakpoints(mobile: 768, tablet: 992, desktop: 1200);
 
   // Tailwind CSS breakpoints (using ScreenUtil)
 
   /// Breakpoints matching the Tailwind CSS default breakpoints.
-  static BxResponsiveBreakpoints get tailwind => BxResponsiveBreakpoints(mobile: 640, tablet: 768, desktop: 1024);
+  static BxResponsiveBreakpoints get tailwind =>
+      BxResponsiveBreakpoints(mobile: 640, tablet: 768, desktop: 1024);
 
   // Custom breakpoints for specific use cases (using ScreenUtil)
 
   /// Compact breakpoints for very narrow layouts.
-  static BxResponsiveBreakpoints get compact => BxResponsiveBreakpoints(mobile: 480, tablet: 800, desktop: 1024);
+  static BxResponsiveBreakpoints get compact =>
+      BxResponsiveBreakpoints(mobile: 480, tablet: 800, desktop: 1024);
 
   /// Expanded breakpoints for layouts that need more room.
-  static BxResponsiveBreakpoints get expanded => BxResponsiveBreakpoints(mobile: 720, tablet: 1440, desktop: 1920);
+  static BxResponsiveBreakpoints get expanded =>
+      BxResponsiveBreakpoints(mobile: 720, tablet: 1440, desktop: 1920);
 
   /// Returns the [BxScreenSize] category for a given [width] in logical
   /// pixels.
@@ -183,12 +192,24 @@ class BxResponsiveBreakpoints {
 
   /// Returns a map of screen size to its corresponding media query string.
   Map<BxScreenSize, String> getMediaQueries({bool min = true}) {
-    return {BxScreenSize.mobile: getMediaQuery(BxScreenSize.mobile, min: min), BxScreenSize.tablet: getMediaQuery(BxScreenSize.tablet, min: min), BxScreenSize.desktop: getMediaQuery(BxScreenSize.desktop, min: min)};
+    return {
+      BxScreenSize.mobile: getMediaQuery(BxScreenSize.mobile, min: min),
+      BxScreenSize.tablet: getMediaQuery(BxScreenSize.tablet, min: min),
+      BxScreenSize.desktop: getMediaQuery(BxScreenSize.desktop, min: min),
+    };
   }
 
   /// Creates a copy of this breakpoint set with the given fields replaced.
-  BxResponsiveBreakpoints copyWith({double? mobile, double? tablet, double? desktop}) {
-    return BxResponsiveBreakpoints(mobile: mobile ?? this.mobile, tablet: tablet ?? this.tablet, desktop: desktop ?? this.desktop);
+  BxResponsiveBreakpoints copyWith({
+    double? mobile,
+    double? tablet,
+    double? desktop,
+  }) {
+    return BxResponsiveBreakpoints(
+      mobile: mobile ?? this.mobile,
+      tablet: tablet ?? this.tablet,
+      desktop: desktop ?? this.desktop,
+    );
   }
 
   /// Returns `true` if the breakpoints form a valid ascending chain:
@@ -226,8 +247,13 @@ class BreakpointUtils {
   ///   breakpoints: [0, 600, 900, 1200],
   /// );
   /// ```
-  static double interpolate(double width, {required List<double> values, List<double>? breakpoints}) {
-    final effectiveBreakpoints = breakpoints ?? defaultBreakpoints.allBreakpoints;
+  static double interpolate(
+    double width, {
+    required List<double> values,
+    List<double>? breakpoints,
+  }) {
+    final effectiveBreakpoints =
+        breakpoints ?? defaultBreakpoints.allBreakpoints;
 
     if (effectiveBreakpoints.length != values.length) {
       throw ArgumentError('Breakpoints and values must have same length');
@@ -239,7 +265,8 @@ class BreakpointUtils {
       final nextBreakpoint = effectiveBreakpoints[i + 1];
 
       if (width >= currentBreakpoint && width < nextBreakpoint) {
-        final progress = (width - currentBreakpoint) / (nextBreakpoint - currentBreakpoint);
+        final progress =
+            (width - currentBreakpoint) / (nextBreakpoint - currentBreakpoint);
         return lerpDouble(values[i], values[i + 1], progress)!;
       }
     }
@@ -251,7 +278,13 @@ class BreakpointUtils {
   /// Returns a value of type [T] based on the current screen size.
   ///
   /// Uses the [defaultBreakpoints] and the provided per‑size values.
-  static T getValueForSize<T>({required BuildContext context, required T watch, required T mobile, required T tablet, required T desktop}) {
+  static T getValueForSize<T>({
+    required BuildContext context,
+    required T watch,
+    required T mobile,
+    required T tablet,
+    required T desktop,
+  }) {
     final breakpoints = defaultBreakpoints;
     final width = MediaQuery.of(context).size.width;
     final size = breakpoints.getScreenSize(width);
@@ -271,18 +304,33 @@ class BreakpointUtils {
   ///
   /// If explicit values are given they take precedence; otherwise sensible
   /// defaults are used (e.g. 2 columns for mobile portrait, 3 for landscape).
-  static int getGridColumns({required BuildContext context, int? watchColumns, int? mobileColumns, int? tabletColumns, int? desktopColumns}) {
+  static int getGridColumns({
+    required BuildContext context,
+    int? watchColumns,
+    int? mobileColumns,
+    int? tabletColumns,
+    int? desktopColumns,
+  }) {
     final breakpoints = defaultBreakpoints;
     final width = MediaQuery.of(context).size.width;
     final size = breakpoints.getScreenSize(width);
 
     switch (size) {
       case BxScreenSize.mobile:
-        return mobileColumns ?? (MediaQuery.of(context).orientation == Orientation.portrait ? 2 : 3);
+        return mobileColumns ??
+            (MediaQuery.of(context).orientation == Orientation.portrait
+                ? 2
+                : 3);
       case BxScreenSize.tablet:
-        return tabletColumns ?? (MediaQuery.of(context).orientation == Orientation.portrait ? 3 : 4);
+        return tabletColumns ??
+            (MediaQuery.of(context).orientation == Orientation.portrait
+                ? 3
+                : 4);
       case BxScreenSize.desktop:
-        return desktopColumns ?? (MediaQuery.of(context).orientation == Orientation.portrait ? 4 : 6);
+        return desktopColumns ??
+            (MediaQuery.of(context).orientation == Orientation.portrait
+                ? 4
+                : 6);
     }
   }
 
@@ -290,7 +338,12 @@ class BreakpointUtils {
   /// current screen size.
   ///
   /// Defaults: mobile 8.0, tablet 12.0, desktop 16.0.
-  static double getSpacing({required BuildContext context, double? mobileSpacing, double? tabletSpacing, double? desktopSpacing}) {
+  static double getSpacing({
+    required BuildContext context,
+    double? mobileSpacing,
+    double? tabletSpacing,
+    double? desktopSpacing,
+  }) {
     final breakpoints = defaultBreakpoints;
     final width = MediaQuery.of(context).size.width;
     final size = breakpoints.getScreenSize(width);

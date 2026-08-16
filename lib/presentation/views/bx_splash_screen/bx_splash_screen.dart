@@ -15,7 +15,10 @@ class BxSplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BxResponsiveBuilder(mobileBuilder: (context) => const BxSplashWidgetMobile(), tabletBuilder: (context) => const BxSplashWidgetTablet()),
+      body: BxResponsiveBuilder(
+        mobileBuilder: (context) => const BxSplashWidgetMobile(),
+        tabletBuilder: (context) => const BxSplashWidgetTablet(),
+      ),
     );
   }
 }

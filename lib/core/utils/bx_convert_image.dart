@@ -23,16 +23,29 @@ class BxConvertImage {
   final String? fileName;
   final String? filePath;
 
-  const BxConvertImage({this.base64String, this.bytes, this.fileName, this.filePath});
+  const BxConvertImage({
+    this.base64String,
+    this.bytes,
+    this.fileName,
+    this.filePath,
+  });
 
   /// Creates a [BxConvertImage] from a base64 string
   factory BxConvertImage.fromBase64(String base64String, {String? fileName}) {
-    return BxConvertImage(base64String: base64String, bytes: base64Decode(base64String), fileName: fileName);
+    return BxConvertImage(
+      base64String: base64String,
+      bytes: base64Decode(base64String),
+      fileName: fileName,
+    );
   }
 
   /// Creates a [BxConvertImage] from bytes
   factory BxConvertImage.fromBytes(Uint8List bytes, {String? fileName}) {
-    return BxConvertImage(base64String: base64Encode(bytes), bytes: bytes, fileName: fileName);
+    return BxConvertImage(
+      base64String: base64Encode(bytes),
+      bytes: bytes,
+      fileName: fileName,
+    );
   }
 
   /// Creates a [BxConvertImage] from a File
@@ -43,12 +56,27 @@ class BxConvertImage {
   }
 
   /// Converts base64 string to Image widget
-  static Image imageFromBase64String(String base64String, {double? height, double? width, BoxFit fit = BoxFit.cover}) {
-    return Image.memory(base64Decode(base64String), height: height, width: width, fit: fit);
+  static Image imageFromBase64String(
+    String base64String, {
+    double? height,
+    double? width,
+    BoxFit fit = BoxFit.cover,
+  }) {
+    return Image.memory(
+      base64Decode(base64String),
+      height: height,
+      width: width,
+      fit: fit,
+    );
   }
 
   /// Converts bytes to Image widget
-  static Image imageFromBytes(Uint8List bytes, {double? height, double? width, BoxFit fit = BoxFit.cover}) {
+  static Image imageFromBytes(
+    Uint8List bytes, {
+    double? height,
+    double? width,
+    BoxFit fit = BoxFit.cover,
+  }) {
     return Image.memory(bytes, height: height, width: width, fit: fit);
   }
 
@@ -63,7 +91,13 @@ class BxConvertImage {
   /// Extracts image metadata from base64 string
   static ImageMetadata getImageMetadata(String base64String) {
     final bytes = base64Decode(base64String);
-    return ImageMetadata(sizeInBytes: bytes.length, sizeInKB: bytes.length / 1024, sizeInMB: bytes.length / (1024 * 1024), base64Length: base64String.length, bytes: bytes);
+    return ImageMetadata(
+      sizeInBytes: bytes.length,
+      sizeInKB: bytes.length / 1024,
+      sizeInMB: bytes.length / (1024 * 1024),
+      base64Length: base64String.length,
+      bytes: bytes,
+    );
   }
 
   /// Gets metadata for this instance
@@ -71,7 +105,13 @@ class BxConvertImage {
     if (bytes == null) {
       throw Exception('No image data available');
     }
-    return ImageMetadata(sizeInBytes: bytes!.length, sizeInKB: bytes!.length / 1024, sizeInMB: bytes!.length / (1024 * 1024), base64Length: base64String?.length ?? 0, bytes: bytes);
+    return ImageMetadata(
+      sizeInBytes: bytes!.length,
+      sizeInKB: bytes!.length / 1024,
+      sizeInMB: bytes!.length / (1024 * 1024),
+      base64Length: base64String?.length ?? 0,
+      bytes: bytes,
+    );
   }
 
   /// Validates if a string is a valid base64 image
@@ -85,9 +125,15 @@ class BxConvertImage {
       // PNG: 137 80 78 71 13 10 26 10
       // JPEG: 255 216 255
       // GIF: 71 73 70 56
-      if ((bytes[0] == 0x89 && bytes[1] == 0x50 && bytes[2] == 0x4E && bytes[3] == 0x47) || // PNG
+      if ((bytes[0] == 0x89 &&
+              bytes[1] == 0x50 &&
+              bytes[2] == 0x4E &&
+              bytes[3] == 0x47) || // PNG
           (bytes[0] == 0xFF && bytes[1] == 0xD8 && bytes[2] == 0xFF) || // JPEG
-          (bytes[0] == 0x47 && bytes[1] == 0x49 && bytes[2] == 0x46 && bytes[3] == 0x38)) {
+          (bytes[0] == 0x47 &&
+              bytes[1] == 0x49 &&
+              bytes[2] == 0x46 &&
+              bytes[3] == 0x38)) {
         // GIF
         return true;
       }
@@ -116,13 +162,26 @@ class BxConvertImage {
   }
 
   /// Adds data URL prefix to base64 string
-  static String addDataUrlPrefix(String base64String, {String mimeType = 'image/png'}) {
+  static String addDataUrlPrefix(
+    String base64String, {
+    String mimeType = 'image/png',
+  }) {
     return 'data:$mimeType;base64,$base64String';
   }
 
   /// Creates a copy of this instance with updated values
-  BxConvertImage copyWith({String? base64String, Uint8List? bytes, String? fileName, String? filePath}) {
-    return BxConvertImage(base64String: base64String ?? this.base64String, bytes: bytes ?? this.bytes, fileName: fileName ?? this.fileName, filePath: filePath ?? this.filePath);
+  BxConvertImage copyWith({
+    String? base64String,
+    Uint8List? bytes,
+    String? fileName,
+    String? filePath,
+  }) {
+    return BxConvertImage(
+      base64String: base64String ?? this.base64String,
+      bytes: bytes ?? this.bytes,
+      fileName: fileName ?? this.fileName,
+      filePath: filePath ?? this.filePath,
+    );
   }
 
   @override
@@ -134,7 +193,10 @@ class BxConvertImage {
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    return other is BxConvertImage && other.base64String == base64String && other.fileName == fileName && other.filePath == filePath;
+    return other is BxConvertImage &&
+        other.base64String == base64String &&
+        other.fileName == fileName &&
+        other.filePath == filePath;
   }
 
   @override
@@ -149,7 +211,13 @@ class ImageMetadata {
   final int base64Length;
   final Uint8List? bytes;
 
-  const ImageMetadata({required this.sizeInBytes, required this.sizeInKB, required this.sizeInMB, required this.base64Length, this.bytes});
+  const ImageMetadata({
+    required this.sizeInBytes,
+    required this.sizeInKB,
+    required this.sizeInMB,
+    required this.base64Length,
+    this.bytes,
+  });
 
   /// Formats the size in a human-readable format
   String get formattedSize {

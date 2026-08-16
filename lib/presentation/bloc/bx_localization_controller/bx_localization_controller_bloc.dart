@@ -11,38 +11,61 @@ import 'package:equatable/equatable.dart';
 part 'bx_localization_controller_event.dart';
 part 'bx_localization_controller_state.dart';
 
-class BxLocalizationControllerBloc extends Bloc<BxLocalizationControllerEvent, BxLocalizationControllerState> {
+class BxLocalizationControllerBloc
+    extends Bloc<BxLocalizationControllerEvent, BxLocalizationControllerState> {
   final BxSharedPreferencesDataSource _bxSharedPreferencesDataSource;
 
-  BxLocalizationControllerBloc(this._bxSharedPreferencesDataSource) : super(const BxLocalizationControllerState()) {
+  BxLocalizationControllerBloc(this._bxSharedPreferencesDataSource)
+    : super(const BxLocalizationControllerState()) {
     on<BxLoadLocalizationEvent>(_onLoadLocalization);
     on<BxChangeLanguageEvent>(_onChangeLanguage);
   }
 
-  Future<void> _onLoadLocalization(BxLoadLocalizationEvent event, Emitter<BxLocalizationControllerState> emit) async {
+  Future<void> _onLoadLocalization(
+    BxLoadLocalizationEvent event,
+    Emitter<BxLocalizationControllerState> emit,
+  ) async {
     try {
       emit(state.copyWith(status: BxLocalizationStatus.loading));
 
-      final savedLanguageCode = await _bxSharedPreferencesDataSource.getLanguageCode();
+      final savedLanguageCode = await _bxSharedPreferencesDataSource
+          .getLanguageCode();
       final languageCode = savedLanguageCode ?? 'en';
       BxAppData.langCode = languageCode;
-      emit(state.copyWith(status: BxLocalizationStatus.success, languageCode: languageCode));
+      emit(
+        state.copyWith(
+          status: BxLocalizationStatus.success,
+          languageCode: languageCode,
+        ),
+      );
     } catch (e) {
-      emit(state.copyWith(status: BxLocalizationStatus.error, error: e.toString()));
+      emit(
+        state.copyWith(status: BxLocalizationStatus.error, error: e.toString()),
+      );
     }
   }
 
-  Future<void> _onChangeLanguage(BxChangeLanguageEvent event, Emitter<BxLocalizationControllerState> emit) async {
+  Future<void> _onChangeLanguage(
+    BxChangeLanguageEvent event,
+    Emitter<BxLocalizationControllerState> emit,
+  ) async {
     try {
       emit(state.copyWith(status: BxLocalizationStatus.loading));
 
       // Save language code to shared preferences
       await _bxSharedPreferencesDataSource.saveLanguageCode(event.languageCode);
 
-      emit(state.copyWith(status: BxLocalizationStatus.success, languageCode: event.languageCode));
+      emit(
+        state.copyWith(
+          status: BxLocalizationStatus.success,
+          languageCode: event.languageCode,
+        ),
+      );
       BxAppData.langCode = event.languageCode;
     } catch (e) {
-      emit(state.copyWith(status: BxLocalizationStatus.error, error: e.toString()));
+      emit(
+        state.copyWith(status: BxLocalizationStatus.error, error: e.toString()),
+      );
     }
   }
 }

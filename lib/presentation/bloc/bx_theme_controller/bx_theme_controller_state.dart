@@ -19,8 +19,16 @@ class BxThemeControllerState extends Equatable {
     this.themeMode = ThemeMode.dark, // Default to dark theme
   });
 
-  BxThemeControllerState copyWith({BxThemeStatus? status, String? error, ThemeMode? themeMode}) {
-    return BxThemeControllerState(status: status ?? this.status, error: error ?? this.error, themeMode: themeMode ?? this.themeMode);
+  BxThemeControllerState copyWith({
+    BxThemeStatus? status,
+    String? error,
+    ThemeMode? themeMode,
+  }) {
+    return BxThemeControllerState(
+      status: status ?? this.status,
+      error: error ?? this.error,
+      themeMode: themeMode ?? this.themeMode,
+    );
   }
 
   @override

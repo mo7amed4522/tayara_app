@@ -26,7 +26,11 @@ class BxRouteNames {
 
   // Route groups
   /// All publicly accessible routes in the application.
-  static const List<String> publicRoutes = [bxSplashScreen, bxOnBoardingScreen, bxLoginScreen];
+  static const List<String> publicRoutes = [
+    bxSplashScreen,
+    bxOnBoardingScreen,
+    bxLoginScreen,
+  ];
 
   /// Routes that are shown as modals (currently empty).
   static const List<String> modalRoutes = [];
@@ -73,7 +77,10 @@ class BxRouteNames {
   ///
   /// Returns a map where each key is the parameter name (without the colon)
   /// and the value is the corresponding segment from the route.
-  static Map<String, String> extractAllRouteParameters(String routeName, String pattern) {
+  static Map<String, String> extractAllRouteParameters(
+    String routeName,
+    String pattern,
+  ) {
     final parameters = <String, String>{};
     final patternParts = pattern.split('/');
     final routeParts = routeName.split('/');
