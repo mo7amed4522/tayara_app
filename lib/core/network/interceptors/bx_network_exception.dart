@@ -10,7 +10,12 @@ class BxNetworkException implements Exception {
   final DioExceptionType type;
   final dynamic data;
 
-  BxNetworkException({required this.message, required this.statusCode, required this.type, this.data});
+  BxNetworkException({
+    required this.message,
+    required this.statusCode,
+    required this.type,
+    this.data,
+  });
 
   @override
   String toString() => 'BxNetworkException: $message (Status: $statusCode)';

@@ -35,7 +35,10 @@ class BxRouteGenerator {
   /// Before building the route, the navigation is logged for analytics.
   static Route<dynamic> generateRoute(RouteSettings settings) {
     // Track route for analytics
-    BxRouteGenerator.trackRouteView(settings.name ?? '', parameters: {'arguments': settings.arguments});
+    BxRouteGenerator.trackRouteView(
+      settings.name ?? '',
+      parameters: {'arguments': settings.arguments},
+    );
 
     switch (settings.name) {
       // Public routes
@@ -62,7 +65,10 @@ class BxRouteGenerator {
         const end = Offset.zero;
         const curve = Curves.easeInOut;
 
-        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        var tween = Tween(
+          begin: begin,
+          end: end,
+        ).chain(CurveTween(curve: curve));
 
         return SlideTransition(position: animation.drive(tween), child: child);
       },
@@ -75,7 +81,10 @@ class BxRouteGenerator {
   /// Builds a route that fades in the given [page] over 300 ms.
   ///
   /// Optionally attach [settings] for analytics and argument passing.
-  static Route<dynamic> fadeTransitionRoute(Widget page, {RouteSettings? settings}) {
+  static Route<dynamic> fadeTransitionRoute(
+    Widget page, {
+    RouteSettings? settings,
+  }) {
     return PageRouteBuilder(
       settings: settings,
       pageBuilder: (context, animation, secondaryAnimation) => page,
@@ -89,7 +98,10 @@ class BxRouteGenerator {
   /// Builds a route that slides [page] in from the right over 300 ms.
   ///
   /// Similar to the default platform push transition.
-  static Route<dynamic> slideTransitionRoute(Widget page, {RouteSettings? settings}) {
+  static Route<dynamic> slideTransitionRoute(
+    Widget page, {
+    RouteSettings? settings,
+  }) {
     return PageRouteBuilder(
       settings: settings,
       pageBuilder: (context, animation, secondaryAnimation) => page,
@@ -98,7 +110,10 @@ class BxRouteGenerator {
         const end = Offset.zero;
         const curve = Curves.easeInOut;
 
-        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        var tween = Tween(
+          begin: begin,
+          end: end,
+        ).chain(CurveTween(curve: curve));
 
         return SlideTransition(position: animation.drive(tween), child: child);
       },
@@ -108,13 +123,18 @@ class BxRouteGenerator {
 
   /// Builds a route that scales [page] up from 0 to 1 over 400 ms
   /// using a `fastOutSlowIn` curve.
-  static Route<dynamic> scaleTransitionRoute(Widget page, {RouteSettings? settings}) {
+  static Route<dynamic> scaleTransitionRoute(
+    Widget page, {
+    RouteSettings? settings,
+  }) {
     return PageRouteBuilder(
       settings: settings,
       pageBuilder: (context, animation, secondaryAnimation) => page,
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         return ScaleTransition(
-          scale: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: animation, curve: Curves.fastOutSlowIn)),
+          scale: Tween<double>(begin: 0.0, end: 1.0).animate(
+            CurvedAnimation(parent: animation, curve: Curves.fastOutSlowIn),
+          ),
           child: child,
         );
       },
@@ -125,13 +145,21 @@ class BxRouteGenerator {
   // Navigation helpers
 
   /// Replaces the current route with a named route.
-  static void pushReplacementNamed(BuildContext context, String routeName, {Object? arguments}) {
+  static void pushReplacementNamed(
+    BuildContext context,
+    String routeName, {
+    Object? arguments,
+  }) {
     Navigator.of(context).pushReplacementNamed(routeName, arguments: arguments);
   }
 
   /// Pushes a named route onto the navigator and returns a [Future]
   /// that completes when the route is popped.
-  static Future<T?> pushNamed<T extends Object?>(BuildContext context, String routeName, {Object? arguments}) {
+  static Future<T?> pushNamed<T extends Object?>(
+    BuildContext context,
+    String routeName, {
+    Object? arguments,
+  }) {
     return Navigator.of(context).pushNamed<T>(routeName, arguments: arguments);
   }
 
@@ -141,14 +169,25 @@ class BxRouteGenerator {
   }
 
   /// Pops the current route and immediately pushes a named route.
-  static void popAndPushNamed(BuildContext context, String routeName, {Object? arguments}) {
+  static void popAndPushNamed(
+    BuildContext context,
+    String routeName, {
+    Object? arguments,
+  }) {
     Navigator.of(context).popAndPushNamed(routeName, arguments: arguments);
   }
 
   /// Pushes a named route and removes all routes that do not satisfy
   /// the [predicate].
-  static Future<T?> pushNamedAndRemoveUntil<T extends Object?>(BuildContext context, String newRouteName, RoutePredicate predicate, {Object? arguments}) {
-    return Navigator.of(context).pushNamedAndRemoveUntil<T>(newRouteName, predicate, arguments: arguments);
+  static Future<T?> pushNamedAndRemoveUntil<T extends Object?>(
+    BuildContext context,
+    String newRouteName,
+    RoutePredicate predicate, {
+    Object? arguments,
+  }) {
+    return Navigator.of(
+      context,
+    ).pushNamedAndRemoveUntil<T>(newRouteName, predicate, arguments: arguments);
   }
 
   // Deep linking
@@ -158,7 +197,9 @@ class BxRouteGenerator {
   /// A deep link can start with `https://`, `http://`, or the custom scheme
   /// `myapp://`.
   static bool isDeepLink(String url) {
-    return url.startsWith('https://') || url.startsWith('http://') || url.startsWith('myapp://');
+    return url.startsWith('https://') ||
+        url.startsWith('http://') ||
+        url.startsWith('myapp://');
   }
 
   /// Parses a deep link [url] and returns a map of its components:
@@ -189,11 +230,21 @@ class BxRouteGenerator {
   /// Creates a deep link string using the custom scheme `myapp://` and the
   /// given [path].  Optional [parameters] are encoded as query parameters,
   /// and an optional [fragment] is appended.
-  static String generateDeepLink({required String path, Map<String, dynamic>? parameters, String? fragment}) {
+  static String generateDeepLink({
+    required String path,
+    Map<String, dynamic>? parameters,
+    String? fragment,
+  }) {
     final buffer = StringBuffer('myapp://$path');
 
     if (parameters != null && parameters.isNotEmpty) {
-      final queryParams = parameters.entries.where((entry) => entry.value != null).map((entry) => '${entry.key}=${Uri.encodeComponent(entry.value.toString())}').join('&');
+      final queryParams = parameters.entries
+          .where((entry) => entry.value != null)
+          .map(
+            (entry) =>
+                '${entry.key}=${Uri.encodeComponent(entry.value.toString())}',
+          )
+          .join('&');
 
       if (queryParams.isNotEmpty) {
         buffer.write('?$queryParams');
@@ -212,7 +263,10 @@ class BxRouteGenerator {
   /// Logs a route view event to the debug console.
   ///
   /// In production, this should be replaced by an analytics service call.
-  static void trackRouteView(String routeName, {Map<String, dynamic>? parameters}) {
+  static void trackRouteView(
+    String routeName, {
+    Map<String, dynamic>? parameters,
+  }) {
     // Integrate with analytics service
     // Example: AnalyticsService.trackScreenView(routeName, parameters);
 
@@ -227,9 +281,15 @@ class BxRouteGenerator {
   /// Returns `true` if [routeName] is one of the predefined app routes or
   /// matches the product/user deep link pattern.
   static bool isValidRoute(String routeName) {
-    final validRoutes = [BxRouteNames.bxSplashScreen, BxRouteNames.bxOnBoardingScreen, BxRouteNames.bxLoginScreen];
+    final validRoutes = [
+      BxRouteNames.bxSplashScreen,
+      BxRouteNames.bxOnBoardingScreen,
+      BxRouteNames.bxLoginScreen,
+    ];
 
-    return validRoutes.contains(routeName) || routeName.startsWith('/product/') || routeName.startsWith('/user/');
+    return validRoutes.contains(routeName) ||
+        routeName.startsWith('/product/') ||
+        routeName.startsWith('/user/');
   }
 
   // Get route title for display

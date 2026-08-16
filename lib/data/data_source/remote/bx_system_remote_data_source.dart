@@ -35,5 +35,6 @@ abstract class BxSystemRemoteDataSource {}
 class BxSystemRemoteDataSourceImpl implements BxSystemRemoteDataSource {
   final BxDioClient _dioClient;
 
-  BxSystemRemoteDataSourceImpl({required BxDioClient dioClient}) : _dioClient = dioClient;
+  BxSystemRemoteDataSourceImpl({required BxDioClient dioClient})
+    : _dioClient = dioClient;
 }

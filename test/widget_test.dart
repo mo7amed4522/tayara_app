@@ -36,7 +36,9 @@ void main() {
   /// The splash-screen BLoC dispatches a 3-second timer; we fast-forward
   /// past it with [fakeAsync] so the tree reaches a steady state before
   /// asserting.
-  testWidgets('BxAppWidget renders without crashing', (WidgetTester tester) async {
+  testWidgets('BxAppWidget renders without crashing', (
+    WidgetTester tester,
+  ) async {
     await tester.pumpWidget(
       ScreenUtilInit(
         designSize: const Size(375, 812),

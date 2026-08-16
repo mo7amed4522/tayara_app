@@ -16,10 +16,26 @@ enum BxSnackBarType { success, warning, error, info }
 
 class BxCustomSnackBar {
   // Show custom snack bar
-  static void show({required BuildContext context, required String message, required BxSnackBarType type, String? title, Widget? logo, String? buttonText, VoidCallback? onButtonPressed, Duration duration = const Duration(seconds: 4)}) {
+  static void show({
+    required BuildContext context,
+    required String message,
+    required BxSnackBarType type,
+    String? title,
+    Widget? logo,
+    String? buttonText,
+    VoidCallback? onButtonPressed,
+    Duration duration = const Duration(seconds: 4),
+  }) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: BxSnackBarContent(message: message, type: type, title: title, logo: logo, buttonText: buttonText, onButtonPressed: onButtonPressed),
+        content: BxSnackBarContent(
+          message: message,
+          type: type,
+          title: title,
+          logo: logo,
+          buttonText: buttonText,
+          onButtonPressed: onButtonPressed,
+        ),
         behavior: SnackBarBehavior.floating,
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -31,20 +47,80 @@ class BxCustomSnackBar {
   }
 
   // Convenience methods
-  static void success({required BuildContext context, String? title, required String message, Widget? logo, String? buttonText, VoidCallback? onButtonPressed}) {
-    show(title: title, context: context, message: message, type: BxSnackBarType.success, logo: logo, buttonText: buttonText, onButtonPressed: onButtonPressed);
+  static void success({
+    required BuildContext context,
+    String? title,
+    required String message,
+    Widget? logo,
+    String? buttonText,
+    VoidCallback? onButtonPressed,
+  }) {
+    show(
+      title: title,
+      context: context,
+      message: message,
+      type: BxSnackBarType.success,
+      logo: logo,
+      buttonText: buttonText,
+      onButtonPressed: onButtonPressed,
+    );
   }
 
-  static void warning({required BuildContext context, String? title, required String message, Widget? logo, String? buttonText, VoidCallback? onButtonPressed}) {
-    show(title: title, context: context, message: message, type: BxSnackBarType.warning, logo: logo, buttonText: buttonText, onButtonPressed: onButtonPressed);
+  static void warning({
+    required BuildContext context,
+    String? title,
+    required String message,
+    Widget? logo,
+    String? buttonText,
+    VoidCallback? onButtonPressed,
+  }) {
+    show(
+      title: title,
+      context: context,
+      message: message,
+      type: BxSnackBarType.warning,
+      logo: logo,
+      buttonText: buttonText,
+      onButtonPressed: onButtonPressed,
+    );
   }
 
-  static void error({required BuildContext context, String? title, required String message, Widget? logo, String? buttonText, VoidCallback? onButtonPressed}) {
-    show(context: context, title: title, message: message, type: BxSnackBarType.error, logo: logo, buttonText: buttonText, onButtonPressed: onButtonPressed);
+  static void error({
+    required BuildContext context,
+    String? title,
+    required String message,
+    Widget? logo,
+    String? buttonText,
+    VoidCallback? onButtonPressed,
+  }) {
+    show(
+      context: context,
+      title: title,
+      message: message,
+      type: BxSnackBarType.error,
+      logo: logo,
+      buttonText: buttonText,
+      onButtonPressed: onButtonPressed,
+    );
   }
 
-  static void info({required BuildContext context, String? title, required String message, Widget? logo, String? buttonText, VoidCallback? onButtonPressed}) {
-    show(title: title, context: context, message: message, type: BxSnackBarType.info, logo: logo, buttonText: buttonText, onButtonPressed: onButtonPressed);
+  static void info({
+    required BuildContext context,
+    String? title,
+    required String message,
+    Widget? logo,
+    String? buttonText,
+    VoidCallback? onButtonPressed,
+  }) {
+    show(
+      title: title,
+      context: context,
+      message: message,
+      type: BxSnackBarType.info,
+      logo: logo,
+      buttonText: buttonText,
+      onButtonPressed: onButtonPressed,
+    );
   }
 }
 
@@ -57,7 +133,15 @@ class BxSnackBarContent extends StatelessWidget {
   final String? buttonText;
   final VoidCallback? onButtonPressed;
 
-  const BxSnackBarContent({super.key, required this.message, required this.type, this.title, this.logo, this.buttonText, this.onButtonPressed});
+  const BxSnackBarContent({
+    super.key,
+    required this.message,
+    required this.type,
+    this.title,
+    this.logo,
+    this.buttonText,
+    this.onButtonPressed,
+  });
 
   Color _getBorderColor(BuildContext context) {
     switch (type) {
@@ -103,14 +187,25 @@ class BxSnackBarContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor = isDarkMode ? BxAppColors.darkSurface : BxAppColors.surface;
+    final backgroundColor = isDarkMode
+        ? BxAppColors.darkSurface
+        : BxAppColors.surface;
 
     return Container(
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: _getBorderColor(context).withOpacity(0.5), width: 1),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 8, offset: const Offset(0, 2))],
+        border: Border.all(
+          color: _getBorderColor(context).withOpacity(0.5),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16.r),
@@ -135,7 +230,11 @@ class BxSnackBarContent extends StatelessWidget {
                   if (logo == null)
                     Container(
                       margin: EdgeInsets.only(right: 12.w),
-                      child: Icon(_getIcon(), color: _getTextColor(context), size: 24.sp),
+                      child: Icon(
+                        _getIcon(),
+                        color: _getTextColor(context),
+                        size: 24.sp,
+                      ),
                     ),
                   SizedBox(width: 4.w),
                   // Message Section
@@ -145,12 +244,25 @@ class BxSnackBarContent extends StatelessWidget {
                       children: [
                         Text(
                           title == null ? _getTypeTitle(context) : title!,
-                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: _getTextColor(context), letterSpacing: 0.5, fontFamily: BxAppFonts.bxAppFonts),
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: _getTextColor(context),
+                            letterSpacing: 0.5,
+                            fontFamily: BxAppFonts.bxAppFonts,
+                          ),
                         ),
                         SizedBox(height: 4.h),
                         Text(
                           message,
-                          style: TextStyle(fontSize: 13, color: isDarkMode ? BxAppColors.darkOnBackground : BxAppColors.onBackground, height: 1.4, fontFamily: BxAppFonts.bxAppFonts),
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: isDarkMode
+                                ? BxAppColors.darkOnBackground
+                                : BxAppColors.onBackground,
+                            height: 1.4,
+                            fontFamily: BxAppFonts.bxAppFonts,
+                          ),
                         ),
                       ],
                     ),
@@ -162,13 +274,20 @@ class BxSnackBarContent extends StatelessWidget {
                       onPressed: onButtonPressed,
                       style: TextButton.styleFrom(
                         foregroundColor: _getTextColor(context),
-                        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 8.w,
+                          vertical: 4.h,
+                        ),
                         minimumSize: Size.zero,
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
                       child: Text(
                         buttonText!,
-                        style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.w600, fontFamily: BxAppFonts.bxAppFonts),
+                        style: TextStyle(
+                          fontSize: 13.sp,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: BxAppFonts.bxAppFonts,
+                        ),
                       ),
                     ),
                 ],
@@ -197,14 +316,30 @@ class BxSnackBarContent extends StatelessWidget {
 
 // Optional: Animated snack bar with sliding effect
 class BxAnimatedSnackBar {
-  static void show({required BuildContext context, required String message, required BxSnackBarType type, Widget? logo, String? buttonText, VoidCallback? onButtonPressed, Duration duration = const Duration(seconds: 4)}) {
+  static void show({
+    required BuildContext context,
+    required String message,
+    required BxSnackBarType type,
+    Widget? logo,
+    String? buttonText,
+    VoidCallback? onButtonPressed,
+    Duration duration = const Duration(seconds: 4),
+  }) {
     final overlay = Overlay.of(context);
 
     // Declare overlayEntry first
     late OverlayEntry overlayEntry;
 
     overlayEntry = OverlayEntry(
-      builder: (context) => _AnimatedSnackBarOverlay(message: message, type: type, logo: logo, buttonText: buttonText, onButtonPressed: onButtonPressed, duration: duration, onDismiss: () => overlayEntry.remove()),
+      builder: (context) => _AnimatedSnackBarOverlay(
+        message: message,
+        type: type,
+        logo: logo,
+        buttonText: buttonText,
+        onButtonPressed: onButtonPressed,
+        duration: duration,
+        onDismiss: () => overlayEntry.remove(),
+      ),
     );
 
     overlay.insert(overlayEntry);
@@ -220,13 +355,23 @@ class _AnimatedSnackBarOverlay extends StatefulWidget {
   final Duration duration;
   final VoidCallback onDismiss;
 
-  const _AnimatedSnackBarOverlay({required this.message, required this.type, this.logo, this.buttonText, this.onButtonPressed, required this.duration, required this.onDismiss});
+  const _AnimatedSnackBarOverlay({
+    required this.message,
+    required this.type,
+    this.logo,
+    this.buttonText,
+    this.onButtonPressed,
+    required this.duration,
+    required this.onDismiss,
+  });
 
   @override
-  State<_AnimatedSnackBarOverlay> createState() => _AnimatedSnackBarOverlayState();
+  State<_AnimatedSnackBarOverlay> createState() =>
+      _AnimatedSnackBarOverlayState();
 }
 
-class _AnimatedSnackBarOverlayState extends State<_AnimatedSnackBarOverlay> with SingleTickerProviderStateMixin {
+class _AnimatedSnackBarOverlayState extends State<_AnimatedSnackBarOverlay>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Offset> _slideAnimation;
   late Animation<double> _fadeAnimation;
@@ -234,11 +379,20 @@ class _AnimatedSnackBarOverlayState extends State<_AnimatedSnackBarOverlay> with
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 300));
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
 
-    _slideAnimation = Tween<Offset>(begin: const Offset(0, -1), end: Offset.zero).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, -1),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
 
-    _fadeAnimation = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+    _fadeAnimation = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
 
     _controller.forward();
 
@@ -267,7 +421,13 @@ class _AnimatedSnackBarOverlayState extends State<_AnimatedSnackBarOverlay> with
           position: _slideAnimation,
           child: Material(
             color: Colors.transparent,
-            child: BxSnackBarContent(message: widget.message, type: widget.type, logo: widget.logo, buttonText: widget.buttonText, onButtonPressed: widget.onButtonPressed),
+            child: BxSnackBarContent(
+              message: widget.message,
+              type: widget.type,
+              logo: widget.logo,
+              buttonText: widget.buttonText,
+              onButtonPressed: widget.onButtonPressed,
+            ),
           ),
         ),
       ),

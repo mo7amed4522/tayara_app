@@ -47,16 +47,34 @@ class BxAppWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<BxSplashScreenControllerBloc>(create: (context) => BxSplashScreenControllerBloc(sharedPreferencesDataSource: BxDependencyInjector.instance.get())..add(const BxStartSplashTimer())),
-        BlocProvider<BxThemeControllerBloc>(create: (context) => BxThemeControllerBloc(BxDependencyInjector.instance.get())..add(BxLoadThemeEvent())),
-        BlocProvider<BxLocalizationControllerBloc>(create: (context) => BxLocalizationControllerBloc(BxDependencyInjector.instance.get())..add(BxLoadLocalizationEvent())),
+        BlocProvider<BxSplashScreenControllerBloc>(
+          create: (context) => BxSplashScreenControllerBloc(
+            sharedPreferencesDataSource: BxDependencyInjector.instance.get(),
+          )..add(const BxStartSplashTimer()),
+        ),
+        BlocProvider<BxThemeControllerBloc>(
+          create: (context) =>
+              BxThemeControllerBloc(BxDependencyInjector.instance.get())
+                ..add(BxLoadThemeEvent()),
+        ),
+        BlocProvider<BxLocalizationControllerBloc>(
+          create: (context) =>
+              BxLocalizationControllerBloc(BxDependencyInjector.instance.get())
+                ..add(BxLoadLocalizationEvent()),
+        ),
       ],
       child: BlocBuilder<BxThemeControllerBloc, BxThemeControllerState>(
         builder: (context, themeState) {
-          return BlocBuilder<BxLocalizationControllerBloc, BxLocalizationControllerState>(
+          return BlocBuilder<
+            BxLocalizationControllerBloc,
+            BxLocalizationControllerState
+          >(
             builder: (context, state) {
               final locale = Locale(state.languageCode);
-              return BlocBuilder<BxSplashScreenControllerBloc, BxSplashScreenControllerState>(
+              return BlocBuilder<
+                BxSplashScreenControllerBloc,
+                BxSplashScreenControllerState
+              >(
                 builder: (context, state) {
                   debugPrint(state.status.toString());
                   return MaterialApp(
@@ -66,7 +84,12 @@ class BxAppWidget extends StatelessWidget {
                     darkTheme: BxAppTheme.darkTheme,
                     themeMode: themeState.themeMode,
                     locale: locale,
-                    localizationsDelegates: const [AppLocalizations.delegate, GlobalMaterialLocalizations.delegate, GlobalWidgetsLocalizations.delegate, GlobalCupertinoLocalizations.delegate],
+                    localizationsDelegates: const [
+                      AppLocalizations.delegate,
+                      GlobalMaterialLocalizations.delegate,
+                      GlobalWidgetsLocalizations.delegate,
+                      GlobalCupertinoLocalizations.delegate,
+                    ],
                     supportedLocales: AppLocalizations.supportedLocales,
                     initialRoute: BxRouteNames.bxSplashScreen,
                     onGenerateRoute: BxRouteGenerator.generateRoute,

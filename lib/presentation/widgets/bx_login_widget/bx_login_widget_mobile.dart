@@ -30,28 +30,57 @@ class BxLoginWidgetMobile extends StatelessWidget {
             children: [
               // 1. Top pill container
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Theme.of(context).colorScheme.primary.withOpacity(0.2), width: 1),
-                  boxShadow: [BoxShadow(color: Theme.of(context).colorScheme.primary.withOpacity(0.1), blurRadius: 8, offset: const Offset(0, 2))],
+                  border: Border.all(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.primary.withOpacity(0.2),
+                    width: 1,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withOpacity(0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
                 child: Text(
                   "Ready for your next adventure ?",
-                  style: TextStyle(color: Theme.of(context).colorScheme.onBackground, fontSize: 14, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onBackground,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
               const SizedBox(height: 32),
 
               // 2. Login logo
-              Image.asset(BxAppConstant.loginLogo, width: 251, height: 150, fit: BoxFit.contain),
+              Image.asset(
+                BxAppConstant.loginLogo,
+                width: 251,
+                height: 150,
+                fit: BoxFit.contain,
+              ),
               const SizedBox(height: 32),
 
               // 3. Welcome text
               Text(
                 "Welcome to Taiyara",
                 textAlign: TextAlign.center,
-                style: theme.textTheme.headlineSmall?.copyWith(color: colorScheme.onBackground, fontWeight: FontWeight.bold, fontFamily: 'lao-mn'),
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  color: colorScheme.onBackground,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'lao-mn',
+                ),
               ),
               const SizedBox(height: 12),
 
@@ -59,30 +88,65 @@ class BxLoginWidgetMobile extends StatelessWidget {
               Text(
                 "Discover amazing trips, compare trusted agencies, and book your next adventure in minutes.",
                 textAlign: TextAlign.center,
-                style: theme.textTheme.bodyMedium?.copyWith(color: colorScheme.onBackground.withOpacity(0.7), fontSize: 14),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onBackground.withOpacity(0.7),
+                  fontSize: 14,
+                ),
               ),
               const SizedBox(height: 32),
 
               // 5. Social login buttons (Google, Apple, Facebook)
-              _buildSocialButton(context, logo: BxAppConstant.googleLogo, text: 'Continue with Google', onTap: () => context.read<BxLoginControllerBloc>().add(BxLoginWithGoogle())),
+              _buildSocialButton(
+                context,
+                logo: BxAppConstant.googleLogo,
+                text: 'Continue with Google',
+                onTap: () => context.read<BxLoginControllerBloc>().add(
+                  BxLoginWithGoogle(),
+                ),
+              ),
               const SizedBox(height: 12),
-              _buildSocialButton(context, logo: BxAppConstant.appleLogo, text: 'Continue with Apple', onTap: () => context.read<BxLoginControllerBloc>().add(BxLoginWithApple())),
+              _buildSocialButton(
+                context,
+                logo: BxAppConstant.appleLogo,
+                text: 'Continue with Apple',
+                onTap: () => context.read<BxLoginControllerBloc>().add(
+                  BxLoginWithApple(),
+                ),
+              ),
               const SizedBox(height: 12),
-              _buildSocialButton(context, logo: BxAppConstant.facebookLogo, text: 'Continue with Facebook', onTap: () => context.read<BxLoginControllerBloc>().add(BxLoginWithFacebook())),
+              _buildSocialButton(
+                context,
+                logo: BxAppConstant.facebookLogo,
+                text: 'Continue with Facebook',
+                onTap: () => context.read<BxLoginControllerBloc>().add(
+                  BxLoginWithFacebook(),
+                ),
+              ),
               const SizedBox(height: 24),
 
               // 6. Divider with OR
               Row(
                 children: [
-                  Expanded(child: Divider(color: colorScheme.onBackground.withOpacity(0.2))),
+                  Expanded(
+                    child: Divider(
+                      color: colorScheme.onBackground.withOpacity(0.2),
+                    ),
+                  ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: Text(
                       'OR',
-                      style: TextStyle(color: colorScheme.onBackground.withOpacity(0.6), fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        color: colorScheme.onBackground.withOpacity(0.6),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                  Expanded(child: Divider(color: colorScheme.onBackground.withOpacity(0.2))),
+                  Expanded(
+                    child: Divider(
+                      color: colorScheme.onBackground.withOpacity(0.2),
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 24),
@@ -92,18 +156,27 @@ class BxLoginWidgetMobile extends StatelessWidget {
                 width: 327,
                 height: 56,
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(colors: [Color(0xFF3B82F6), Color(0xFF2563EB)], begin: Alignment.centerLeft, end: Alignment.centerRight),
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF3B82F6), Color(0xFF2563EB)],
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                  ),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Material(
                   color: Colors.transparent,
                   child: InkWell(
-                    onTap: () => context.read<BxLoginControllerBloc>().add(BxLoginWithPhone()),
+                    onTap: () => context.read<BxLoginControllerBloc>().add(
+                      BxLoginWithPhone(),
+                    ),
                     borderRadius: BorderRadius.circular(16),
                     child: const Center(
                       child: Text(
                         'Continue with Phone Number',
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
@@ -115,9 +188,19 @@ class BxLoginWidgetMobile extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.lock_outline, size: 16, color: colorScheme.onBackground.withOpacity(0.5)),
+                  Icon(
+                    Icons.lock_outline,
+                    size: 16,
+                    color: colorScheme.onBackground.withOpacity(0.5),
+                  ),
                   const SizedBox(width: 6),
-                  Text("Secure login • Your data is protected", style: TextStyle(color: colorScheme.onBackground.withOpacity(0.5), fontSize: 12)),
+                  Text(
+                    "Secure login • Your data is protected",
+                    style: TextStyle(
+                      color: colorScheme.onBackground.withOpacity(0.5),
+                      fontSize: 12,
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 16),
@@ -126,18 +209,29 @@ class BxLoginWidgetMobile extends StatelessWidget {
               RichText(
                 textAlign: TextAlign.center,
                 text: TextSpan(
-                  style: TextStyle(color: colorScheme.onBackground.withOpacity(0.7), fontSize: 12),
+                  style: TextStyle(
+                    color: colorScheme.onBackground.withOpacity(0.7),
+                    fontSize: 12,
+                  ),
                   children: [
-                    const TextSpan(text: "By continuing, you agree to Tayara's "),
+                    const TextSpan(
+                      text: "By continuing, you agree to Tayara's ",
+                    ),
                     TextSpan(
                       text: 'Terms of Service',
-                      style: TextStyle(color: colorScheme.primary, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        color: colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
                       recognizer: null,
                     ),
                     const TextSpan(text: ' and '),
                     TextSpan(
                       text: 'Privacy Policy',
-                      style: TextStyle(color: colorScheme.primary, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        color: colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
                       recognizer: null,
                     ),
                   ],
@@ -151,13 +245,20 @@ class BxLoginWidgetMobile extends StatelessWidget {
   }
 
   /// Helper to build a social login button with border and logo.
-  Widget _buildSocialButton(BuildContext context, {required String logo, required String text, required VoidCallback onTap}) {
+  Widget _buildSocialButton(
+    BuildContext context, {
+    required String logo,
+    required String text,
+    required VoidCallback onTap,
+  }) {
     final theme = Theme.of(context);
     return Container(
       width: 327,
       height: 56,
       decoration: BoxDecoration(
-        border: Border.all(color: theme.colorScheme.onBackground.withOpacity(0.2)),
+        border: Border.all(
+          color: theme.colorScheme.onBackground.withOpacity(0.2),
+        ),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Material(
@@ -173,7 +274,10 @@ class BxLoginWidgetMobile extends StatelessWidget {
               const SizedBox(width: 25),
               Text(
                 text,
-                style: TextStyle(color: theme.colorScheme.onBackground, fontWeight: FontWeight.w600),
+                style: TextStyle(
+                  color: theme.colorScheme.onBackground,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ],
           ),

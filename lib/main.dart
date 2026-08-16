@@ -46,7 +46,8 @@ void main() async {
   if (kDebugMode) {
     FlutterError.onError = (FlutterErrorDetails details) {
       // Ignore keyboard assertion errors from the framework
-      if (details.exceptionAsString().contains('KeyUpEvent') || details.exceptionAsString().contains('_pressedKeys.containsKey')) {
+      if (details.exceptionAsString().contains('KeyUpEvent') ||
+          details.exceptionAsString().contains('_pressedKeys.containsKey')) {
         return; // Silently ignore
       }
       // Forward other errors

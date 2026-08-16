@@ -10,7 +10,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 part 'bx_login_controller_event.dart';
 part 'bx_login_controller_state.dart';
 
-class BxLoginControllerBloc extends Bloc<BxLoginControllerEvent, BxLoginControllerState> {
+class BxLoginControllerBloc
+    extends Bloc<BxLoginControllerEvent, BxLoginControllerState> {
   BxLoginControllerBloc() : super(const BxLoginControllerState()) {
     on<BxLoginWithGoogle>((event, emit) {
       emit(state.copyWith(status: BxLoginControllerStatus.loading));

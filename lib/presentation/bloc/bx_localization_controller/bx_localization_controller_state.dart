@@ -19,8 +19,16 @@ class BxLocalizationControllerState extends Equatable {
     this.languageCode = 'en', // Default to English
   });
 
-  BxLocalizationControllerState copyWith({BxLocalizationStatus? status, String? error, String? languageCode}) {
-    return BxLocalizationControllerState(status: status ?? this.status, error: error ?? this.error, languageCode: languageCode ?? this.languageCode);
+  BxLocalizationControllerState copyWith({
+    BxLocalizationStatus? status,
+    String? error,
+    String? languageCode,
+  }) {
+    return BxLocalizationControllerState(
+      status: status ?? this.status,
+      error: error ?? this.error,
+      languageCode: languageCode ?? this.languageCode,
+    );
   }
 
   @override

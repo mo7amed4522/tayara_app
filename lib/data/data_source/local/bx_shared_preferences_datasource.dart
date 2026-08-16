@@ -59,7 +59,8 @@ abstract class BxSharedPreferencesDataSource {
 /// The constructor takes an existing [SharedPreferences] instance, which
 /// should be obtained via `SharedPreferences.getInstance()` before creating
 /// this data source.
-class BxSharedPreferencesDataSourceImpl implements BxSharedPreferencesDataSource {
+class BxSharedPreferencesDataSourceImpl
+    implements BxSharedPreferencesDataSource {
   final SharedPreferences _sharedPreferences;
 
   BxSharedPreferencesDataSourceImpl(this._sharedPreferences);
@@ -106,7 +107,10 @@ class BxSharedPreferencesDataSourceImpl implements BxSharedPreferencesDataSource
 
   @override
   Future<bool> saveLanguageCode(String languageCode) async {
-    return _sharedPreferences.setString(BxSharedPreferencesKeys.languageCode, languageCode);
+    return _sharedPreferences.setString(
+      BxSharedPreferencesKeys.languageCode,
+      languageCode,
+    );
   }
 
   @override
@@ -116,7 +120,10 @@ class BxSharedPreferencesDataSourceImpl implements BxSharedPreferencesDataSource
 
   @override
   Future<bool> saveThemeMode(String themeMode) async {
-    return _sharedPreferences.setString(BxSharedPreferencesKeys.themeMode, themeMode);
+    return _sharedPreferences.setString(
+      BxSharedPreferencesKeys.themeMode,
+      themeMode,
+    );
   }
 
   @override

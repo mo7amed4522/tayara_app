@@ -18,21 +18,48 @@ import 'package:tayara/data/data_source/local/bx_shared_preferences_datasource.d
 part 'bx_on_boarding_controller_event.dart';
 part 'bx_on_boarding_controller_state.dart';
 
-class BxOnBoardingControllerBloc extends Bloc<BxOnBoardingControllerEvent, BxOnBoardingControllerState> {
+class BxOnBoardingControllerBloc
+    extends Bloc<BxOnBoardingControllerEvent, BxOnBoardingControllerState> {
   final BxSharedPreferencesDataSource _sharedPreferencesDataSource;
-  BxOnBoardingControllerBloc({required BxSharedPreferencesDataSource sharedPreferencesDataSource})
-    : _sharedPreferencesDataSource = sharedPreferencesDataSource,
-      super(
-        BxOnBoardingControllerState(
-          pages: [
-            BxOnBoardingPage(title: 'Discover Trips Easily', description: 'Search and explore hundreds of destinations in seconds', imagePath: BxAppConstant.onBoarding1),
-            BxOnBoardingPage(title: 'Choose Your Perfect Agency', description: 'Compare trusted agencies, ratings, and offers to find your best match.', imagePath: BxAppConstant.onBoarding2),
-            BxOnBoardingPage(title: 'Plan Your Trip Day by Day', description: 'Customize itineraries with hotels, activities, and highlights.', imagePath: BxAppConstant.onBoarding3),
-            BxOnBoardingPage(title: 'Book Securely in Seconds', description: 'Fast, safe, and reliable bookings all in one place.', imagePath: BxAppConstant.onBoarding4),
-            BxOnBoardingPage(title: 'Let the Adventure Begin', description: 'Your journey starts here. Explore, book, and travel with ease.', imagePath: BxAppConstant.onBoarding5),
-          ],
-        ),
-      ) {
+  BxOnBoardingControllerBloc({
+    required BxSharedPreferencesDataSource sharedPreferencesDataSource,
+  }) : _sharedPreferencesDataSource = sharedPreferencesDataSource,
+       super(
+         BxOnBoardingControllerState(
+           pages: [
+             BxOnBoardingPage(
+               title: 'Discover Trips Easily',
+               description:
+                   'Search and explore hundreds of destinations in seconds',
+               imagePath: BxAppConstant.onBoarding1,
+             ),
+             BxOnBoardingPage(
+               title: 'Choose Your Perfect Agency',
+               description:
+                   'Compare trusted agencies, ratings, and offers to find your best match.',
+               imagePath: BxAppConstant.onBoarding2,
+             ),
+             BxOnBoardingPage(
+               title: 'Plan Your Trip Day by Day',
+               description:
+                   'Customize itineraries with hotels, activities, and highlights.',
+               imagePath: BxAppConstant.onBoarding3,
+             ),
+             BxOnBoardingPage(
+               title: 'Book Securely in Seconds',
+               description:
+                   'Fast, safe, and reliable bookings all in one place.',
+               imagePath: BxAppConstant.onBoarding4,
+             ),
+             BxOnBoardingPage(
+               title: 'Let the Adventure Begin',
+               description:
+                   'Your journey starts here. Explore, book, and travel with ease.',
+               imagePath: BxAppConstant.onBoarding5,
+             ),
+           ],
+         ),
+       ) {
     on<BxOnBoardingPageChanged>((event, emit) {
       emit(state.copyWith(currentPage: event.page));
     });
@@ -46,7 +73,10 @@ class BxOnBoardingControllerBloc extends Bloc<BxOnBoardingControllerEvent, BxOnB
     });
 
     on<BxOnBoardingSkip>((event, emit) async {
-      await _sharedPreferencesDataSource.saveBool(BxSharedPreferencesKeys.onboardingCompleted, true);
+      await _sharedPreferencesDataSource.saveBool(
+        BxSharedPreferencesKeys.onboardingCompleted,
+        true,
+      );
       BxAppRouter.pushReplacement(event.context, BxRouteNames.bxLoginScreen);
       emit(state.copyWith(status: BxOnBoardingControllerStatus.completed));
     });

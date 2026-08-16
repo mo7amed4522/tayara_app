@@ -46,10 +46,15 @@ class BxAppleAuthResult {
   final AuthorizationCredentialAppleID? appleUser;
 
   /// Creates a successful [BxAppleAuthResult].
-  BxAppleAuthResult.success(this.user, this.appleUser) : success = true, error = null;
+  BxAppleAuthResult.success(this.user, this.appleUser)
+    : success = true,
+      error = null;
 
   /// Creates a failed [BxAppleAuthResult] with an [error] message.
-  BxAppleAuthResult.failure(this.error) : success = false, user = null, appleUser = null;
+  BxAppleAuthResult.failure(this.error)
+    : success = false,
+      user = null,
+      appleUser = null;
 }
 
 /// Service that performs Apple authentication using Firebase Auth.
@@ -80,7 +85,8 @@ class BxAppleAuthResult {
 class BxAppleAuthFirebaseServices {
   // -- Singleton ----------------------------------------------------------
 
-  static final BxAppleAuthFirebaseServices _instance = BxAppleAuthFirebaseServices._internal();
+  static final BxAppleAuthFirebaseServices _instance =
+      BxAppleAuthFirebaseServices._internal();
 
   /// Returns the singleton instance.
   static BxAppleAuthFirebaseServices get instance => _instance;
@@ -121,20 +127,32 @@ class BxAppleAuthFirebaseServices {
   Future<BxAppleAuthResult> signIn() async {
     try {
       // 1. Request credential from Apple with email and full name scopes.
-      final AuthorizationCredentialAppleID appleCredential = await SignInWithApple.getAppleIDCredential(scopes: [AppleIDAuthorizationScopes.email, AppleIDAuthorizationScopes.fullName]);
+      final AuthorizationCredentialAppleID appleCredential =
+          await SignInWithApple.getAppleIDCredential(
+            scopes: [
+              AppleIDAuthorizationScopes.email,
+              AppleIDAuthorizationScopes.fullName,
+            ],
+          );
 
       // 2. Convert the identity token (JWT) to a string.
       final String? idToken = appleCredential.identityToken;
 
       if (idToken == null) {
-        return BxAppleAuthResult.failure('Failed to obtain Apple identity token.');
+        return BxAppleAuthResult.failure(
+          'Failed to obtain Apple identity token.',
+        );
       }
 
       // 3. Create a Firebase OAuth credential from the Apple identity token.
-      final OAuthCredential credential = OAuthProvider('apple.com').credential(idToken: idToken);
+      final OAuthCredential credential = OAuthProvider(
+        'apple.com',
+      ).credential(idToken: idToken);
 
       // 4. Sign in to Firebase with the credential.
-      final UserCredential userCredential = await _auth.signInWithCredential(credential);
+      final UserCredential userCredential = await _auth.signInWithCredential(
+        credential,
+      );
 
       return BxAppleAuthResult.success(userCredential, appleCredential);
     } on Exception catch (e) {

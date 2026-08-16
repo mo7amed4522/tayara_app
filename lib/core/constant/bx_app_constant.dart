@@ -72,7 +72,8 @@ class BxAppConfiguration {
   BxAppConfiguration._();
 
   /// The display name of the medical center, localised.
-  static String bxAppName(BuildContext context) => AppLocalizations.of(context)?.app_name ?? "App Name";
+  static String bxAppName(BuildContext context) =>
+      AppLocalizations.of(context)?.app_name ?? "App Name";
 }
 
 /// Font families used throughout the application.

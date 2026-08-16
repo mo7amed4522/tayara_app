@@ -49,23 +49,50 @@ class BxAppRouter {
   ///
   /// Delegates to [BxRouteGenerator.pushNamed] which handles route
   /// generation and analytics logging.
-  static Future<T?> push<T extends Object?>(BuildContext context, String routeName, {Object? arguments, OnNavigationFailure? onFailure}) {
-    return BxRouteGenerator.pushNamed<T>(context, routeName, arguments: arguments);
+  static Future<T?> push<T extends Object?>(
+    BuildContext context,
+    String routeName, {
+    Object? arguments,
+    OnNavigationFailure? onFailure,
+  }) {
+    return BxRouteGenerator.pushNamed<T>(
+      context,
+      routeName,
+      arguments: arguments,
+    );
   }
 
   /// Replaces the current route with a new named route.
   ///
   /// The previous route is removed from the stack.
-  static Future<T?> pushReplacement<T extends Object?, TO extends Object?>(BuildContext context, String routeName, {TO? result, Object? arguments, OnNavigationFailure? onFailure}) {
-    return Navigator.of(context).pushReplacementNamed<T, TO>(routeName, arguments: arguments, result: result);
+  static Future<T?> pushReplacement<T extends Object?, TO extends Object?>(
+    BuildContext context,
+    String routeName, {
+    TO? result,
+    Object? arguments,
+    OnNavigationFailure? onFailure,
+  }) {
+    return Navigator.of(context).pushReplacementNamed<T, TO>(
+      routeName,
+      arguments: arguments,
+      result: result,
+    );
   }
 
   /// Pushes a named route and removes all previous routes that do not
   /// satisfy the given [predicate].
   ///
   /// Commonly used to clear the navigation stack after login.
-  static Future<T?> pushAndPopUntil<T extends Object?>(BuildContext context, String routeName, {required RoutePredicate predicate, Object? arguments, OnNavigationFailure? onFailure}) {
-    return Navigator.of(context).pushNamedAndRemoveUntil<T>(routeName, predicate, arguments: arguments);
+  static Future<T?> pushAndPopUntil<T extends Object?>(
+    BuildContext context,
+    String routeName, {
+    required RoutePredicate predicate,
+    Object? arguments,
+    OnNavigationFailure? onFailure,
+  }) {
+    return Navigator.of(
+      context,
+    ).pushNamedAndRemoveUntil<T>(routeName, predicate, arguments: arguments);
   }
 
   /// Pops the current route off the navigator stack, optionally returning
@@ -82,7 +109,10 @@ class BxAppRouter {
   /// Tries to pop the current route, returning `true` if successful.
   ///
   /// Unlike [pop], this will not throw if there is nothing to pop.
-  static Future<bool> maybePop<T extends Object?>(BuildContext context, [T? result]) async {
+  static Future<bool> maybePop<T extends Object?>(
+    BuildContext context, [
+    T? result,
+  ]) async {
     return await Navigator.of(context).maybePop(result);
   }
 
@@ -107,7 +137,11 @@ class BxAppRouter {
   ///
   /// Supports product, user and generic route patterns. Falls back to the
   /// login screen if the link cannot be recognised.
-  static Future<void> handleDeepLink(BuildContext context, String link, {Map<String, dynamic>? parameters}) async {
+  static Future<void> handleDeepLink(
+    BuildContext context,
+    String link, {
+    Map<String, dynamic>? parameters,
+  }) async {
     try {
       final uri = Uri.parse(link);
       final path = uri.path;
@@ -138,7 +172,11 @@ class BxAppRouter {
   ///
   /// Currently only logs the product id and query parameters. Implement
   /// actual navigation logic when product detail routes are available.
-  static Future<void> _handleProductDeepLink(BuildContext context, String productId, Map<String, String> queryParams) async {
+  static Future<void> _handleProductDeepLink(
+    BuildContext context,
+    String productId,
+    Map<String, String> queryParams,
+  ) async {
     // await push(context, RouteConstants.buildProductDetailRoute(productId));
     debugPrint('Product deep link: $productId, params: $queryParams');
   }
@@ -146,7 +184,11 @@ class BxAppRouter {
   /// Placeholder handler for deep links targeting a user profile.
   ///
   /// Currently only logs the user id and query parameters.
-  static Future<void> _handleUserDeepLink(BuildContext context, String userId, Map<String, String> queryParams) async {
+  static Future<void> _handleUserDeepLink(
+    BuildContext context,
+    String userId,
+    Map<String, String> queryParams,
+  ) async {
     // await push(context, RouteConstants.buildUserDetailRoute(userId));
     debugPrint('User deep link: $userId, params: $queryParams');
   }
@@ -157,7 +199,11 @@ class BxAppRouter {
   ///
   /// Useful for screens that should appear softly, such as a splash
   /// or a modal overlay.
-  static Route<T> fadeTransitionBuilder<T>(BuildContext context, Widget child, RouteSettings settings) {
+  static Route<T> fadeTransitionBuilder<T>(
+    BuildContext context,
+    Widget child,
+    RouteSettings settings,
+  ) {
     return PageRouteBuilder<T>(
       settings: settings,
       pageBuilder: (context, animation, secondaryAnimation) => child,
@@ -172,7 +218,11 @@ class BxAppRouter {
   /// over 300 ms.
   ///
   /// Mimics the default platform transition for pushing a new screen.
-  static Route<T> slideTransitionBuilder<T>(BuildContext context, Widget child, RouteSettings settings) {
+  static Route<T> slideTransitionBuilder<T>(
+    BuildContext context,
+    Widget child,
+    RouteSettings settings,
+  ) {
     return PageRouteBuilder<T>(
       settings: settings,
       pageBuilder: (context, animation, secondaryAnimation) => child,
@@ -181,7 +231,10 @@ class BxAppRouter {
         const end = Offset.zero;
         const curve = Curves.ease;
 
-        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        var tween = Tween(
+          begin: begin,
+          end: end,
+        ).chain(CurveTween(curve: curve));
 
         return SlideTransition(position: animation.drive(tween), child: child);
       },
@@ -196,7 +249,11 @@ class BxAppRouter {
   ///
   /// Call this from navigation observers or route‑aware widgets to track
   /// user navigation.
-  static void logRouteChange(String previousRoute, String newRoute, Map<String, dynamic>? parameters) {
+  static void logRouteChange(
+    String previousRoute,
+    String newRoute,
+    Map<String, dynamic>? parameters,
+  ) {
     // Integrate with your analytics service
     debugPrint('Route changed: $previousRoute -> $newRoute');
     if (parameters != null && parameters.isNotEmpty) {
@@ -211,8 +268,16 @@ class BxAppRouter {
   ///
   /// Equivalent to `pushAndPopUntil` with a predicate that always returns
   /// `false`.
-  static void clearStackAndNavigate(BuildContext context, String routeName, {Object? arguments}) {
-    Navigator.of(context).pushNamedAndRemoveUntil(routeName, (route) => false, arguments: arguments);
+  static void clearStackAndNavigate(
+    BuildContext context,
+    String routeName, {
+    Object? arguments,
+  }) {
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      routeName,
+      (route) => false,
+      arguments: arguments,
+    );
   }
 
   // Check if current route is in stack
@@ -236,7 +301,14 @@ class BxAppRouter {
   ///
   /// The sheet is scroll‑controlled and can be customised with
   /// [isDismissible], [enableDrag] and [barrierColor].
-  static Future<T?> showModal<T>(BuildContext context, Widget widget, {bool isDismissible = true, bool enableDrag = true, Color? barrierColor, String? routeName}) {
+  static Future<T?> showModal<T>(
+    BuildContext context,
+    Widget widget, {
+    bool isDismissible = true,
+    bool enableDrag = true,
+    Color? barrierColor,
+    String? routeName,
+  }) {
     return showModalBottomSheet<T>(
       context: context,
       builder: (context) => widget,
@@ -251,7 +323,13 @@ class BxAppRouter {
   /// Shows a dialog using [showDialog], with the given [widget] as content.
   ///
   /// Supports barrier dismissal and a custom [barrierColor].
-  static Future<T?> showDialogModal<T>(BuildContext context, Widget widget, {bool barrierDismissible = true, Color? barrierColor, String? routeName}) {
+  static Future<T?> showDialogModal<T>(
+    BuildContext context,
+    Widget widget, {
+    bool barrierDismissible = true,
+    Color? barrierColor,
+    String? routeName,
+  }) {
     return showDialog<T>(
       context: context,
       builder: (context) => widget,
@@ -280,8 +358,14 @@ class BxAppRouter {
         title: const Text('Exit App'),
         content: Text(message ?? 'Are you sure you want to exit?'),
         actions: [
-          TextButton(onPressed: () => pop(context, false), child: const Text('Cancel')),
-          TextButton(onPressed: () => pop(context, true), child: const Text('Exit')),
+          TextButton(
+            onPressed: () => pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => pop(context, true),
+            child: const Text('Exit'),
+          ),
         ],
       ),
     );
@@ -302,7 +386,10 @@ class BxAppRouter {
   /// );
   /// ```
   static RouterConfig<Object> createRouterConfig() {
-    return RouterConfig(routeInformationParser: _AppRouteInformationParser(), routerDelegate: _BxAppRouterDelegate());
+    return RouterConfig(
+      routeInformationParser: _AppRouteInformationParser(),
+      routerDelegate: _BxAppRouterDelegate(),
+    );
   }
 }
 
@@ -313,7 +400,9 @@ class BxAppRouter {
 /// This simple implementation just passes the URI location string through.
 class _AppRouteInformationParser extends RouteInformationParser<String> {
   @override
-  Future<String> parseRouteInformation(RouteInformation routeInformation) async {
+  Future<String> parseRouteInformation(
+    RouteInformation routeInformation,
+  ) async {
     return routeInformation.location;
   }
 
@@ -336,7 +425,9 @@ class _BxAppRouterDelegate extends RouterDelegate<String> with ChangeNotifier {
   @override
   Widget build(BuildContext context) {
     // Use the BxRouteGenerator to generate routes
-    final route = BxRouteGenerator.generateRoute(RouteSettings(name: _currentConfiguration));
+    final route = BxRouteGenerator.generateRoute(
+      RouteSettings(name: _currentConfiguration),
+    );
 
     // Return a Navigator with the generated route
     return Navigator(

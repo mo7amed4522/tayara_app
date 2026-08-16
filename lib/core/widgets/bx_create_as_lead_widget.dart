@@ -16,10 +16,15 @@ class CountryPickerBottomSheet extends StatefulWidget {
   final Function(Country) onCountrySelected;
   final PhoneNumberController phoneController;
 
-  const CountryPickerBottomSheet({super.key, required this.onCountrySelected, required this.phoneController});
+  const CountryPickerBottomSheet({
+    super.key,
+    required this.onCountrySelected,
+    required this.phoneController,
+  });
 
   @override
-  State<CountryPickerBottomSheet> createState() => _CountryPickerBottomSheetState();
+  State<CountryPickerBottomSheet> createState() =>
+      _CountryPickerBottomSheetState();
 }
 
 class _CountryPickerBottomSheetState extends State<CountryPickerBottomSheet> {
@@ -41,7 +46,9 @@ class _CountryPickerBottomSheetState extends State<CountryPickerBottomSheet> {
         _filteredCountries = CountriesData.allCountries;
       } else {
         _filteredCountries = CountriesData.allCountries.where((country) {
-          return country.name.toLowerCase().contains(query) || country.dialCode.contains(query) || country.code.toLowerCase().contains(query);
+          return country.name.toLowerCase().contains(query) ||
+              country.dialCode.contains(query) ||
+              country.code.toLowerCase().contains(query);
         }).toList();
       }
     });
@@ -68,13 +75,21 @@ class _CountryPickerBottomSheetState extends State<CountryPickerBottomSheet> {
             margin: const EdgeInsets.only(top: 12, bottom: 8),
             height: 4,
             width: 40,
-            decoration: BoxDecoration(color: Colors.white.withOpacity(0.3), borderRadius: BorderRadius.circular(2)),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.3),
+              borderRadius: BorderRadius.circular(2),
+            ),
           ),
           Padding(
             padding: const EdgeInsets.all(16),
             child: Text(
               'Select Country',
-              style: TextStyle(fontSize: 20.sp, fontFamily: BxAppFonts.bxAppFonts, fontWeight: FontWeight.bold, color: Colors.white),
+              style: TextStyle(
+                fontSize: 20.sp,
+                fontFamily: BxAppFonts.bxAppFonts,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
           ),
           Padding(
@@ -84,7 +99,10 @@ class _CountryPickerBottomSheetState extends State<CountryPickerBottomSheet> {
               autofocus: false,
               keyboardType: TextInputType.text,
               textInputAction: TextInputAction.search,
-              style: TextStyle(color: Colors.white, fontFamily: BxAppFonts.bxAppFonts),
+              style: TextStyle(
+                color: Colors.white,
+                fontFamily: BxAppFonts.bxAppFonts,
+              ),
               onSubmitted: (_) => FocusScope.of(context).unfocus(),
               decoration: InputDecoration(
                 hintText: 'Search country...',
@@ -124,17 +142,35 @@ class _CountryPickerBottomSheetState extends State<CountryPickerBottomSheet> {
               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               itemBuilder: (context, index) {
                 final country = _filteredCountries[index];
-                final isSelected = country.code == widget.phoneController.selectedCountry.code;
+                final isSelected =
+                    country.code == widget.phoneController.selectedCountry.code;
                 return Material(
                   color: Colors.transparent,
                   child: ListTile(
-                    leading: Text(country.flagEmoji, style: const TextStyle(fontSize: 28)),
+                    leading: Text(
+                      country.flagEmoji,
+                      style: const TextStyle(fontSize: 28),
+                    ),
                     title: Text(
                       country.name,
-                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, fontFamily: BxAppFonts.bxAppFonts, color: Colors.white),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        fontFamily: BxAppFonts.bxAppFonts,
+                        color: Colors.white,
+                      ),
                     ),
-                    subtitle: Text(country.dialCode, style: TextStyle(fontSize: 12, color: Colors.white70)),
-                    trailing: isSelected ? Icon(Icons.check_circle, color: Colors.white, size: 20) : null,
+                    subtitle: Text(
+                      country.dialCode,
+                      style: TextStyle(fontSize: 12, color: Colors.white70),
+                    ),
+                    trailing: isSelected
+                        ? Icon(
+                            Icons.check_circle,
+                            color: Colors.white,
+                            size: 20,
+                          )
+                        : null,
                     onTap: () {
                       FocusScope.of(context).unfocus();
                       widget.onCountrySelected(country);

@@ -45,10 +45,15 @@ class BxFacebookAuthResult {
   final LoginResult? loginResult;
 
   /// Creates a successful [BxFacebookAuthResult].
-  BxFacebookAuthResult.success(this.user, this.loginResult) : success = true, error = null;
+  BxFacebookAuthResult.success(this.user, this.loginResult)
+    : success = true,
+      error = null;
 
   /// Creates a failed [BxFacebookAuthResult] with an [error] message.
-  BxFacebookAuthResult.failure(this.error) : success = false, user = null, loginResult = null;
+  BxFacebookAuthResult.failure(this.error)
+    : success = false,
+      user = null,
+      loginResult = null;
 }
 
 /// Service that performs Facebook authentication using Firebase Auth.
@@ -84,7 +89,8 @@ class BxFacebookAuthResult {
 class BxFacebookAuthFirebaseServices {
   // -- Singleton ----------------------------------------------------------
 
-  static final BxFacebookAuthFirebaseServices _instance = BxFacebookAuthFirebaseServices._internal();
+  static final BxFacebookAuthFirebaseServices _instance =
+      BxFacebookAuthFirebaseServices._internal();
 
   /// Returns the singleton instance.
   static BxFacebookAuthFirebaseServices get instance => _instance;
@@ -123,25 +129,35 @@ class BxFacebookAuthFirebaseServices {
   Future<BxFacebookAuthResult> signIn() async {
     try {
       // 1. Trigger the Facebook login flow.
-      final LoginResult facebookResult = await _facebookAuth.login(permissions: const ['email', 'public_profile']);
+      final LoginResult facebookResult = await _facebookAuth.login(
+        permissions: const ['email', 'public_profile'],
+      );
 
       // 2. Check if the login was successful.
       if (facebookResult.status != LoginStatus.success) {
-        return BxFacebookAuthResult.failure(_facebookLoginStatusMessage(facebookResult.status));
+        return BxFacebookAuthResult.failure(
+          _facebookLoginStatusMessage(facebookResult.status),
+        );
       }
 
       // 3. Extract the access token string.
       final String? accessToken = facebookResult.accessToken?.tokenString;
 
       if (accessToken == null) {
-        return BxFacebookAuthResult.failure('Failed to obtain Facebook access token.');
+        return BxFacebookAuthResult.failure(
+          'Failed to obtain Facebook access token.',
+        );
       }
 
       // 4. Create a Firebase credential from the Facebook access token.
-      final OAuthCredential credential = FacebookAuthProvider.credential(accessToken);
+      final OAuthCredential credential = FacebookAuthProvider.credential(
+        accessToken,
+      );
 
       // 5. Sign in to Firebase with the credential.
-      final UserCredential userCredential = await _auth.signInWithCredential(credential);
+      final UserCredential userCredential = await _auth.signInWithCredential(
+        credential,
+      );
 
       return BxFacebookAuthResult.success(userCredential, facebookResult);
     } on Exception catch (e) {

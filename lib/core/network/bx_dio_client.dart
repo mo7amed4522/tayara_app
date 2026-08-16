@@ -56,7 +56,11 @@ class BxDioClient {
       ),
     );
 
-    _dio.interceptors.addAll([BxAuthInterceptor(), BxErrorInterceptor(), BxLoggingInterceptor()]);
+    _dio.interceptors.addAll([
+      BxAuthInterceptor(),
+      BxErrorInterceptor(),
+      BxLoggingInterceptor(),
+    ]);
   }
 
   // GET
@@ -67,14 +71,30 @@ class BxDioClient {
   /// [onReceiveProgress] are passed directly to [Dio.get].
   /// Returns the parsed response data (typically a `Map` or `List`)
   /// on success (status 200–299), or throws [BxNetworkException] on failure.
-  Future<dynamic> get(String path, {Map<String, dynamic>? queryParameters, Options? options, CancelToken? cancelToken, ProgressCallback? onReceiveProgress}) async {
+  Future<dynamic> get(
+    String path, {
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+    ProgressCallback? onReceiveProgress,
+  }) async {
     Response response;
     try {
-      response = await _dio.get(path, queryParameters: queryParameters, options: options, cancelToken: cancelToken, onReceiveProgress: onReceiveProgress);
+      response = await _dio.get(
+        path,
+        queryParameters: queryParameters,
+        options: options,
+        cancelToken: cancelToken,
+        onReceiveProgress: onReceiveProgress,
+      );
     } on DioException catch (e) {
       throw _handleDioError(e);
     } catch (e) {
-      throw BxNetworkException(message: 'Network error: ${e.toString()}', statusCode: 0, type: DioExceptionType.unknown);
+      throw BxNetworkException(
+        message: 'Network error: ${e.toString()}',
+        statusCode: 0,
+        type: DioExceptionType.unknown,
+      );
     }
     return _processResponse(response);
   }
@@ -87,14 +107,34 @@ class BxDioClient {
   /// [onSendProgress] and [onReceiveProgress].
   /// Returns the parsed response on success; otherwise throws
   /// [BxNetworkException].
-  Future<dynamic> post(String path, {dynamic data, Map<String, dynamic>? queryParameters, Options? options, CancelToken? cancelToken, ProgressCallback? onSendProgress, ProgressCallback? onReceiveProgress}) async {
+  Future<dynamic> post(
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
     Response response;
     try {
-      response = await _dio.post(path, data: data, queryParameters: queryParameters, options: options, cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
+      response = await _dio.post(
+        path,
+        data: data,
+        queryParameters: queryParameters,
+        options: options,
+        cancelToken: cancelToken,
+        onSendProgress: onSendProgress,
+        onReceiveProgress: onReceiveProgress,
+      );
     } on DioException catch (e) {
       throw _handleDioError(e);
     } catch (e) {
-      throw BxNetworkException(message: 'Network error: ${e.toString()}', statusCode: 0, type: DioExceptionType.unknown);
+      throw BxNetworkException(
+        message: 'Network error: ${e.toString()}',
+        statusCode: 0,
+        type: DioExceptionType.unknown,
+      );
     }
     return _processResponse(response);
   }
@@ -104,14 +144,34 @@ class BxDioClient {
   /// Sends an HTTP PUT request to [path] with an optional [data] body.
   ///
   /// Other parameters behave like [post]. Returns parsed data or throws.
-  Future<dynamic> put(String path, {dynamic data, Map<String, dynamic>? queryParameters, Options? options, CancelToken? cancelToken, ProgressCallback? onSendProgress, ProgressCallback? onReceiveProgress}) async {
+  Future<dynamic> put(
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
     Response response;
     try {
-      response = await _dio.put(path, data: data, queryParameters: queryParameters, options: options, cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
+      response = await _dio.put(
+        path,
+        data: data,
+        queryParameters: queryParameters,
+        options: options,
+        cancelToken: cancelToken,
+        onSendProgress: onSendProgress,
+        onReceiveProgress: onReceiveProgress,
+      );
     } on DioException catch (e) {
       throw _handleDioError(e);
     } catch (e) {
-      throw BxNetworkException(message: 'Network error: ${e.toString()}', statusCode: 0, type: DioExceptionType.unknown);
+      throw BxNetworkException(
+        message: 'Network error: ${e.toString()}',
+        statusCode: 0,
+        type: DioExceptionType.unknown,
+      );
     }
     return _processResponse(response);
   }
@@ -121,14 +181,34 @@ class BxDioClient {
   /// Sends an HTTP PATCH request to [path] with an optional [data] body.
   ///
   /// Other parameters behave like [post]. Returns parsed data or throws.
-  Future<dynamic> patch(String path, {dynamic data, Map<String, dynamic>? queryParameters, Options? options, CancelToken? cancelToken, ProgressCallback? onSendProgress, ProgressCallback? onReceiveProgress}) async {
+  Future<dynamic> patch(
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
     Response response;
     try {
-      response = await _dio.patch(path, data: data, queryParameters: queryParameters, options: options, cancelToken: cancelToken, onSendProgress: onSendProgress, onReceiveProgress: onReceiveProgress);
+      response = await _dio.patch(
+        path,
+        data: data,
+        queryParameters: queryParameters,
+        options: options,
+        cancelToken: cancelToken,
+        onSendProgress: onSendProgress,
+        onReceiveProgress: onReceiveProgress,
+      );
     } on DioException catch (e) {
       throw _handleDioError(e);
     } catch (e) {
-      throw BxNetworkException(message: 'Network error: ${e.toString()}', statusCode: 0, type: DioExceptionType.unknown);
+      throw BxNetworkException(
+        message: 'Network error: ${e.toString()}',
+        statusCode: 0,
+        type: DioExceptionType.unknown,
+      );
     }
     return _processResponse(response);
   }
@@ -139,14 +219,30 @@ class BxDioClient {
   ///
   /// Supports an optional [data] body, [queryParameters], [options] and
   /// [cancelToken]. Returns parsed data or throws [BxNetworkException].
-  Future<dynamic> delete(String path, {dynamic data, Map<String, dynamic>? queryParameters, Options? options, CancelToken? cancelToken}) async {
+  Future<dynamic> delete(
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+  }) async {
     Response response;
     try {
-      response = await _dio.delete(path, data: data, queryParameters: queryParameters, options: options, cancelToken: cancelToken);
+      response = await _dio.delete(
+        path,
+        data: data,
+        queryParameters: queryParameters,
+        options: options,
+        cancelToken: cancelToken,
+      );
     } on DioException catch (e) {
       throw _handleDioError(e);
     } catch (e) {
-      throw BxNetworkException(message: 'Network error: ${e.toString()}', statusCode: 0, type: DioExceptionType.unknown);
+      throw BxNetworkException(
+        message: 'Network error: ${e.toString()}',
+        statusCode: 0,
+        type: DioExceptionType.unknown,
+      );
     }
     return _processResponse(response);
   }
@@ -214,7 +310,10 @@ class BxDioClient {
         if (data is String && data.trim().startsWith('<!DOCTYPE', 0)) {
           message = _parseHtmlError(data, statusCode);
         } else if (data is Map<String, dynamic>) {
-          message = data['message'] as String? ?? data['error'] as String? ?? 'Server error occurred';
+          message =
+              data['message'] as String? ??
+              data['error'] as String? ??
+              'Server error occurred';
         } else {
           message = 'Server error (HTTP $statusCode)';
         }
@@ -226,7 +325,12 @@ class BxDioClient {
         message = error.message ?? 'An unexpected error occurred';
     }
 
-    return BxNetworkException(message: message, statusCode: statusCode ?? 0, type: error.type, data: data);
+    return BxNetworkException(
+      message: message,
+      statusCode: statusCode ?? 0,
+      type: error.type,
+      data: data,
+    );
   }
 
   /// Attempts to extract a human‑readable error message from an HTML string
@@ -236,9 +340,18 @@ class BxDioClient {
   /// status‑code‑based default message if nothing is found.
   String _parseHtmlError(String html, int? statusCode) {
     // Extract title from HTML
-    final titleMatch = RegExp(r'<title>(.*?)</title>', caseSensitive: false).firstMatch(html);
-    final headingMatch = RegExp(r'<h1>(.*?)</h1>', caseSensitive: false).firstMatch(html);
-    final paragraphMatch = RegExp(r'<p>(.*?)</p>', caseSensitive: false).firstMatch(html);
+    final titleMatch = RegExp(
+      r'<title>(.*?)</title>',
+      caseSensitive: false,
+    ).firstMatch(html);
+    final headingMatch = RegExp(
+      r'<h1>(.*?)</h1>',
+      caseSensitive: false,
+    ).firstMatch(html);
+    final paragraphMatch = RegExp(
+      r'<p>(.*?)</p>',
+      caseSensitive: false,
+    ).firstMatch(html);
 
     if (paragraphMatch != null) {
       return paragraphMatch.group(1) ?? 'Server error occurred';

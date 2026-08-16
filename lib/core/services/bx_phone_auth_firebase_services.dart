@@ -45,13 +45,13 @@ class BxPhoneAuthResult {
 
   /// Creates a successful [BxPhoneAuthResult].
   BxPhoneAuthResult.success(this.user, {this.verificationId})
-      : success = true,
-        error = null;
+    : success = true,
+      error = null;
 
   /// Creates a failed [BxPhoneAuthResult] with an [error] message.
   BxPhoneAuthResult.failure(this.error, {this.verificationId})
-      : success = false,
-        user = null;
+    : success = false,
+      user = null;
 }
 
 /// Callback invoked for each state change during phone number
@@ -170,7 +170,10 @@ class BxPhoneAuthFirebaseServices {
         verificationCompleted: (PhoneAuthCredential credential) async {
           verificationId = credential.verificationId;
           verifyStateChanged?.call(
-            BxPhoneAuthState(credential: credential, verificationId: verificationId),
+            BxPhoneAuthState(
+              credential: credential,
+              verificationId: verificationId,
+            ),
           );
         },
         verificationFailed: (FirebaseAuthException e) {
@@ -187,9 +190,7 @@ class BxPhoneAuthFirebaseServices {
         },
         codeAutoRetrievalTimeout: (String vid) {
           verificationId = vid;
-          verifyStateChanged?.call(
-            BxPhoneAuthState(verificationId: vid),
-          );
+          verifyStateChanged?.call(BxPhoneAuthState(verificationId: vid));
         },
       );
 
@@ -198,7 +199,8 @@ class BxPhoneAuthFirebaseServices {
       }
 
       return BxPhoneAuthResult.failure(
-          'Verification completed without returning an ID.');
+        'Verification completed without returning an ID.',
+      );
     } on FirebaseAuthException catch (e) {
       return BxPhoneAuthResult.failure(_firebaseAuthErrorMessage(e));
     } catch (e) {
@@ -234,8 +236,9 @@ class BxPhoneAuthFirebaseServices {
       );
 
       // 2. Sign in to Firebase with the credential.
-      final UserCredential userCredential =
-          await _auth.signInWithCredential(credential);
+      final UserCredential userCredential = await _auth.signInWithCredential(
+        credential,
+      );
 
       return BxPhoneAuthResult.success(userCredential);
     } on FirebaseAuthException catch (e) {

@@ -41,14 +41,10 @@ class BxGoogleAuthResult {
   final String? error;
 
   /// Creates a successful [BxGoogleAuthResult].
-  BxGoogleAuthResult.success(this.user)
-      : success = true,
-        error = null;
+  BxGoogleAuthResult.success(this.user) : success = true, error = null;
 
   /// Creates a failed [BxGoogleAuthResult] with an [error] message.
-  BxGoogleAuthResult.failure(this.error)
-      : success = false,
-        user = null;
+  BxGoogleAuthResult.failure(this.error) : success = false, user = null;
 }
 
 /// Service that performs Google authentication using Firebase Auth.
@@ -136,8 +132,7 @@ class BxGoogleAuthFirebaseServices {
       final String? idToken = googleUser.authentication.idToken;
 
       if (idToken == null) {
-        return BxGoogleAuthResult
-            .failure('Failed to obtain Google ID token.');
+        return BxGoogleAuthResult.failure('Failed to obtain Google ID token.');
       }
 
       // 4. Create a Firebase credential from the Google ID token.
@@ -146,8 +141,9 @@ class BxGoogleAuthFirebaseServices {
       );
 
       // 5. Sign in to Firebase with the credential.
-      final UserCredential userCredential =
-          await _auth.signInWithCredential(credential);
+      final UserCredential userCredential = await _auth.signInWithCredential(
+        credential,
+      );
 
       return BxGoogleAuthResult.success(userCredential);
     } on GoogleSignInException catch (e) {

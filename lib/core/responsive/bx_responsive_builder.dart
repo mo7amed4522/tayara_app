@@ -56,8 +56,22 @@ class BxResponsiveBuilder extends StatelessWidget {
   /// The breakpoints used to classify screen sizes.
   final BxResponsiveBreakpoints breakpoints;
 
-  const BxResponsiveBuilder({super.key, this.mobileBuilder, this.tabletBuilder, this.desktopBuilder, this.builder, this.child, this.breakpoints = const BxResponsiveBreakpoints()})
-    : assert((mobileBuilder != null || tabletBuilder != null || desktopBuilder != null || builder != null || child != null), 'At least one builder or child must be provided');
+  const BxResponsiveBuilder({
+    super.key,
+    this.mobileBuilder,
+    this.tabletBuilder,
+    this.desktopBuilder,
+    this.builder,
+    this.child,
+    this.breakpoints = const BxResponsiveBreakpoints(),
+  }) : assert(
+         (mobileBuilder != null ||
+             tabletBuilder != null ||
+             desktopBuilder != null ||
+             builder != null ||
+             child != null),
+         'At least one builder or child must be provided',
+       );
 
   @override
   Widget build(BuildContext context) {
@@ -121,10 +135,16 @@ class BxResponsiveBuilder extends StatelessWidget {
     switch (screenSize) {
       case BxScreenSize.mobile:
         // Mobile landscape might need different layout
-        return ConstrainedBox(constraints: BoxConstraints(maxWidth: 800), child: child);
+        return ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: 800),
+          child: child,
+        );
       case BxScreenSize.tablet:
         // Tablet landscape can use more width
-        return ConstrainedBox(constraints: BoxConstraints(maxWidth: 1200), child: child);
+        return ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: 1200),
+          child: child,
+        );
       case BxScreenSize.desktop:
         // Desktop landscape has full width
         return child;
@@ -156,10 +176,17 @@ class ResponsiveValue<T> {
   /// Value for desktop screens.
   final T desktop;
 
-  const ResponsiveValue({required this.mobile, required this.tablet, required this.desktop});
+  const ResponsiveValue({
+    required this.mobile,
+    required this.tablet,
+    required this.desktop,
+  });
 
   /// Creates a [ResponsiveValue] where all screen sizes return the same value.
-  const ResponsiveValue.all(T value) : mobile = value, tablet = value, desktop = value;
+  const ResponsiveValue.all(T value)
+    : mobile = value,
+      tablet = value,
+      desktop = value;
 
   /// Returns the value corresponding to the screen size of [context].
   T value(BuildContext context) {
@@ -180,7 +207,11 @@ class ResponsiveValue<T> {
   ///
   /// This uses [BxScreenUtils.currentScreenSize] and does not require a
   /// [BuildContext].
-  T valueOrElse({required bool Function(BxScreenSize) condition, required T trueValue, required T falseValue}) {
+  T valueOrElse({
+    required bool Function(BxScreenSize) condition,
+    required T trueValue,
+    required T falseValue,
+  }) {
     return condition(BxScreenUtils.currentScreenSize) ? trueValue : falseValue;
   }
 }

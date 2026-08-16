@@ -24,9 +24,14 @@ class BxSplashWidgetMobile extends StatelessWidget {
 
     // Theme-aware gradient: transparent at top, background colour at bottom.
     // This keeps the sky visible while ensuring text/logo contrast.
-    final gradientColor = isDark ? BxAppColors.background.withOpacity(0.7) : BxAppColors.background.withOpacity(0.7);
+    final gradientColor = isDark
+        ? BxAppColors.background.withOpacity(0.7)
+        : BxAppColors.background.withOpacity(0.7);
 
-    return BlocListener<BxSplashScreenControllerBloc, BxSplashScreenControllerState>(
+    return BlocListener<
+      BxSplashScreenControllerBloc,
+      BxSplashScreenControllerState
+    >(
       listener: (context, state) {
         // Only proceed if status is success
         if (state.status == BxSplashScreenStatus.success) {
@@ -34,11 +39,18 @@ class BxSplashWidgetMobile extends StatelessWidget {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             Future.delayed(const Duration(seconds: 3), () {
               // For StatelessWidget, we need to check via Navigator
-              if (Navigator.of(context, rootNavigator: true).canPop() || Navigator.of(context, rootNavigator: true).widget != null) {
+              if (Navigator.of(context, rootNavigator: true).canPop() ||
+                  Navigator.of(context, rootNavigator: true).widget != null) {
                 if (state.onBoardingCompleted == true) {
-                  BxAppRouter.pushReplacement(context, BxRouteNames.bxLoginScreen);
+                  BxAppRouter.pushReplacement(
+                    context,
+                    BxRouteNames.bxLoginScreen,
+                  );
                 } else {
-                  BxAppRouter.pushReplacement(context, BxRouteNames.bxOnBoardingScreen);
+                  BxAppRouter.pushReplacement(
+                    context,
+                    BxRouteNames.bxOnBoardingScreen,
+                  );
                 }
               }
             });
@@ -49,14 +61,21 @@ class BxSplashWidgetMobile extends StatelessWidget {
         width: double.infinity,
         height: double.infinity,
         decoration: BoxDecoration(
-          image: DecorationImage(image: AssetImage(BxAppConstant.appBackground), fit: BoxFit.cover),
+          image: DecorationImage(
+            image: AssetImage(BxAppConstant.appBackground),
+            fit: BoxFit.cover,
+          ),
         ),
         child: Stack(
           children: [
             // Gradient overlay (top to bottom)
             Container(
               decoration: BoxDecoration(
-                gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.white.withOpacity(0.01), gradientColor]),
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Colors.white.withOpacity(0.01), gradientColor],
+                ),
               ),
             ),
 
@@ -68,7 +87,12 @@ class BxSplashWidgetMobile extends StatelessWidget {
                   // Logo animation: comes from above
                   FadeInDown(
                     duration: const Duration(milliseconds: 1000),
-                    child: Image.asset(BxAppConstant.appLogo, width: 350, height: 350, fit: BoxFit.contain),
+                    child: Image.asset(
+                      BxAppConstant.appLogo,
+                      width: 350,
+                      height: 350,
+                      fit: BoxFit.contain,
+                    ),
                   ),
                   // Text animation: comes from below
                   FadeInUp(
@@ -76,7 +100,12 @@ class BxSplashWidgetMobile extends StatelessWidget {
                     delay: const Duration(milliseconds: 200),
                     child: Text(
                       "Taiyara",
-                      style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: BxAppColors.primary, fontFamily: 'lao-mn'),
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        color: BxAppColors.primary,
+                        fontFamily: 'lao-mn',
+                      ),
                     ),
                   ),
                 ],

@@ -129,7 +129,13 @@ class ResponsiveGrid extends StatelessWidget {
 
     // Normal GridView
     return GridView.builder(
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: crossAxisCount, crossAxisSpacing: responsiveSpacing, mainAxisSpacing: responsiveSpacing, childAspectRatio: childAspectRatio ?? _getAspectRatio(screenSize, crossAxisCount)),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: crossAxisCount,
+        crossAxisSpacing: responsiveSpacing,
+        mainAxisSpacing: responsiveSpacing,
+        childAspectRatio:
+            childAspectRatio ?? _getAspectRatio(screenSize, crossAxisCount),
+      ),
       padding: responsivePadding,
       shrinkWrap: shrinkWrap,
       physics: physics,
@@ -156,13 +162,16 @@ class ResponsiveGrid extends StatelessWidget {
     int baseColumns;
     switch (screenSize) {
       case BxScreenSize.mobile:
-        baseColumns = mobileColumns ?? (orientation == Orientation.portrait ? 2 : 3);
+        baseColumns =
+            mobileColumns ?? (orientation == Orientation.portrait ? 2 : 3);
         break;
       case BxScreenSize.tablet:
-        baseColumns = tabletColumns ?? (orientation == Orientation.portrait ? 3 : 4);
+        baseColumns =
+            tabletColumns ?? (orientation == Orientation.portrait ? 3 : 4);
         break;
       case BxScreenSize.desktop:
-        baseColumns = desktopColumns ?? (orientation == Orientation.portrait ? 4 : 6);
+        baseColumns =
+            desktopColumns ?? (orientation == Orientation.portrait ? 4 : 6);
         break;
     }
 
@@ -267,8 +276,17 @@ class ResponsiveSliverGrid extends StatelessWidget {
     return SliverPadding(
       padding: responsivePadding,
       sliver: SliverGrid(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: crossAxisCount, crossAxisSpacing: responsiveSpacing, mainAxisSpacing: responsiveSpacing, childAspectRatio: childAspectRatio ?? _getAspectRatio(screenSize, crossAxisCount)),
-        delegate: SliverChildBuilderDelegate((context, index) => children[index], childCount: children.length),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: crossAxisCount,
+          crossAxisSpacing: responsiveSpacing,
+          mainAxisSpacing: responsiveSpacing,
+          childAspectRatio:
+              childAspectRatio ?? _getAspectRatio(screenSize, crossAxisCount),
+        ),
+        delegate: SliverChildBuilderDelegate(
+          (context, index) => children[index],
+          childCount: children.length,
+        ),
       ),
     );
   }
@@ -373,7 +391,10 @@ class ResponsiveGridItem extends StatelessWidget {
     this.alignment,
     this.clipBehavior = Clip.none,
     this.expand = false,
-  }) : assert(color == null || decoration == null, 'Cannot provide both color and decoration');
+  }) : assert(
+         color == null || decoration == null,
+         'Cannot provide both color and decoration',
+       );
 
   @override
   Widget build(BuildContext context) {
@@ -421,7 +442,11 @@ class ResponsiveGridItem extends StatelessWidget {
   EdgeInsets _getPadding(BxScreenSize screenSize) {
     switch (screenSize) {
       case BxScreenSize.mobile:
-        return mobilePadding ?? tabletPadding ?? desktopPadding ?? padding ?? EdgeInsets.zero;
+        return mobilePadding ??
+            tabletPadding ??
+            desktopPadding ??
+            padding ??
+            EdgeInsets.zero;
       case BxScreenSize.tablet:
         return tabletPadding ?? desktopPadding ?? padding ?? EdgeInsets.zero;
       case BxScreenSize.desktop:
@@ -432,7 +457,11 @@ class ResponsiveGridItem extends StatelessWidget {
   EdgeInsets _getMargin(BxScreenSize screenSize) {
     switch (screenSize) {
       case BxScreenSize.mobile:
-        return mobileMargin ?? tabletMargin ?? desktopMargin ?? margin ?? EdgeInsets.zero;
+        return mobileMargin ??
+            tabletMargin ??
+            desktopMargin ??
+            margin ??
+            EdgeInsets.zero;
       case BxScreenSize.tablet:
         return tabletMargin ?? desktopMargin ?? margin ?? EdgeInsets.zero;
       case BxScreenSize.desktop:
@@ -533,7 +562,10 @@ class ResponsiveListView extends StatelessWidget {
         keyboardDismissBehavior: keyboardDismissBehavior,
         itemCount: children.length,
         itemBuilder: (context, index) => children[index],
-        separatorBuilder: (context, index) => SizedBox(width: scrollDirection == Axis.horizontal ? responsiveSpacing : 0, height: scrollDirection == Axis.vertical ? responsiveSpacing : 0),
+        separatorBuilder: (context, index) => SizedBox(
+          width: scrollDirection == Axis.horizontal ? responsiveSpacing : 0,
+          height: scrollDirection == Axis.vertical ? responsiveSpacing : 0,
+        ),
       );
     } else {
       return ListView.builder(

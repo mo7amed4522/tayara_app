@@ -14,36 +14,63 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 part 'bx_splash_screen_controller_state.dart';
 part 'bx_splash_screen_controller_event.dart';
 
-class BxSplashScreenControllerBloc extends Bloc<BxSplashScreenControllerEvent, BxSplashScreenControllerState> {
+class BxSplashScreenControllerBloc
+    extends Bloc<BxSplashScreenControllerEvent, BxSplashScreenControllerState> {
   final BxSharedPreferencesDataSource _sharedPreferencesDataSource;
 
-  BxSplashScreenControllerBloc({required BxSharedPreferencesDataSource sharedPreferencesDataSource}) : _sharedPreferencesDataSource = sharedPreferencesDataSource, super(BxSplashScreenControllerState()) {
+  BxSplashScreenControllerBloc({
+    required BxSharedPreferencesDataSource sharedPreferencesDataSource,
+  }) : _sharedPreferencesDataSource = sharedPreferencesDataSource,
+       super(BxSplashScreenControllerState()) {
     on<BxStartSplashTimer>(_onStartSplashTimer);
     on<BxResetSplashScreen>(_onResetSplashScreen);
     on<BxCheckAndStartSplash>(_onCheckAndStartSplash);
   }
 
-  Future<void> _onStartSplashTimer(BxStartSplashTimer event, Emitter<BxSplashScreenControllerState> emit) async {
-    final onBoardingCompleted = await _sharedPreferencesDataSource.getBool(BxSharedPreferencesKeys.onboardingCompleted) ?? false;
+  Future<void> _onStartSplashTimer(
+    BxStartSplashTimer event,
+    Emitter<BxSplashScreenControllerState> emit,
+  ) async {
+    final onBoardingCompleted =
+        await _sharedPreferencesDataSource.getBool(
+          BxSharedPreferencesKeys.onboardingCompleted,
+        ) ??
+        false;
     if (state.status == BxSplashScreenStatus.success) {
-      emit(state.copyWith(status: BxSplashScreenStatus.initial, onBoardingCompleted: onBoardingCompleted));
+      emit(
+        state.copyWith(
+          status: BxSplashScreenStatus.initial,
+          onBoardingCompleted: onBoardingCompleted,
+        ),
+      );
     }
     if (state.status == BxSplashScreenStatus.loading) {
       return;
     }
-    emit(state.copyWith(status: BxSplashScreenStatus.loading, onBoardingCompleted: onBoardingCompleted));
+    emit(
+      state.copyWith(
+        status: BxSplashScreenStatus.loading,
+        onBoardingCompleted: onBoardingCompleted,
+      ),
+    );
     await Future.delayed(const Duration(seconds: 3));
     // Check user data and get APNs token if needed
     emit(state.copyWith(status: BxSplashScreenStatus.success));
   }
 
-  Future<void> _onResetSplashScreen(BxResetSplashScreen event, Emitter<BxSplashScreenControllerState> emit) async {
+  Future<void> _onResetSplashScreen(
+    BxResetSplashScreen event,
+    Emitter<BxSplashScreenControllerState> emit,
+  ) async {
     emit(state.copyWith(status: BxSplashScreenStatus.initial));
     // Start timer again after reset
     add(const BxStartSplashTimer());
   }
 
-  Future<void> _onCheckAndStartSplash(BxCheckAndStartSplash event, Emitter<BxSplashScreenControllerState> emit) async {
+  Future<void> _onCheckAndStartSplash(
+    BxCheckAndStartSplash event,
+    Emitter<BxSplashScreenControllerState> emit,
+  ) async {
     // If state is success, reset and start
     if (state.status == BxSplashScreenStatus.success) {
       add(const BxResetSplashScreen());

@@ -13,11 +13,21 @@ class BxPaginationResponse {
   final int total;
   final int pages;
 
-  const BxPaginationResponse({required this.page, required this.limit, required this.total, required this.pages});
+  const BxPaginationResponse({
+    required this.page,
+    required this.limit,
+    required this.total,
+    required this.pages,
+  });
 
   /// Creates a [BxPaginationResponse] from a JSON map
   factory BxPaginationResponse.fromJson(Map<String, dynamic> json) {
-    return BxPaginationResponse(page: json['page'] as int, limit: json['limit'] as int, total: json['total'] as int, pages: json['pages'] as int);
+    return BxPaginationResponse(
+      page: json['page'] as int,
+      limit: json['limit'] as int,
+      total: json['total'] as int,
+      pages: json['pages'] as int,
+    );
   }
 
   /// Converts this pagination response to a JSON map
@@ -73,8 +83,18 @@ class BxPaginationResponse {
   }
 
   /// Creates a copy of this response with updated page
-  BxPaginationResponse copyWith({int? page, int? limit, int? total, int? pages}) {
-    return BxPaginationResponse(page: page ?? this.page, limit: limit ?? this.limit, total: total ?? this.total, pages: pages ?? this.pages);
+  BxPaginationResponse copyWith({
+    int? page,
+    int? limit,
+    int? total,
+    int? pages,
+  }) {
+    return BxPaginationResponse(
+      page: page ?? this.page,
+      limit: limit ?? this.limit,
+      total: total ?? this.total,
+      pages: pages ?? this.pages,
+    );
   }
 
   @override
@@ -86,7 +106,11 @@ class BxPaginationResponse {
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    return other is BxPaginationResponse && other.page == page && other.limit == limit && other.total == total && other.pages == pages;
+    return other is BxPaginationResponse &&
+        other.page == page &&
+        other.limit == limit &&
+        other.total == total &&
+        other.pages == pages;
   }
 
   @override

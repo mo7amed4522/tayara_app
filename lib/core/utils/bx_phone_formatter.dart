@@ -78,12 +78,14 @@ class BxPhoneFormatter {
     if (cleaned.startsWith('+971')) {
       String withoutCode = cleaned.substring(4); // Remove +971
       if (withoutCode.length == 9) {
-        formatted = '+971 ${withoutCode.substring(0, 2)} ${withoutCode.substring(2, 5)} ${withoutCode.substring(5)}';
+        formatted =
+            '+971 ${withoutCode.substring(0, 2)} ${withoutCode.substring(2, 5)} ${withoutCode.substring(5)}';
       } else {
         formatted = cleaned;
       }
     } else if (cleaned.length == 13 && cleaned.startsWith('+')) {
-      formatted = '${cleaned.substring(0, 4)} ${cleaned.substring(4, 6)} ${cleaned.substring(6, 9)} ${cleaned.substring(9)}';
+      formatted =
+          '${cleaned.substring(0, 4)} ${cleaned.substring(4, 6)} ${cleaned.substring(6, 9)} ${cleaned.substring(9)}';
     } else {
       formatted = phoneNumber;
     }
@@ -98,7 +100,10 @@ class BxPhoneFormatter {
   ///
   /// This combines the English grouping with an RTL guard, offering a
   /// safe output for mixed‑direction UIs.
-  static String formatPhoneNumberForDisplay(String phoneNumber, BuildContext context) {
+  static String formatPhoneNumberForDisplay(
+    String phoneNumber,
+    BuildContext context,
+  ) {
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
     // Format the number with English digits

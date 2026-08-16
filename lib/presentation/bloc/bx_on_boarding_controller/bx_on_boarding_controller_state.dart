@@ -14,7 +14,11 @@ class BxOnBoardingPage {
   final String description;
   final String imagePath;
 
-  const BxOnBoardingPage({required this.title, required this.description, required this.imagePath});
+  const BxOnBoardingPage({
+    required this.title,
+    required this.description,
+    required this.imagePath,
+  });
 }
 
 class BxOnBoardingControllerState extends Equatable {
@@ -23,12 +27,27 @@ class BxOnBoardingControllerState extends Equatable {
   final List<BxOnBoardingPage> pages;
   final int currentPage;
 
-  const BxOnBoardingControllerState({this.status = BxOnBoardingControllerStatus.initial, this.errorMessage, this.pages = const [], this.currentPage = 0});
+  const BxOnBoardingControllerState({
+    this.status = BxOnBoardingControllerStatus.initial,
+    this.errorMessage,
+    this.pages = const [],
+    this.currentPage = 0,
+  });
 
   @override
   List<Object?> get props => [status, errorMessage, pages, currentPage];
 
-  BxOnBoardingControllerState copyWith({BxOnBoardingControllerStatus? status, String? errorMessage, List<BxOnBoardingPage>? pages, int? currentPage}) {
-    return BxOnBoardingControllerState(status: status ?? this.status, errorMessage: errorMessage ?? this.errorMessage, pages: pages ?? this.pages, currentPage: currentPage ?? this.currentPage);
+  BxOnBoardingControllerState copyWith({
+    BxOnBoardingControllerStatus? status,
+    String? errorMessage,
+    List<BxOnBoardingPage>? pages,
+    int? currentPage,
+  }) {
+    return BxOnBoardingControllerState(
+      status: status ?? this.status,
+      errorMessage: errorMessage ?? this.errorMessage,
+      pages: pages ?? this.pages,
+      currentPage: currentPage ?? this.currentPage,
+    );
   }
 }

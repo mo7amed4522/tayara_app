@@ -13,6 +13,8 @@ import 'package:lottie/lottie.dart';
 class BxLoadingApp {
   BxLoadingApp._();
   static Widget lottieWidget() {
-    return Center(child: Lottie.asset(BxAppConstant.loadingIcon, height: 100, width: 100));
+    return Center(
+      child: Lottie.asset(BxAppConstant.loadingIcon, height: 100, width: 100),
+    );
   }
 }
