@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      Facebook App ID – required by the Facebook SDK.
+      Replace {YOUR_FACEBOOK_APP_ID} with the App ID from the
+      Facebook Developer Console.
+    -->
+    <string name="facebook_app_id">{YOUR_FACEBOOK_APP_ID}</string>
+    <string name="fb_login_protocol_scheme">fb{YOUR_FACEBOOK_APP_ID}</string>
+</resources>
