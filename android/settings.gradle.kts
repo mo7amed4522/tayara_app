@@ -15,6 +15,17 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
     }
+
+    resolutionStrategy {
+        eachPlugin {
+            if (requested.id.namespace == "org.jetbrains.kotlin") {
+                useModule("org.jetbrains.kotlin:kotlin-gradle-plugin:${requested.version}")
+            }
+        }
+        force("org.jetbrains.kotlin:kotlin-stdlib:2.3.20")
+        force("org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.3.20")
+        force("org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.3.20")
+    }
 }
 
 plugins {

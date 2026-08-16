@@ -16,6 +16,7 @@
 library;
 
 import 'package:tayara/core/routes/bx_route_names.dart';
+import 'package:tayara/presentation/views/bx_home_screen/bx_home_screen.dart';
 import 'package:tayara/presentation/views/bx_login_screen/bx_login_screen.dart';
 import 'package:tayara/presentation/views/bx_on_boarding_screen/bx_on_boarding_screen.dart';
 import 'package:tayara/presentation/views/bx_splash_screen/bx_splash_screen.dart';
@@ -48,6 +49,8 @@ class BxRouteGenerator {
         return _buildRoute(settings, const BxOnBoardingScreen());
       case BxRouteNames.bxLoginScreen:
         return _buildRoute(settings, const BxLoginScreen());
+      case BxRouteNames.bxHomeScreen:
+        return _buildRoute(settings, const BxHomeScreen());
       // Default route (404)
       default:
         return _buildRoute(settings, const BxLoginScreen());
@@ -285,6 +288,7 @@ class BxRouteGenerator {
       BxRouteNames.bxSplashScreen,
       BxRouteNames.bxOnBoardingScreen,
       BxRouteNames.bxLoginScreen,
+      BxRouteNames.bxHomeScreen,
     ];
 
     return validRoutes.contains(routeName) ||
@@ -304,6 +308,8 @@ class BxRouteGenerator {
         return 'Bx-On-boarding-screen';
       case BxRouteNames.bxLoginScreen:
         return 'Bx-Login-screen';
+      case BxRouteNames.bxHomeScreen:
+        return 'Bx-Home-screen';
 
       default:
         return 'App';

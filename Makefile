@@ -1,9 +1,9 @@
-# nmmc Build Makefile
+# taiyara Build Makefile
 # Provides target for generating localization files
 
 .PHONY: help
 help: ## Display this help message
-	@echo "nmmc Build System"
+	@echo "taiyara Build System"
 	@echo ""
 	@echo "Usage: make [target]"
 	@echo ""
