@@ -6,6 +6,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tayara/domain/usecase/bx_firebase_login_usecase.dart';
+import 'package:tayara/injection/bx_dependency_injector.dart';
 import 'package:tayara/presentation/bloc/bx_login_controller/bx_login_controller_bloc.dart';
 import 'package:tayara/presentation/widgets/bx_login_widget/bx_login_widget_mobile.dart';
 import 'package:tayara/presentation/widgets/bx_login_widget/bx_login_widget_tablet.dart';
@@ -16,7 +18,9 @@ class BxLoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => BxLoginControllerBloc(),
+      create: (_) => BxLoginControllerBloc(
+        useCase: BxDependencyInjector.instance.get<BxFirebaseLoginUsecase>(),
+      ),
       child: LayoutBuilder(
         builder: (context, constraints) {
           if (constraints.maxWidth < 600) {

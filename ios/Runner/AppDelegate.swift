@@ -12,7 +12,6 @@ import FirebaseCore
     // This must be called before any other Firebase API is used.
     FirebaseApp.configure()
 
-    GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 

@@ -19,8 +19,17 @@
 /// Purpose: Handle Facebook Sign‑In via Firebase Authentication
 library;
 
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+
+/// Returns `true` when running on the iOS simulator.
+bool get _isSimulator =>
+    Platform.isIOS &&
+    Process.runSync('sysctl', ['-n', 'hw.model']).stdout.toString().contains(
+      'Simulator',
+    );
 
 /// Represents the outcome of a Facebook authentication attempt.
 ///
@@ -127,6 +136,11 @@ class BxFacebookAuthFirebaseServices {
   ///   failed (e.g. account disabled, invalid token).
   /// - Generic exceptions – unexpected errors.
   Future<BxFacebookAuthResult> signIn() async {
+    if (_isSimulator) {
+      return BxFacebookAuthResult.failure(
+        'Facebook Sign‑In is not available on the iOS simulator. Please use a physical device.',
+      );
+    }
     try {
       // 1. Trigger the Facebook login flow.
       final LoginResult facebookResult = await _facebookAuth.login(

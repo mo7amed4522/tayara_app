@@ -22,8 +22,27 @@ class BxLoginWithApple extends BxLoginControllerEvent {}
 /// Triggered when user taps "Continue with Facebook".
 class BxLoginWithFacebook extends BxLoginControllerEvent {}
 
-/// Triggered when user taps "Continue with Phone Number".
-class BxLoginWithPhone extends BxLoginControllerEvent {}
+/// Triggered when user taps "Continue with Phone Number" (step 1: send SMS code).
+/// [phoneNumber] is the full international phone number (e.g. '+1234567890').
+class BxLoginWithPhone extends BxLoginControllerEvent {
+  final String phoneNumber;
+
+  const BxLoginWithPhone({required this.phoneNumber});
+
+  @override
+  List<Object?> get props => [phoneNumber];
+}
+
+/// Triggered when user submits the SMS verification code (step 2: verify code).
+class BxLoginWithPhoneCode extends BxLoginControllerEvent {
+  final String phoneNumber;
+  final String smsCode;
+
+  const BxLoginWithPhoneCode({required this.phoneNumber, required this.smsCode});
+
+  @override
+  List<Object?> get props => [phoneNumber, smsCode];
+}
 
 /// Triggered when user taps "Terms of Service".
 class BxLoginTermsPressed extends BxLoginControllerEvent {}

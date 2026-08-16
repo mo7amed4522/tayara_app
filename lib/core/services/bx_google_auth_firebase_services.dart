@@ -20,8 +20,17 @@
 /// Purpose: Handle Google Sign‑In via Firebase Authentication
 library;
 
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
+/// Returns `true` when running on the iOS simulator.
+bool get _isSimulator =>
+    Platform.isIOS &&
+    Process.runSync('sysctl', [' -n', 'hw.model']).stdout.toString().contains(
+      'Simulator',
+    );
 
 /// Represents the outcome of a Google authentication attempt.
 ///
@@ -58,9 +67,8 @@ class BxGoogleAuthResult {
 /// - [FirebaseAuth] to exchange those tokens for a Firebase credential
 ///   and create / link a Firebase user.
 ///
-/// **Note:** [GoogleSignIn.instance.initialize] is called automatically
-/// on the first [signIn] call. It must be awaited before any other
-/// [GoogleSignIn] methods are invoked.
+/// **Note:** The iOS client ID is read automatically from
+/// `GoogleService-Info.plist`. No manual initialization is required.
 ///
 /// Usage:
 /// ```dart
@@ -100,12 +108,12 @@ class BxGoogleAuthFirebaseServices {
   /// Signs the user in with Google and authenticates with Firebase.
   ///
   /// **Steps:**
-  /// 1. Calls [GoogleSignIn.initialize] with the web client ID from
-  ///    `google-services.json` (required before any sign‑in call).
-  /// 2. Calls [GoogleSignIn.authenticate] to show the Google sign‑in UI.
-  /// 3. Extracts the `idToken` from the sign‑in result.
-  /// 4. Creates a [GoogleAuthProvider.credential] from the token.
-  /// 5. Calls [FirebaseAuth.signInWithCredential] to complete the
+  /// 1. Triggers the Google sign‑in UI via [GoogleSignIn.authenticate].
+  ///    The iOS client ID is read automatically from
+  ///    `GoogleService-Info.plist`.
+  /// 2. Extracts the `idToken` from the sign‑in result.
+  /// 3. Creates a [GoogleAuthProvider.credential] from the token.
+  /// 4. Calls [FirebaseAuth.signInWithCredential] to complete the
   ///    Firebase sign‑in.
   ///
   /// **Returns:** A [BxGoogleAuthResult] indicating success or failure.
@@ -117,18 +125,17 @@ class BxGoogleAuthFirebaseServices {
   ///   failed (e.g. account disabled, invalid token).
   /// - Generic exceptions – unexpected errors.
   Future<BxGoogleAuthResult> signIn() async {
-    try {
-      // 1. Initialize Google Sign‑In with the web client ID.
-      //    This must be called exactly once before any other method.
-      await _googleSignIn.initialize(
-        clientId:
-            '271442722424-acm991odqmv3k4s15l3optf19pjsmk5n.apps.googleusercontent.com',
+    if (_isSimulator) {
+      return BxGoogleAuthResult.failure(
+        'Google Sign‑In is not available on the iOS simulator. Please use a physical device.',
       );
-
-      // 2. Trigger the Google sign‑in flow.
+    }
+    try {
+      // 1. Trigger the Google sign‑in flow.
+      //    The iOS client ID is read automatically from GoogleService-Info.plist.
       final GoogleSignInAccount googleUser = await _googleSignIn.authenticate();
 
-      // 3. Extract the ID token.
+      // 2. Extract the ID token.
       final String? idToken = googleUser.authentication.idToken;
 
       if (idToken == null) {

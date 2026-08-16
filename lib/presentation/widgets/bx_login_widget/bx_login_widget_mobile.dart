@@ -167,7 +167,7 @@ class BxLoginWidgetMobile extends StatelessWidget {
                   color: Colors.transparent,
                   child: InkWell(
                     onTap: () => context.read<BxLoginControllerBloc>().add(
-                      BxLoginWithPhone(),
+                      BxLoginWithPhone(phoneNumber: ''),
                     ),
                     borderRadius: BorderRadius.circular(16),
                     child: const Center(
