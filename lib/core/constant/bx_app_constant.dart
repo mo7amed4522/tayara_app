@@ -54,6 +54,22 @@ class BxAppConstant {
   static const String exploreIcon = '${baseImageUrl}explore_icon.png';
   static const String bookingsIcon = '${baseImageUrl}booking_icon.png';
   static const String profileIcon = '${baseImageUrl}profile_icon.png';
+
+  /// home bottom nav bar images.
+  /// Home icon image.
+  static const String billImage = '${baseImageUrl}bill_image.png';
+  static const String adsBackground = '${baseImageUrl}ads_background.png';
+  static const String baliImage = '${baseImageUrl}bali_image.png';
+  static const String pairsImage = '${baseImageUrl}pairs_image.png';
+  static const String tokyoImage = '${baseImageUrl}tokyo_image.png';
+  static const String swazirelandImage = '${baseImageUrl}swazireland_image.png';
+  static const String topDealsImage1 = '${baseImageUrl}top_deals_image1.png';
+  static const String topDealsImage2 = '${baseImageUrl}top_deals_image2.png';
+  static const String eyeBirdImage = '${baseImageUrl}eye_bird_image.png';
+  static const String lightImage = '${baseImageUrl}light_image.png';
+  static const String tayaraObjectImage = '${baseImageUrl}tayara_object.png';
+  static const String recommendImage1 = '${baseImageUrl}recommend_image1.png';
+  static const String recommendImage2 = '${baseImageUrl}recommend_image2.png';
   // social media logos
   /// Application social media logos.
   /// Login logo

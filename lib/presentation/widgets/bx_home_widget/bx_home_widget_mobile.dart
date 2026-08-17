@@ -4,7 +4,7 @@
 // Architecture: Presentation Layer - Bx Home Widget
 // Purpose: Mobile home screen with custom bottom navigation bar and PageView
 
-// ignore_for_file: sized_box_for_whitespace
+// ignore_for_file: deprecated_member_use, sized_box_for_whitespace
 
 import 'dart:math';
 
@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tayara/core/constant/bx_app_constant.dart';
 import 'package:tayara/core/theme/bx_app_colors.dart';
+import 'package:tayara/presentation/bloc/bx_home_bottom_screen_controller/bx_home_bottom_screen_controller_bloc.dart';
 import 'package:tayara/presentation/bloc/bx_home_screen_controller/bx_home_screen_controller_bloc.dart';
 import 'package:tayara/presentation/views/bx_booking_bottom_screen/bx_booking_bottom_screen_mobile.dart';
 import 'package:tayara/presentation/views/bx_explore_bottom_screen/bx_explore_bottom_screen_mobile.dart';
@@ -80,7 +81,6 @@ class _BxHomeWidgetMobileState extends State<BxHomeWidgetMobile>
         }
 
         return Scaffold(
-          backgroundColor: BxAppColors.background,
           body: PageView(
             controller: _pageController,
             onPageChanged: (index) {
@@ -88,11 +88,14 @@ class _BxHomeWidgetMobileState extends State<BxHomeWidgetMobile>
                 BxChangeHomeTab(tabIndex: index),
               );
             },
-            children: const [
-              BxHomeBottomScreenMobile(),
-              BxExploreBottomScreenMobile(),
-              BxBookingBottomScreenMobile(),
-              BxProfileBottomScreenMobile(),
+            children: [
+              BlocProvider(
+                create: (_) => BxHomeBottomScreenControllerBloc(),
+                child: const BxHomeBottomScreenMobile(),
+              ),
+              const BxExploreBottomScreenMobile(),
+              const BxBookingBottomScreenMobile(),
+              const BxProfileBottomScreenMobile(),
             ],
           ),
           bottomNavigationBar: _buildBottomNavBar(currentIndex),
@@ -122,10 +125,9 @@ class _BxHomeWidgetMobileState extends State<BxHomeWidgetMobile>
         Container(
           height: _barHeight,
           decoration: BoxDecoration(
-            color: Colors.white,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.06),
+                color: Theme.of(context).shadowColor.withOpacity(0.06),
                 blurRadius: 8,
                 offset: const Offset(0, -2),
               ),
