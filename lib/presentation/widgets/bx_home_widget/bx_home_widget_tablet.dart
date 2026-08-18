@@ -12,6 +12,9 @@ import 'package:tayara/presentation/views/bx_booking_bottom_screen/bx_booking_bo
 import 'package:tayara/presentation/views/bx_explore_bottom_screen/bx_explore_bottom_screen_tablet.dart';
 import 'package:tayara/presentation/views/bx_home_bottom_screen/bx_home_bottom_screen_tablet.dart';
 import 'package:tayara/presentation/views/bx_profile_bottom_screen/bx_profile_bottom_screen_tablet.dart';
+import '../../bloc/bx_profile_bottom_screen_controller/bx_profile_bottom_screen_controller_bloc.dart';
+import '../../../data/data_source/local/bx_shared_preferences_datasource.dart';
+import '../../../injection/bx_dependency_injector.dart';
 
 /// Tablet home screen featuring a top tab slider instead of a bottom nav bar.
 ///
@@ -87,11 +90,19 @@ class _BxHomeWidgetTabletState extends State<BxHomeWidgetTablet>
                       BxChangeHomeTab(tabIndex: index),
                     );
                   },
-                  children: const [
+                  children: [
                     BxHomeBottomScreenTablet(),
                     BxExploreBottomScreenTablet(),
                     BxBookingBottomScreenTablet(),
-                    BxProfileBottomScreenTablet(),
+                    BlocProvider(
+                      create: (context) => BxProfileBottomScreenControllerBloc(
+                        sharedPreferencesDataSource:
+                            BxDependencyInjector.instance.get<
+                              BxSharedPreferencesDataSource
+                            >(),
+                      )..add(BxLoadProfileThemeEvent()),
+                      child: const BxProfileBottomScreenTablet(),
+                    ),
                   ],
                 ),
               ),

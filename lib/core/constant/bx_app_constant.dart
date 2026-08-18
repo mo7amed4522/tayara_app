@@ -70,6 +70,10 @@ class BxAppConstant {
   static const String tayaraObjectImage = '${baseImageUrl}tayara_object.png';
   static const String recommendImage1 = '${baseImageUrl}recommend_image1.png';
   static const String recommendImage2 = '${baseImageUrl}recommend_image2.png';
+
+  /// setting bottom nav bar images.
+  /// Setting icon image.
+  static const String settingLogo = '${baseImageUrl}setting_logo.png';
   // social media logos
   /// Application social media logos.
   /// Login logo
