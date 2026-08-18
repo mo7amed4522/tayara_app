@@ -29,11 +29,7 @@ class BxProfileBottomScreenTablet extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // 2. Top center logo
-              Image.asset(
-                BxAppConstant.settingLogo,
-                width: 333,
-                height: 313,
-              ),
+              Image.asset(BxAppConstant.settingLogo, width: 333, height: 313),
               const SizedBox(height: 16),
               // 3. Title
               Text(
@@ -81,143 +77,151 @@ class BxProfileBottomScreenTablet extends StatelessWidget {
         ),
         // Scrollable section below the fixed header
         Expanded(
-          child: BlocBuilder<
-            BxProfileBottomScreenControllerBloc,
-            BxProfileBottomScreenControllerState
-          >(
-            builder: (context, state) {
-              return SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 32,
-                  vertical: 16,
-                ),
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 480),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      // 6. My Bookings card
-                      _buildProfileCard(
-                        context,
-                        shadowColor: theme.colorScheme.primary,
-                        icon: Icons.calendar_today,
-                        iconColor: theme.colorScheme.primary,
-                        text: 'My Bookings',
-                        trailing: Icon(
-                          Icons.lock,
-                          size: 18,
-                          color: theme.colorScheme.onSurface.withOpacity(0.6),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      // 7. Payments & Wallet card
-                      _buildProfileCard(
-                        context,
-                        shadowColor: const Color(0xFF10B981),
-                        icon: Icons.account_balance_wallet,
-                        iconColor: const Color(0xFF10B981),
-                        text: 'Payments & Wallet',
-                        trailing: Icon(
-                          Icons.lock,
-                          size: 18,
-                          color: theme.colorScheme.onSurface.withOpacity(0.6),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      // 8. Dark/Light mode card
-                      _buildProfileCard(
-                        context,
-                        shadowColor: theme.colorScheme.primary,
-                        icon: Icons.brightness_6,
-                        iconColor: theme.colorScheme.primary,
-                        text: 'Dark/Light mode',
-                        trailing: Icon(
-                          state.isDarkMode
-                              ? Icons.light_mode_outlined
-                              : Icons.dark_mode_outlined,
-                          size: 18,
-                          color: theme.colorScheme.onSurface.withOpacity(0.6),
-                        ),
-                        onTap: () {
-                          final isDark =
-                              context
+          child:
+              BlocBuilder<
+                BxProfileBottomScreenControllerBloc,
+                BxProfileBottomScreenControllerState
+              >(
+                builder: (context, state) {
+                  return SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 32,
+                      vertical: 16,
+                    ),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 480),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // 6. My Bookings card
+                          _buildProfileCard(
+                            context,
+                            shadowColor: theme.colorScheme.primary,
+                            icon: Icons.calendar_today,
+                            iconColor: theme.colorScheme.primary,
+                            text: 'My Bookings',
+                            trailing: Icon(
+                              Icons.lock,
+                              size: 18,
+                              color: theme.colorScheme.onSurface.withOpacity(
+                                0.6,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          // 7. Payments & Wallet card
+                          _buildProfileCard(
+                            context,
+                            shadowColor: const Color(0xFF10B981),
+                            icon: Icons.account_balance_wallet,
+                            iconColor: const Color(0xFF10B981),
+                            text: 'Payments & Wallet',
+                            trailing: Icon(
+                              Icons.lock,
+                              size: 18,
+                              color: theme.colorScheme.onSurface.withOpacity(
+                                0.6,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          // 8. Dark/Light mode card
+                          _buildProfileCard(
+                            context,
+                            shadowColor: theme.colorScheme.primary,
+                            icon: Icons.brightness_6,
+                            iconColor: theme.colorScheme.primary,
+                            text: 'Dark/Light mode',
+                            trailing: Icon(
+                              state.isDarkMode
+                                  ? Icons.light_mode_outlined
+                                  : Icons.dark_mode_outlined,
+                              size: 18,
+                              color: theme.colorScheme.onSurface.withOpacity(
+                                0.6,
+                              ),
+                            ),
+                            onTap: () {
+                              final isDark = context
                                   .read<BxProfileBottomScreenControllerBloc>()
                                   .state
                                   .isDarkMode;
-                          context
-                              .read<BxProfileBottomScreenControllerBloc>()
-                              .add(BxToggleProfileThemeEvent());
-                          context.read<BxThemeControllerBloc>().add(
-                            BxChangeThemeEvent(
-                              isDark ? ThemeMode.light : ThemeMode.dark,
-                            ),
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 12),
-                      // 9. Saved Trips card
-                      _buildProfileCard(
-                        context,
-                        shadowColor: const Color(0xFFFFEDD5),
-                        icon: Icons.favorite,
-                        iconColor: const Color(0xFFFFEDD5),
-                        text: 'Saved Trips',
-                        trailing: Icon(
-                          Icons.keyboard_arrow_down,
-                          size: 20,
-                          color: theme.colorScheme.onSurface.withOpacity(0.6),
-                        ),
-                      ),
-                      const SizedBox(height: 32),
-                      // 10. Settings & Support section header
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          'Settings & Support',
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
+                              context
+                                  .read<BxProfileBottomScreenControllerBloc>()
+                                  .add(BxToggleProfileThemeEvent());
+                              context.read<BxThemeControllerBloc>().add(
+                                BxChangeThemeEvent(
+                                  isDark ? ThemeMode.light : ThemeMode.dark,
+                                ),
+                              );
+                            },
                           ),
-                        ),
+                          const SizedBox(height: 12),
+                          // 9. Saved Trips card
+                          _buildProfileCard(
+                            context,
+                            shadowColor: const Color(0xFFFFEDD5),
+                            icon: Icons.favorite,
+                            iconColor: const Color(0xFFFFEDD5),
+                            text: 'Saved Trips',
+                            trailing: Icon(
+                              Icons.keyboard_arrow_down,
+                              size: 20,
+                              color: theme.colorScheme.onSurface.withOpacity(
+                                0.6,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 32),
+                          // 10. Settings & Support section header
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'Settings & Support',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          // 11. Notifications row
+                          _buildSettingsRow(
+                            context,
+                            icon: Icons.notifications,
+                            iconColor: theme.colorScheme.primary,
+                            text: 'Notifications',
+                            trailing: const Icon(Icons.chevron_right),
+                          ),
+                          // 12. Settings row
+                          _buildSettingsRow(
+                            context,
+                            icon: Icons.settings,
+                            iconColor: theme.colorScheme.primary,
+                            text: 'Settings',
+                            trailing: const Icon(Icons.chevron_right),
+                          ),
+                          // 13. Help & Support row
+                          _buildSettingsRow(
+                            context,
+                            icon: Icons.help,
+                            iconColor: theme.colorScheme.primary,
+                            text: 'Help & Support',
+                            trailing: const Icon(Icons.chevron_right),
+                          ),
+                          // 14. Logout row
+                          _buildSettingsRow(
+                            context,
+                            icon: Icons.logout,
+                            iconColor: const Color(0xFFDC2626),
+                            text: 'Logout',
+                            trailing: const Icon(Icons.chevron_right),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 8),
-                      // 11. Notifications row
-                      _buildSettingsRow(
-                        context,
-                        icon: Icons.notifications,
-                        iconColor: theme.colorScheme.primary,
-                        text: 'Notifications',
-                        trailing: const Icon(Icons.chevron_right),
-                      ),
-                      // 12. Settings row
-                      _buildSettingsRow(
-                        context,
-                        icon: Icons.settings,
-                        iconColor: theme.colorScheme.primary,
-                        text: 'Settings',
-                        trailing: const Icon(Icons.chevron_right),
-                      ),
-                      // 13. Help & Support row
-                      _buildSettingsRow(
-                        context,
-                        icon: Icons.help,
-                        iconColor: theme.colorScheme.primary,
-                        text: 'Help & Support',
-                        trailing: const Icon(Icons.chevron_right),
-                      ),
-                      // 14. Logout row
-                      _buildSettingsRow(
-                        context,
-                        icon: Icons.logout,
-                        iconColor: const Color(0xFFDC2626),
-                        text: 'Logout',
-                        trailing: const Icon(Icons.chevron_right),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
+                    ),
+                  );
+                },
+              ),
         ),
       ],
     );

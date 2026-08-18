@@ -22,13 +22,13 @@ class BxProfileBottomScreenControllerBloc
 
   BxProfileBottomScreenControllerBloc({
     required BxSharedPreferencesDataSource sharedPreferencesDataSource,
-  })  : _sharedPreferencesDataSource = sharedPreferencesDataSource,
-        super(
-          const BxProfileBottomScreenControllerState(
-            status: BxProfileBottomScreenControllerStatus.initial,
-            isDarkMode: false,
-          ),
-        ) {
+  }) : _sharedPreferencesDataSource = sharedPreferencesDataSource,
+       super(
+         const BxProfileBottomScreenControllerState(
+           status: BxProfileBottomScreenControllerStatus.initial,
+           isDarkMode: false,
+         ),
+       ) {
     on<BxLoadProfileThemeEvent>(_onLoadTheme);
     on<BxToggleProfileThemeEvent>(_onToggleTheme);
   }
