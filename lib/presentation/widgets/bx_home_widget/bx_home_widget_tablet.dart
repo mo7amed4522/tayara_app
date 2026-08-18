@@ -96,10 +96,9 @@ class _BxHomeWidgetTabletState extends State<BxHomeWidgetTablet>
                     BxBookingBottomScreenTablet(),
                     BlocProvider(
                       create: (context) => BxProfileBottomScreenControllerBloc(
-                        sharedPreferencesDataSource:
-                            BxDependencyInjector.instance.get<
-                              BxSharedPreferencesDataSource
-                            >(),
+                        sharedPreferencesDataSource: BxDependencyInjector
+                            .instance
+                            .get<BxSharedPreferencesDataSource>(),
                       )..add(BxLoadProfileThemeEvent()),
                       child: const BxProfileBottomScreenTablet(),
                     ),

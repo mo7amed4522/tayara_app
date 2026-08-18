@@ -100,10 +100,8 @@ class _BxHomeWidgetMobileState extends State<BxHomeWidgetMobile>
               const BxBookingBottomScreenMobile(),
               BlocProvider(
                 create: (context) => BxProfileBottomScreenControllerBloc(
-                  sharedPreferencesDataSource:
-                      BxDependencyInjector.instance.get<
-                        BxSharedPreferencesDataSource
-                      >(),
+                  sharedPreferencesDataSource: BxDependencyInjector.instance
+                      .get<BxSharedPreferencesDataSource>(),
                 )..add(BxLoadProfileThemeEvent()),
                 child: const BxProfileBottomScreenMobile(),
               ),
