@@ -43,16 +43,42 @@ class BxAppColors {
 
   // Semantic colors
   /// Colour indicating a successful action or positive status.
-  static const Color success = Color(0xFF2E7D32);
+  static const Color success = Color(0xFF16A24A);
 
   /// Colour indicating a warning or cautionary state.
-  static const Color warning = Color(0xFFED6C02);
+  static const Color warning = Color(0xFFD97705);
 
   /// Colour indicating an error or destructive action.
-  static const Color error = Color(0xFFD32F2F);
+  static const Color error = Color(0xFFEF4444);
 
   /// Colour used for informational messages or highlights.
   static const Color info = Color(0xFF0288D1);
+
+  // Extended semantic / accent colors (Figma-matched)
+  /// Teal accent used for premium features and secondary success states.
+  static const Color teal = Color(0xFF10B981);
+
+  /// Purple accent for VIP / premium trip badges.
+  static const Color purple = Color(0xFF9333EA);
+
+  /// Pink accent for wishlist and favourite actions.
+  static const Color pink = Color(0xFFDA2677);
+
+  /// Brown / amber accent for secondary CTAs and highlights.
+  static const Color brown = Color(0xFFB45309);
+
+  /// Amber colour for star ratings and highlights.
+  static const Color amber = Color(0xFFF59E0B);
+
+  // Neutral palette
+  /// Colour for borders and dividers.
+  static const Color border = Color(0xFFE5E7EB);
+
+  /// Colour for secondary / muted text.
+  static const Color muted = Color(0xFF666666);
+
+  /// Colour for placeholder text and very muted UI elements.
+  static const Color mutedLight = Color(0xFF9CA3AF);
 
   // Neutral colors (light theme)
   /// Default scaffold background colour for the light theme.
@@ -67,11 +93,20 @@ class BxAppColors {
   /// Colour of text and icons displayed on [secondary] backgrounds.
   static const Color onSecondary = Color(0xFFFFFFFF);
 
+  /// Colour of text and icons displayed on [teal] backgrounds.
+  static const Color onTeal = Color(0xFFFFFFFF);
+
+  /// Colour of text and icons displayed on [purple] backgrounds.
+  static const Color onPurple = Color(0xFFFFFFFF);
+
+  /// Colour of text and icons displayed on [pink] backgrounds.
+  static const Color onPink = Color(0xFFFFFFFF);
+
   /// Default text colour on the light theme's background.
-  static const Color onBackground = Color(0xFF1C1E24);
+  static const Color onBackground = Color(0xFF111827);
 
   /// Default text colour on the light theme's surfaces.
-  static const Color onSurface = Color(0xFF1C1E24);
+  static const Color onSurface = Color(0xFF111827);
 
   /// Colour of text and icons displayed on [error] backgrounds.
   static const Color onError = Color(0xFFFFFFFF);
@@ -82,6 +117,12 @@ class BxAppColors {
 
   /// Surface colour for cards, dialogs, and sheets in the dark theme.
   static const Color darkSurface = Color(0xFF1E1E1E);
+
+  /// Border colour for cards and inputs in the dark theme.
+  static const Color darkBorder = Color(0xFF374151);
+
+  /// Muted text colour in the dark theme.
+  static const Color darkMuted = Color(0xFF9CA3AF);
 
   /// Default text colour on the dark theme's background.
   static const Color darkOnBackground = Color(0xFFE0E0E0);

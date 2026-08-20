@@ -7,11 +7,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tayara/core/theme/bx_app_colors.dart';
+import 'package:tayara/presentation/bloc/bx_explore_bottom_screen_controller/bx_explore_bottom_screen_controller_bloc.dart';
 import 'package:tayara/presentation/bloc/bx_home_screen_controller/bx_home_screen_controller_bloc.dart';
 import 'package:tayara/presentation/views/bx_booking_bottom_screen/bx_booking_bottom_screen_tablet.dart';
 import 'package:tayara/presentation/views/bx_explore_bottom_screen/bx_explore_bottom_screen_tablet.dart';
 import 'package:tayara/presentation/views/bx_home_bottom_screen/bx_home_bottom_screen_tablet.dart';
 import 'package:tayara/presentation/views/bx_profile_bottom_screen/bx_profile_bottom_screen_tablet.dart';
+import '../../bloc/bx_booking_bottom_screen_controller/bx_booking_bottom_screen_controller_bloc.dart';
 import '../../bloc/bx_profile_bottom_screen_controller/bx_profile_bottom_screen_controller_bloc.dart';
 import '../../../data/data_source/local/bx_shared_preferences_datasource.dart';
 import '../../../injection/bx_dependency_injector.dart';
@@ -92,8 +94,16 @@ class _BxHomeWidgetTabletState extends State<BxHomeWidgetTablet>
                   },
                   children: [
                     BxHomeBottomScreenTablet(),
-                    BxExploreBottomScreenTablet(),
-                    BxBookingBottomScreenTablet(),
+                    BlocProvider(
+                      create: (_) => BxExploreBottomScreenControllerBloc()
+                        ..add(const BxLoadExploreContent()),
+                      child: const BxExploreBottomScreenTablet(),
+                    ),
+                    BlocProvider(
+                      create: (_) => BxBookingBottomScreenControllerBloc()
+                        ..add(const BxLoadBookings()),
+                      child: const BxBookingBottomScreenTablet(),
+                    ),
                     BlocProvider(
                       create: (context) => BxProfileBottomScreenControllerBloc(
                         sharedPreferencesDataSource: BxDependencyInjector

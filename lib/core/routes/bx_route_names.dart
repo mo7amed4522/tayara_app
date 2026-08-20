@@ -27,12 +27,47 @@ class BxRouteNames {
   /// Home screen route.
   static const String bxHomeScreen = '/home-screen';
 
+  // Auth flow routes
+  /// Sign up screen route.
+  static const String bxSignUpScreen = '/sign-up-screen';
+
+  /// Enter phone number screen route.
+  static const String bxEnterPhoneScreen = '/enter-phone-screen';
+
+  // Trip routes
+  /// Trip detail screen route.
+  static const String bxTripDetailScreen = '/trip-detail-screen';
+
+  /// Booking detail screen route.
+  static const String bxBookingDetailScreen = '/booking-detail-screen';
+
+  /// Payment screen route.
+  static const String bxPaymentScreen = '/payment-screen';
+
+  /// Filter trips screen route.
+  static const String bxFilterTripsScreen = '/filter-trips-screen';
+
+  /// Agencies screen route.
+  static const String bxAgenciesScreen = '/agencies-screen';
+
+  /// Similar trips screen route.
+  static const String bxSimilarTripsScreen = '/similar-trips-screen';
+
+  /// Custom trip screen route.
+  static const String bxCustomTripScreen = '/custom-trip-screen';
+
+  /// Review travelers screen route.
+  static const String bxReviewTravelersScreen = '/review-travelers-screen';
+
   // Route groups
   /// All publicly accessible routes in the application.
   static const List<String> publicRoutes = [
     bxSplashScreen,
     bxOnBoardingScreen,
     bxLoginScreen,
+    bxSignUpScreen,
+    bxEnterPhoneScreen,
+    bxTripDetailScreen,
   ];
 
   /// All authenticated (protected) routes in the application.
