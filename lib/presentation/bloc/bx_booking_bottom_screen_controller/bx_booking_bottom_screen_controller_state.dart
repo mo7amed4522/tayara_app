@@ -7,7 +7,12 @@
 
 part of 'bx_booking_bottom_screen_controller_bloc.dart';
 
-enum BxBookingBottomScreenControllerStatus { initial, loading, success, failure }
+enum BxBookingBottomScreenControllerStatus {
+  initial,
+  loading,
+  success,
+  failure,
+}
 
 class BxBookingBottomScreenControllerState extends Equatable {
   final BxBookingBottomScreenControllerStatus status;

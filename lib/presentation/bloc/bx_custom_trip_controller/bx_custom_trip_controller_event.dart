@@ -1,3 +1,9 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
+// File: lib/presentation/bloc/bx_custom_trip_controller/bx_custom_trip_controller_event.dart
+// Architecture: Presentation Layer - Custom Trip Screen Controller
+// Purpose: Events for custom trip screen BLoC
+
 part of 'bx_custom_trip_controller_bloc.dart';
 
 abstract class BxCustomTripControllerEvent extends Equatable {

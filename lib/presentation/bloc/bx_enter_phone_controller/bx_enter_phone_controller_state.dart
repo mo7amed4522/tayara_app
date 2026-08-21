@@ -1,3 +1,9 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
+// File: lib/presentation/bloc/bx_enter_phone_controller/bx_enter_phone_controller_state.dart
+// Architecture: Presentation Layer - Bx Enter phone Screen Controller
+// Purpose: State management for the enter phone screen
+// ignore_for_file: prefer_initializing_formals, use_build_context_synchronously
 part of 'bx_enter_phone_controller_bloc.dart';
 
 enum BxEnterPhoneControllerStatus { initial, loading, success, error }
@@ -16,7 +22,12 @@ class BxEnterPhoneControllerState extends Equatable {
   });
 
   @override
-  List<Object?> get props => [status, errorMessage, loginResponse, phoneVerificationId];
+  List<Object?> get props => [
+    status,
+    errorMessage,
+    loginResponse,
+    phoneVerificationId,
+  ];
 
   BxEnterPhoneControllerState copyWith({
     BxEnterPhoneControllerStatus? status,

@@ -1,3 +1,9 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
+// File: lib/presentation/bloc/bx_enter_phone_controller/bx_enter_phone_controller_event.dart
+// Architecture: Presentation Layer - Enter Phone number Screen Controller
+// Purpose: Events for enter phone number screen BLoC
+
 part of 'bx_enter_phone_controller_bloc.dart';
 
 abstract class BxEnterPhoneControllerEvent extends Equatable {

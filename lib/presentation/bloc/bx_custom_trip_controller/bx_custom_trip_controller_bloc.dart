@@ -13,8 +13,7 @@ part 'bx_custom_trip_controller_state.dart';
 
 class BxCustomTripControllerBloc
     extends Bloc<BxCustomTripControllerEvent, BxCustomTripControllerState> {
-  BxCustomTripControllerBloc()
-      : super(const BxCustomTripControllerState()) {
+  BxCustomTripControllerBloc() : super(const BxCustomTripControllerState()) {
     on<BxLoadCustomTrip>(_onLoadCustomTrip);
     on<BxSelectSegment>(_onSelectSegment);
     on<BxSelectDestination>(_onSelectDestination);
@@ -28,15 +27,24 @@ class BxCustomTripControllerBloc
     emit(state.copyWith(status: BxCustomTripControllerStatus.success));
   }
 
-  void _onSelectSegment(BxSelectSegment event, Emitter<BxCustomTripControllerState> emit) {
+  void _onSelectSegment(
+    BxSelectSegment event,
+    Emitter<BxCustomTripControllerState> emit,
+  ) {
     emit(state.copyWith(selectedSegment: event.segmentIndex));
   }
 
-  void _onSelectDestination(BxSelectDestination event, Emitter<BxCustomTripControllerState> emit) {
+  void _onSelectDestination(
+    BxSelectDestination event,
+    Emitter<BxCustomTripControllerState> emit,
+  ) {
     emit(state.copyWith(selectedDestination: event.destination));
   }
 
-  void _onAdvanceStep(BxAdvanceStep event, Emitter<BxCustomTripControllerState> emit) {
+  void _onAdvanceStep(
+    BxAdvanceStep event,
+    Emitter<BxCustomTripControllerState> emit,
+  ) {
     final nextStep = (state.activeStep % 5) + 1;
     emit(state.copyWith(activeStep: nextStep));
   }

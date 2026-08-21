@@ -19,7 +19,8 @@ class BxCustomTripWidgetMobile extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return BlocProvider(
-      create: (_) => BxCustomTripControllerBloc()..add(const BxLoadCustomTrip()),
+      create: (_) =>
+          BxCustomTripControllerBloc()..add(const BxLoadCustomTrip()),
       child: Scaffold(
         backgroundColor: const Color(0xFFF8FAFA),
         appBar: AppBar(
@@ -39,41 +40,51 @@ class BxCustomTripWidgetMobile extends StatelessWidget {
             onPressed: () => Navigator.of(context).pop(),
           ),
         ),
-        body: BlocBuilder<BxCustomTripControllerBloc, BxCustomTripControllerState>(
-          builder: (context, state) {
-            return SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              child: Column(
-                children: [
-                  _CtaButton(),
-                  const SizedBox(height: 16),
-                  _StepIndicator(activeStep: state.activeStep),
-                  const SizedBox(height: 20),
-                  _DestinationSection(
-                    textTheme: textTheme,
-                    selectedSegment: state.selectedSegment,
-                    onSegmentSelected: (index) =>
-                        context.read<BxCustomTripControllerBloc>().add(BxSelectSegment(segmentIndex: index)),
+        body:
+            BlocBuilder<
+              BxCustomTripControllerBloc,
+              BxCustomTripControllerState
+            >(
+              builder: (context, state) {
+                return SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  child: Column(
+                    children: [
+                      _CtaButton(),
+                      const SizedBox(height: 16),
+                      _StepIndicator(activeStep: state.activeStep),
+                      const SizedBox(height: 20),
+                      _DestinationSection(
+                        textTheme: textTheme,
+                        selectedSegment: state.selectedSegment,
+                        onSegmentSelected: (index) => context
+                            .read<BxCustomTripControllerBloc>()
+                            .add(BxSelectSegment(segmentIndex: index)),
+                      ),
+                      const SizedBox(height: 16),
+                      _PopularDestinationsCard(
+                        textTheme: textTheme,
+                        selectedDestination: state.selectedDestination,
+                        onDestinationSelected: (dest) => context
+                            .read<BxCustomTripControllerBloc>()
+                            .add(BxSelectDestination(destination: dest)),
+                      ),
+                      const SizedBox(height: 16),
+                      _SelectedDestination(
+                        destination: state.selectedDestination,
+                      ),
+                      const SizedBox(height: 24),
+                      _NextStepButton(
+                        onTap: () => context
+                            .read<BxCustomTripControllerBloc>()
+                            .add(const BxAdvanceStep()),
+                      ),
+                      const SizedBox(height: 24),
+                    ],
                   ),
-                  const SizedBox(height: 16),
-                  _PopularDestinationsCard(
-                    textTheme: textTheme,
-                    selectedDestination: state.selectedDestination,
-                    onDestinationSelected: (dest) =>
-                        context.read<BxCustomTripControllerBloc>().add(BxSelectDestination(destination: dest)),
-                  ),
-                  const SizedBox(height: 16),
-                  _SelectedDestination(destination: state.selectedDestination),
-                  const SizedBox(height: 24),
-                  _NextStepButton(
-                    onTap: () => context.read<BxCustomTripControllerBloc>().add(const BxAdvanceStep()),
-                  ),
-                  const SizedBox(height: 24),
-                ],
-              ),
-            );
-          },
-        ),
+                );
+              },
+            ),
       ),
     );
   }
@@ -126,7 +137,13 @@ class _StepIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final steps = ['Destination', 'Flights Hotels', 'Activities', 'Itinerary', 'Review'];
+    final steps = [
+      'Destination',
+      'Flights Hotels',
+      'Activities',
+      'Itinerary',
+      'Review',
+    ];
     final colorScheme = Theme.of(context).colorScheme;
 
     return Container(
@@ -148,7 +165,9 @@ class _StepIndicator extends StatelessWidget {
                       width: 24,
                       height: 24,
                       decoration: BoxDecoration(
-                        color: isActive ? BxAppColors.primary : colorScheme.onSurface.withOpacity(0.1),
+                        color: isActive
+                            ? BxAppColors.primary
+                            : colorScheme.onSurface.withOpacity(0.1),
                         shape: BoxShape.circle,
                       ),
                       child: Center(
@@ -157,7 +176,9 @@ class _StepIndicator extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
-                            color: isActive ? Colors.white : const Color(0xFF6A7280),
+                            color: isActive
+                                ? Colors.white
+                                : const Color(0xFF6A7280),
                             fontFamily: 'lao-mn',
                           ),
                         ),
@@ -168,7 +189,9 @@ class _StepIndicator extends StatelessWidget {
                       steps[index],
                       style: TextStyle(
                         fontSize: 12,
-                        color: isActive ? BxAppColors.primary : const Color(0xFF6A7280),
+                        color: isActive
+                            ? BxAppColors.primary
+                            : const Color(0xFF6A7280),
                         fontFamily: 'lao-mn',
                       ),
                     ),
@@ -383,7 +406,9 @@ class _DestinationCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
-          border: isSelected ? Border.all(color: BxAppColors.primary, width: 2) : null,
+          border: isSelected
+              ? Border.all(color: BxAppColors.primary, width: 2)
+              : null,
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.06),
@@ -405,7 +430,11 @@ class _DestinationCard extends StatelessWidget {
                     topRight: Radius.circular(12),
                   ),
                 ),
-                child: const Icon(Icons.photo_library, color: Color(0xFF9CA3AF), size: 32),
+                child: const Icon(
+                  Icons.photo_library,
+                  color: Color(0xFF9CA3AF),
+                  size: 32,
+                ),
               ),
             ),
             Padding(
@@ -499,7 +528,11 @@ class _NextStepButton extends StatelessWidget {
         ),
         child: const Text(
           'Next Step',
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, fontFamily: 'lao-mn'),
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            fontFamily: 'lao-mn',
+          ),
         ),
       ),
     );

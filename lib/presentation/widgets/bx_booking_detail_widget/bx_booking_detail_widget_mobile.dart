@@ -21,14 +21,14 @@ class BxBookingDetailWidgetMobile extends StatelessWidget {
     final statusColor = status == 'confirmed'
         ? BxAppColors.success
         : status == 'pending'
-            ? BxAppColors.warning
-            : const Color(0xFF6B7280);
+        ? BxAppColors.warning
+        : const Color(0xFF6B7280);
 
     final statusLabel = status == 'confirmed'
         ? 'Confirmed'
         : status == 'pending'
-            ? 'Pending'
-            : 'Expired';
+        ? 'Pending'
+        : 'Expired';
 
     return Scaffold(
       backgroundColor: colorScheme.background,
@@ -70,7 +70,10 @@ class BxBookingDetailWidgetMobile extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: statusColor.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(8),
@@ -164,16 +167,18 @@ class BxBookingDetailWidgetMobile extends StatelessWidget {
               fontFamily: 'lao-mn',
             ),
           ),
-          Text(
-            value,
-            style: const TextStyle(fontFamily: 'lao-mn'),
-          ),
+          Text(value, style: const TextStyle(fontFamily: 'lao-mn')),
         ],
       ),
     );
   }
 
-  Widget _priceRow(BuildContext context, String label, String value, {bool isTotal = false}) {
+  Widget _priceRow(
+    BuildContext context,
+    String label,
+    String value, {
+    bool isTotal = false,
+  }) {
     final colorScheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),

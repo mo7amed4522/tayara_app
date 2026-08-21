@@ -18,12 +18,48 @@ class BxSimilarTripsWidgetMobile extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     final trips = const [
-      {'name': 'Bali Paradise 5D/4N', 'price': '\$890', 'rating': '4.8', 'reviews': '210', 'image': 'assets/images/recommend_image1.png'},
-      {'name': 'Paris Romance 4D/3N', 'price': '\$1,100', 'rating': '4.9', 'reviews': '185', 'image': 'assets/images/recommend_image2.png'},
-      {'name': 'Tokyo Discovery 6D/5N', 'price': '\$1,350', 'rating': '4.7', 'reviews': '142', 'image': 'assets/images/recommend_image1.png'},
-      {'name': 'Dubai Luxury 5D/4N', 'price': '\$1,500', 'rating': '4.9', 'reviews': '98', 'image': 'assets/images/recommend_image2.png'},
-      {'name': 'Istanbul Cultural 4D/3N', 'price': '\$780', 'rating': '4.6', 'reviews': '167', 'image': 'assets/images/recommend_image1.png'},
-      {'name': 'Santorini Sunset 3D/2N', 'price': '\$1,200', 'rating': '4.8', 'reviews': '203', 'image': 'assets/images/recommend_image2.png'},
+      {
+        'name': 'Bali Paradise 5D/4N',
+        'price': '\$890',
+        'rating': '4.8',
+        'reviews': '210',
+        'image': 'assets/images/recommend_image1.png',
+      },
+      {
+        'name': 'Paris Romance 4D/3N',
+        'price': '\$1,100',
+        'rating': '4.9',
+        'reviews': '185',
+        'image': 'assets/images/recommend_image2.png',
+      },
+      {
+        'name': 'Tokyo Discovery 6D/5N',
+        'price': '\$1,350',
+        'rating': '4.7',
+        'reviews': '142',
+        'image': 'assets/images/recommend_image1.png',
+      },
+      {
+        'name': 'Dubai Luxury 5D/4N',
+        'price': '\$1,500',
+        'rating': '4.9',
+        'reviews': '98',
+        'image': 'assets/images/recommend_image2.png',
+      },
+      {
+        'name': 'Istanbul Cultural 4D/3N',
+        'price': '\$780',
+        'rating': '4.6',
+        'reviews': '167',
+        'image': 'assets/images/recommend_image1.png',
+      },
+      {
+        'name': 'Santorini Sunset 3D/2N',
+        'price': '\$1,200',
+        'rating': '4.8',
+        'reviews': '203',
+        'image': 'assets/images/recommend_image2.png',
+      },
     ];
 
     return Scaffold(
@@ -45,7 +81,9 @@ class BxSimilarTripsWidgetMobile extends StatelessWidget {
           mainAxisSpacing: 12,
           childAspectRatio: 0.72,
           physics: const NeverScrollableScrollPhysics(),
-          children: trips.map((trip) => _TripCard(trip: trip, textTheme: textTheme)).toList(),
+          children: trips
+              .map((trip) => _TripCard(trip: trip, textTheme: textTheme))
+              .toList(),
         ),
       ),
     );
@@ -83,14 +121,20 @@ class _TripCard extends StatelessWidget {
             Expanded(
               flex: 3,
               child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(16),
+                ),
                 child: Image.asset(
                   trip['image']!,
                   width: double.infinity,
                   fit: BoxFit.cover,
                   errorBuilder: (_, _, _) => Container(
                     color: const Color(0xFFF3F4F6),
-                    child: const Icon(Icons.tour, color: Color(0xFF9CA3AF), size: 32),
+                    child: const Icon(
+                      Icons.tour,
+                      color: Color(0xFF9CA3AF),
+                      size: 32,
+                    ),
                   ),
                 ),
               ),
@@ -114,7 +158,11 @@ class _TripCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      const Icon(Icons.star, size: 12, color: Color(0xFFF59E0B)),
+                      const Icon(
+                        Icons.star,
+                        size: 12,
+                        color: Color(0xFFF59E0B),
+                      ),
                       const SizedBox(width: 2),
                       Text(
                         '${trip['rating']} (${trip['reviews']})',

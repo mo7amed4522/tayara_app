@@ -23,8 +23,8 @@ class BxSignUpControllerBloc
   final BxFirebaseLoginUsecase _useCase;
 
   BxSignUpControllerBloc({required BxFirebaseLoginUsecase useCase})
-      : _useCase = useCase,
-        super(const BxSignUpControllerState()) {
+    : _useCase = useCase,
+      super(const BxSignUpControllerState()) {
     on<BxSignUpWithGoogle>(_onSignUpWithGoogle);
     on<BxSignUpWithApple>(_onSignUpWithApple);
     on<BxSignUpWithFacebook>(_onSignUpWithFacebook);
@@ -38,26 +38,32 @@ class BxSignUpControllerBloc
     try {
       final result = await BxGoogleAuthFirebaseServices.instance.signIn();
       if (!result.success || result.user == null) {
-        emit(state.copyWith(
-          status: BxSignUpControllerStatus.error,
-          errorMessage: result.error ?? 'Google sign-up failed',
-        ));
+        emit(
+          state.copyWith(
+            status: BxSignUpControllerStatus.error,
+            errorMessage: result.error ?? 'Google sign-up failed',
+          ),
+        );
         return;
       }
       final idToken = await result.user!.user!.getIdToken();
       if (idToken == null) {
-        emit(state.copyWith(
-          status: BxSignUpControllerStatus.error,
-          errorMessage: 'Failed to obtain Google ID token.',
-        ));
+        emit(
+          state.copyWith(
+            status: BxSignUpControllerStatus.error,
+            errorMessage: 'Failed to obtain Google ID token.',
+          ),
+        );
         return;
       }
       await _callLoginUseCase(idToken, emit);
     } catch (e) {
-      emit(state.copyWith(
-        status: BxSignUpControllerStatus.error,
-        errorMessage: e.toString(),
-      ));
+      emit(
+        state.copyWith(
+          status: BxSignUpControllerStatus.error,
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 
@@ -69,26 +75,32 @@ class BxSignUpControllerBloc
     try {
       final result = await BxAppleAuthFirebaseServices.instance.signIn();
       if (!result.success || result.user == null) {
-        emit(state.copyWith(
-          status: BxSignUpControllerStatus.error,
-          errorMessage: result.error ?? 'Apple sign-up failed',
-        ));
+        emit(
+          state.copyWith(
+            status: BxSignUpControllerStatus.error,
+            errorMessage: result.error ?? 'Apple sign-up failed',
+          ),
+        );
         return;
       }
       final idToken = await result.user!.user!.getIdToken();
       if (idToken == null) {
-        emit(state.copyWith(
-          status: BxSignUpControllerStatus.error,
-          errorMessage: 'Failed to obtain Apple ID token.',
-        ));
+        emit(
+          state.copyWith(
+            status: BxSignUpControllerStatus.error,
+            errorMessage: 'Failed to obtain Apple ID token.',
+          ),
+        );
         return;
       }
       await _callLoginUseCase(idToken, emit);
     } catch (e) {
-      emit(state.copyWith(
-        status: BxSignUpControllerStatus.error,
-        errorMessage: e.toString(),
-      ));
+      emit(
+        state.copyWith(
+          status: BxSignUpControllerStatus.error,
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 
@@ -100,26 +112,32 @@ class BxSignUpControllerBloc
     try {
       final result = await BxFacebookAuthFirebaseServices.instance.signIn();
       if (!result.success || result.user == null) {
-        emit(state.copyWith(
-          status: BxSignUpControllerStatus.error,
-          errorMessage: result.error ?? 'Facebook sign-up failed',
-        ));
+        emit(
+          state.copyWith(
+            status: BxSignUpControllerStatus.error,
+            errorMessage: result.error ?? 'Facebook sign-up failed',
+          ),
+        );
         return;
       }
       final idToken = await result.user!.user!.getIdToken();
       if (idToken == null) {
-        emit(state.copyWith(
-          status: BxSignUpControllerStatus.error,
-          errorMessage: 'Failed to obtain Facebook ID token.',
-        ));
+        emit(
+          state.copyWith(
+            status: BxSignUpControllerStatus.error,
+            errorMessage: 'Failed to obtain Facebook ID token.',
+          ),
+        );
         return;
       }
       await _callLoginUseCase(idToken, emit);
     } catch (e) {
-      emit(state.copyWith(
-        status: BxSignUpControllerStatus.error,
-        errorMessage: e.toString(),
-      ));
+      emit(
+        state.copyWith(
+          status: BxSignUpControllerStatus.error,
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 
@@ -128,24 +146,33 @@ class BxSignUpControllerBloc
     Emitter<BxSignUpControllerState> emit,
   ) async {
     try {
-      final response = await _useCase.execute(BxFirebaseLoginRequest(idToken: idToken));
+      final response = await _useCase.execute(
+        BxFirebaseLoginRequest(idToken: idToken),
+      );
       if (response.code == 0 && response.data != null) {
-        emit(state.copyWith(
-          status: BxSignUpControllerStatus.success,
-          loginResponse: response,
-          errorMessage: null,
-        ));
+        emit(
+          state.copyWith(
+            status: BxSignUpControllerStatus.success,
+            loginResponse: response,
+            errorMessage: null,
+          ),
+        );
       } else {
-        emit(state.copyWith(
-          status: BxSignUpControllerStatus.error,
-          errorMessage: response.message ?? 'Sign-up failed. Please try again.',
-        ));
+        emit(
+          state.copyWith(
+            status: BxSignUpControllerStatus.error,
+            errorMessage:
+                response.message ?? 'Sign-up failed. Please try again.',
+          ),
+        );
       }
     } catch (e) {
-      emit(state.copyWith(
-        status: BxSignUpControllerStatus.error,
-        errorMessage: e.toString(),
-      ));
+      emit(
+        state.copyWith(
+          status: BxSignUpControllerStatus.error,
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 }

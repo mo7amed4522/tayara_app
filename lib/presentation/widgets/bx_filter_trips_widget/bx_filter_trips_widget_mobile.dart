@@ -32,7 +32,10 @@ class BxFilterTripsWidgetMobile extends StatelessWidget {
             onPressed: () {},
             child: const Text(
               'Reset',
-              style: TextStyle(color: BxAppColors.primary, fontFamily: 'lao-mn'),
+              style: TextStyle(
+                color: BxAppColors.primary,
+                fontFamily: 'lao-mn',
+              ),
             ),
           ),
         ],
@@ -73,7 +76,13 @@ class BxFilterTripsWidgetMobile extends StatelessWidget {
             // Trip type
             _filterSection(context, 'Trip Type'),
             const SizedBox(height: 8),
-            _filterChips(context, ['All', 'Adventure', 'Beach', 'Cultural', 'Family']),
+            _filterChips(context, [
+              'All',
+              'Adventure',
+              'Beach',
+              'Cultural',
+              'Family',
+            ]),
             const SizedBox(height: 32),
             // Apply button
             SizedBox(
@@ -130,7 +139,9 @@ class BxFilterTripsWidgetMobile extends StatelessWidget {
               selectedColor: BxAppColors.primary.withOpacity(0.12),
               checkmarkColor: BxAppColors.primary,
               labelStyle: TextStyle(
-                color: isFirst ? BxAppColors.primary : Theme.of(context).colorScheme.onSurface,
+                color: isFirst
+                    ? BxAppColors.primary
+                    : Theme.of(context).colorScheme.onSurface,
                 fontWeight: isFirst ? FontWeight.w600 : FontWeight.normal,
               ),
             ),
@@ -159,7 +170,10 @@ class BxFilterTripsWidgetMobile extends StatelessWidget {
             label: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                ...List.generate(stars, (_) => const Icon(Icons.star, size: 14, color: Colors.amber)),
+                ...List.generate(
+                  stars,
+                  (_) => const Icon(Icons.star, size: 14, color: Colors.amber),
+                ),
                 const SizedBox(width: 4),
                 Text('$stars+', style: Theme.of(context).textTheme.bodySmall),
               ],
