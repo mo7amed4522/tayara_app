@@ -45,10 +45,16 @@ class BxAgenciesWidgetMobile extends StatelessWidget {
                     fontSize: 14,
                     fontFamily: 'lao-mn',
                   ),
-                  prefixIcon: Icon(Icons.search, color: colorScheme.onSurface.withOpacity(0.5)),
+                  prefixIcon: Icon(
+                    Icons.search,
+                    color: colorScheme.onSurface.withOpacity(0.5),
+                  ),
                   filled: true,
                   fillColor: colorScheme.surface,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 0,
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(9999),
                     borderSide: BorderSide.none,
@@ -59,7 +65,10 @@ class BxAgenciesWidgetMobile extends StatelessWidget {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(9999),
-                    borderSide: BorderSide(color: BxAppColors.primary, width: 2),
+                    borderSide: BorderSide(
+                      color: BxAppColors.primary,
+                      width: 2,
+                    ),
                   ),
                 ),
               ),
@@ -77,9 +86,23 @@ class BxAgenciesWidgetMobile extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    final names = ['Nile Voyages', 'Tayara Travel', 'Skyline Tours', 'Oceanic', 'Desert Sands', 'Alpine Expeditions'];
+    final names = [
+      'Nile Voyages',
+      'Tayara Travel',
+      'Skyline Tours',
+      'Oceanic',
+      'Desert Sands',
+      'Alpine Expeditions',
+    ];
     final ratings = ['4.9', '4.8', '4.7', '4.9', '4.6', '4.8'];
-    final tripCounts = ['124 trips', '98 trips', '76 trips', '54 trips', '42 trips', '38 trips'];
+    final tripCounts = [
+      '124 trips',
+      '98 trips',
+      '76 trips',
+      '54 trips',
+      '42 trips',
+      '38 trips',
+    ];
 
     return InkWell(
       onTap: () {},
@@ -116,7 +139,10 @@ class BxAgenciesWidgetMobile extends StatelessWidget {
                 children: [
                   Text(
                     names[index],
-                    style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold, fontFamily: 'lao-mn'),
+                    style: textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'lao-mn',
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -141,12 +167,21 @@ class BxAgenciesWidgetMobile extends StatelessWidget {
               style: TextButton.styleFrom(
                 backgroundColor: BxAppColors.primary.withOpacity(0.1),
                 foregroundColor: BxAppColors.primary,
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
               child: const Text(
                 'View',
-                style: TextStyle(fontFamily: 'lao-mn', fontWeight: FontWeight.w600, fontSize: 13),
+                style: TextStyle(
+                  fontFamily: 'lao-mn',
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                ),
               ),
             ),
           ],

@@ -17,8 +17,8 @@ class BxTripDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => BxTripDetailControllerBloc()
-        ..add(const BxLoadTripDetail(tripId: '')),
+      create: (_) =>
+          BxTripDetailControllerBloc()..add(const BxLoadTripDetail(tripId: '')),
       child: BxResponsiveBuilder(
         mobileBuilder: (context) => const BxTripDetailWidgetMobile(),
         tabletBuilder: (context) => const BxTripDetailWidgetTablet(),

@@ -18,11 +18,46 @@ class BxReviewTravelersWidgetMobile extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     final reviews = const [
-      {'name': 'Ahmed M.', 'avatar': 'A', 'rating': '5.0', 'date': '2 weeks ago', 'text': 'Absolutely amazing trip! The guide was knowledgeable and the itinerary was well planned. Highly recommend!'},
-      {'name': 'Sarah K.', 'avatar': 'S', 'rating': '4.5', 'date': '1 month ago', 'text': 'Great experience overall. The hotels were comfortable and the activities were fun. Only minor issue was the flight schedule.'},
-      {'name': 'Mohamed R.', 'avatar': 'M', 'rating': '5.0', 'date': '1 month ago', 'text': 'Best trip I have ever taken with Tayara. Everything was perfect from start to finish. Will definitely book again!'},
-      {'name': 'Lisa T.', 'avatar': 'L', 'rating': '4.0', 'date': '2 months ago', 'text': 'Good value for money. The destinations were beautiful and the group was friendly. Would love to see more free time in the itinerary.'},
-      {'name': 'Omar H.', 'avatar': 'O', 'rating': '5.0', 'date': '3 months ago', 'text': 'Wonderful memories made on this trip. The local guides added so much value. Thank you Tayara!'},
+      {
+        'name': 'Ahmed M.',
+        'avatar': 'A',
+        'rating': '5.0',
+        'date': '2 weeks ago',
+        'text':
+            'Absolutely amazing trip! The guide was knowledgeable and the itinerary was well planned. Highly recommend!',
+      },
+      {
+        'name': 'Sarah K.',
+        'avatar': 'S',
+        'rating': '4.5',
+        'date': '1 month ago',
+        'text':
+            'Great experience overall. The hotels were comfortable and the activities were fun. Only minor issue was the flight schedule.',
+      },
+      {
+        'name': 'Mohamed R.',
+        'avatar': 'M',
+        'rating': '5.0',
+        'date': '1 month ago',
+        'text':
+            'Best trip I have ever taken with Tayara. Everything was perfect from start to finish. Will definitely book again!',
+      },
+      {
+        'name': 'Lisa T.',
+        'avatar': 'L',
+        'rating': '4.0',
+        'date': '2 months ago',
+        'text':
+            'Good value for money. The destinations were beautiful and the group was friendly. Would love to see more free time in the itinerary.',
+      },
+      {
+        'name': 'Omar H.',
+        'avatar': 'O',
+        'rating': '5.0',
+        'date': '3 months ago',
+        'text':
+            'Wonderful memories made on this trip. The local guides added so much value. Thank you Tayara!',
+      },
     ];
 
     return Scaffold(
@@ -51,14 +86,16 @@ class BxReviewTravelersWidgetMobile extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            ...reviews.map((review) => _reviewCard(
-              context,
-              name: review['name']!,
-              avatar: review['avatar']!,
-              rating: review['rating']!,
-              date: review['date']!,
-              text: review['text']!,
-            )),
+            ...reviews.map(
+              (review) => _reviewCard(
+                context,
+                name: review['name']!,
+                avatar: review['avatar']!,
+                rating: review['rating']!,
+                date: review['date']!,
+                text: review['text']!,
+              ),
+            ),
           ],
         ),
       ),

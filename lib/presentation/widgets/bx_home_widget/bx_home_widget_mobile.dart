@@ -99,13 +99,15 @@ class _BxHomeWidgetMobileState extends State<BxHomeWidgetMobile>
                 child: const BxHomeBottomScreenMobile(),
               ),
               BlocProvider(
-                create: (_) => BxExploreBottomScreenControllerBloc()
-                  ..add(const BxLoadExploreContent()),
+                create: (_) =>
+                    BxExploreBottomScreenControllerBloc()
+                      ..add(const BxLoadExploreContent()),
                 child: const BxExploreBottomScreenMobile(),
               ),
               BlocProvider(
-                create: (_) => BxBookingBottomScreenControllerBloc()
-                  ..add(const BxLoadBookings()),
+                create: (_) =>
+                    BxBookingBottomScreenControllerBloc()
+                      ..add(const BxLoadBookings()),
                 child: const BxBookingBottomScreenMobile(),
               ),
               BlocProvider(

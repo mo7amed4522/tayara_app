@@ -24,8 +24,8 @@ class BxEnterPhoneControllerBloc
   final BxFirebaseLoginUsecase _useCase;
 
   BxEnterPhoneControllerBloc({required BxFirebaseLoginUsecase useCase})
-      : _useCase = useCase,
-        super(const BxEnterPhoneControllerState()) {
+    : _useCase = useCase,
+      super(const BxEnterPhoneControllerState()) {
     on<BxSendPhoneOtp>(_onSendPhoneOtp);
     on<BxVerifyPhoneOtp>(_onVerifyPhoneOtp);
     on<BxSignUpWithGoogle>(_onSignUpWithGoogle);
@@ -42,22 +42,28 @@ class BxEnterPhoneControllerBloc
       final result = await BxPhoneAuthFirebaseServices.instance
           .sendVerificationCode(phoneNumber: event.phoneNumber);
       if (!result.success) {
-        emit(state.copyWith(
-          status: BxEnterPhoneControllerStatus.error,
-          errorMessage: result.error ?? 'Failed to send OTP',
-        ));
+        emit(
+          state.copyWith(
+            status: BxEnterPhoneControllerStatus.error,
+            errorMessage: result.error ?? 'Failed to send OTP',
+          ),
+        );
         return;
       }
-      emit(state.copyWith(
-        status: BxEnterPhoneControllerStatus.initial,
-        phoneVerificationId: result.verificationId,
-        errorMessage: null,
-      ));
+      emit(
+        state.copyWith(
+          status: BxEnterPhoneControllerStatus.initial,
+          phoneVerificationId: result.verificationId,
+          errorMessage: null,
+        ),
+      );
     } catch (e) {
-      emit(state.copyWith(
-        status: BxEnterPhoneControllerStatus.error,
-        errorMessage: e.toString(),
-      ));
+      emit(
+        state.copyWith(
+          status: BxEnterPhoneControllerStatus.error,
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 
@@ -69,10 +75,13 @@ class BxEnterPhoneControllerBloc
     try {
       final verificationId = state.phoneVerificationId;
       if (verificationId == null) {
-        emit(state.copyWith(
-          status: BxEnterPhoneControllerStatus.error,
-          errorMessage: 'No verification ID found. Please request a new code.',
-        ));
+        emit(
+          state.copyWith(
+            status: BxEnterPhoneControllerStatus.error,
+            errorMessage:
+                'No verification ID found. Please request a new code.',
+          ),
+        );
         return;
       }
       final result = await BxPhoneAuthFirebaseServices.instance.verifyCode(
@@ -81,26 +90,32 @@ class BxEnterPhoneControllerBloc
         verificationId: verificationId,
       );
       if (!result.success || result.user == null) {
-        emit(state.copyWith(
-          status: BxEnterPhoneControllerStatus.error,
-          errorMessage: result.error ?? 'Verification failed',
-        ));
+        emit(
+          state.copyWith(
+            status: BxEnterPhoneControllerStatus.error,
+            errorMessage: result.error ?? 'Verification failed',
+          ),
+        );
         return;
       }
       final idToken = await result.user!.user!.getIdToken();
       if (idToken == null) {
-        emit(state.copyWith(
-          status: BxEnterPhoneControllerStatus.error,
-          errorMessage: 'Failed to obtain Firebase ID token.',
-        ));
+        emit(
+          state.copyWith(
+            status: BxEnterPhoneControllerStatus.error,
+            errorMessage: 'Failed to obtain Firebase ID token.',
+          ),
+        );
         return;
       }
       await _callLoginUseCase(idToken, emit);
     } catch (e) {
-      emit(state.copyWith(
-        status: BxEnterPhoneControllerStatus.error,
-        errorMessage: e.toString(),
-      ));
+      emit(
+        state.copyWith(
+          status: BxEnterPhoneControllerStatus.error,
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 
@@ -112,26 +127,32 @@ class BxEnterPhoneControllerBloc
     try {
       final result = await BxGoogleAuthFirebaseServices.instance.signIn();
       if (!result.success || result.user == null) {
-        emit(state.copyWith(
-          status: BxEnterPhoneControllerStatus.error,
-          errorMessage: result.error ?? 'Google sign-up failed',
-        ));
+        emit(
+          state.copyWith(
+            status: BxEnterPhoneControllerStatus.error,
+            errorMessage: result.error ?? 'Google sign-up failed',
+          ),
+        );
         return;
       }
       final idToken = await result.user!.user!.getIdToken();
       if (idToken == null) {
-        emit(state.copyWith(
-          status: BxEnterPhoneControllerStatus.error,
-          errorMessage: 'Failed to obtain Google ID token.',
-        ));
+        emit(
+          state.copyWith(
+            status: BxEnterPhoneControllerStatus.error,
+            errorMessage: 'Failed to obtain Google ID token.',
+          ),
+        );
         return;
       }
       await _callLoginUseCase(idToken, emit);
     } catch (e) {
-      emit(state.copyWith(
-        status: BxEnterPhoneControllerStatus.error,
-        errorMessage: e.toString(),
-      ));
+      emit(
+        state.copyWith(
+          status: BxEnterPhoneControllerStatus.error,
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 
@@ -143,26 +164,32 @@ class BxEnterPhoneControllerBloc
     try {
       final result = await BxAppleAuthFirebaseServices.instance.signIn();
       if (!result.success || result.user == null) {
-        emit(state.copyWith(
-          status: BxEnterPhoneControllerStatus.error,
-          errorMessage: result.error ?? 'Apple sign-up failed',
-        ));
+        emit(
+          state.copyWith(
+            status: BxEnterPhoneControllerStatus.error,
+            errorMessage: result.error ?? 'Apple sign-up failed',
+          ),
+        );
         return;
       }
       final idToken = await result.user!.user!.getIdToken();
       if (idToken == null) {
-        emit(state.copyWith(
-          status: BxEnterPhoneControllerStatus.error,
-          errorMessage: 'Failed to obtain Apple ID token.',
-        ));
+        emit(
+          state.copyWith(
+            status: BxEnterPhoneControllerStatus.error,
+            errorMessage: 'Failed to obtain Apple ID token.',
+          ),
+        );
         return;
       }
       await _callLoginUseCase(idToken, emit);
     } catch (e) {
-      emit(state.copyWith(
-        status: BxEnterPhoneControllerStatus.error,
-        errorMessage: e.toString(),
-      ));
+      emit(
+        state.copyWith(
+          status: BxEnterPhoneControllerStatus.error,
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 
@@ -174,26 +201,32 @@ class BxEnterPhoneControllerBloc
     try {
       final result = await BxFacebookAuthFirebaseServices.instance.signIn();
       if (!result.success || result.user == null) {
-        emit(state.copyWith(
-          status: BxEnterPhoneControllerStatus.error,
-          errorMessage: result.error ?? 'Facebook sign-up failed',
-        ));
+        emit(
+          state.copyWith(
+            status: BxEnterPhoneControllerStatus.error,
+            errorMessage: result.error ?? 'Facebook sign-up failed',
+          ),
+        );
         return;
       }
       final idToken = await result.user!.user!.getIdToken();
       if (idToken == null) {
-        emit(state.copyWith(
-          status: BxEnterPhoneControllerStatus.error,
-          errorMessage: 'Failed to obtain Facebook ID token.',
-        ));
+        emit(
+          state.copyWith(
+            status: BxEnterPhoneControllerStatus.error,
+            errorMessage: 'Failed to obtain Facebook ID token.',
+          ),
+        );
         return;
       }
       await _callLoginUseCase(idToken, emit);
     } catch (e) {
-      emit(state.copyWith(
-        status: BxEnterPhoneControllerStatus.error,
-        errorMessage: e.toString(),
-      ));
+      emit(
+        state.copyWith(
+          status: BxEnterPhoneControllerStatus.error,
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 
@@ -202,24 +235,33 @@ class BxEnterPhoneControllerBloc
     Emitter<BxEnterPhoneControllerState> emit,
   ) async {
     try {
-      final response = await _useCase.execute(BxFirebaseLoginRequest(idToken: idToken));
+      final response = await _useCase.execute(
+        BxFirebaseLoginRequest(idToken: idToken),
+      );
       if (response.code == 0 && response.data != null) {
-        emit(state.copyWith(
-          status: BxEnterPhoneControllerStatus.success,
-          loginResponse: response,
-          errorMessage: null,
-        ));
+        emit(
+          state.copyWith(
+            status: BxEnterPhoneControllerStatus.success,
+            loginResponse: response,
+            errorMessage: null,
+          ),
+        );
       } else {
-        emit(state.copyWith(
-          status: BxEnterPhoneControllerStatus.error,
-          errorMessage: response.message ?? 'Sign-up failed. Please try again.',
-        ));
+        emit(
+          state.copyWith(
+            status: BxEnterPhoneControllerStatus.error,
+            errorMessage:
+                response.message ?? 'Sign-up failed. Please try again.',
+          ),
+        );
       }
     } catch (e) {
-      emit(state.copyWith(
-        status: BxEnterPhoneControllerStatus.error,
-        errorMessage: e.toString(),
-      ));
+      emit(
+        state.copyWith(
+          status: BxEnterPhoneControllerStatus.error,
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 }

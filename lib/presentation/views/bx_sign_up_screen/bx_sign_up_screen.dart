@@ -18,9 +18,8 @@ class BxSignUpScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => BxSignUpControllerBloc(
-        useCase: BxDependencyInjector.instance.get(),
-      ),
+      create: (_) =>
+          BxSignUpControllerBloc(useCase: BxDependencyInjector.instance.get()),
       child: BxResponsiveBuilder(
         mobileBuilder: (context) => const BxSignUpWidgetMobile(),
         tabletBuilder: (context) => const BxSignUpWidgetTablet(),

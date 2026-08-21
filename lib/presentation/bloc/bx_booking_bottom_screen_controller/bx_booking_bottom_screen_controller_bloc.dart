@@ -12,13 +12,17 @@ part 'bx_booking_bottom_screen_controller_state.dart';
 part 'bx_booking_bottom_screen_controller_event.dart';
 
 class BxBookingBottomScreenControllerBloc
-    extends Bloc<BxBookingBottomScreenControllerEvent, BxBookingBottomScreenControllerState> {
+    extends
+        Bloc<
+          BxBookingBottomScreenControllerEvent,
+          BxBookingBottomScreenControllerState
+        > {
   BxBookingBottomScreenControllerBloc()
-      : super(
-          const BxBookingBottomScreenControllerState(
-            status: BxBookingBottomScreenControllerStatus.initial,
-          ),
-        ) {
+    : super(
+        const BxBookingBottomScreenControllerState(
+          status: BxBookingBottomScreenControllerStatus.initial,
+        ),
+      ) {
     on<BxLoadBookings>(_onLoadBookings);
     on<BxFilterBookings>(_onFilterBookings);
   }

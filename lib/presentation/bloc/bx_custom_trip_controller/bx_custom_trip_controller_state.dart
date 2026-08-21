@@ -1,3 +1,9 @@
+// Copyright (c) 2026 Tayara. All rights reserved.
+//
+// File: lib/presentation/bloc/bx_custom_trip_controller/bx_custom_trip_controller_state.dart
+// Architecture: Presentation Layer - Bx Custom trip Screen Controller
+// Purpose: State management for the booking bottom screen
+// ignore_for_file: prefer_initializing_formals, use_build_context_synchronously
 part of 'bx_custom_trip_controller_bloc.dart';
 
 enum BxCustomTripControllerStatus { initial, loading, success, failure }
@@ -16,7 +22,12 @@ class BxCustomTripControllerState extends Equatable {
   });
 
   @override
-  List<Object?> get props => [status, activeStep, selectedSegment, selectedDestination];
+  List<Object?> get props => [
+    status,
+    activeStep,
+    selectedSegment,
+    selectedDestination,
+  ];
 
   BxCustomTripControllerState copyWith({
     BxCustomTripControllerStatus? status,

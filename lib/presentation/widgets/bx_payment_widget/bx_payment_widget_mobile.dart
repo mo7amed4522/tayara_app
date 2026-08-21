@@ -112,7 +112,12 @@ class BxPaymentWidgetMobile extends StatelessWidget {
     );
   }
 
-  Widget _orderRow(BuildContext context, String label, String value, {bool isTotal = false}) {
+  Widget _orderRow(
+    BuildContext context,
+    String label,
+    String value, {
+    bool isTotal = false,
+  }) {
     final colorScheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
@@ -158,13 +163,20 @@ class BxPaymentWidgetMobile extends StatelessWidget {
           color: colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: selected ? BxAppColors.primary : colorScheme.outline.withOpacity(0.2),
+            color: selected
+                ? BxAppColors.primary
+                : colorScheme.outline.withOpacity(0.2),
             width: selected ? 2 : 1,
           ),
         ),
         child: Row(
           children: [
-            Icon(icon, color: selected ? BxAppColors.primary : colorScheme.onSurface.withOpacity(0.6)),
+            Icon(
+              icon,
+              color: selected
+                  ? BxAppColors.primary
+                  : colorScheme.onSurface.withOpacity(0.6),
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(

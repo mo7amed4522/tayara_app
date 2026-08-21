@@ -2,7 +2,7 @@
 //
 // File: lib/presentation/views/bx_home_bottom_screen/bx_home_bottom_screen_mobile.dart
 // Architecture: Presentation Layer - Bx Home Bottom Screen
-// Purpose: Mobile home bottom screen implementation
+// Purpose: Mobile home bottom screen implementation matching Figma design
 
 // ignore_for_file: deprecated_member_use
 
@@ -17,79 +17,70 @@ class BxHomeBottomScreenMobile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    return Container(
-      color: colorScheme.background,
-      child: SafeArea(
+    return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.background,
+      body: SafeArea(
         child: Column(
           children: [
             // Fixed header
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: const _Header(),
             ),
             // Scrollable content
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 16,
-                  horizontal: 4,
-                ),
-                child: Center(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const _SearchField(),
-                      const SizedBox(height: 16),
-                      const _CategoryChips(),
-                      const SizedBox(height: 16),
-                      const _AdCarousel(),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Discover Destinations',
-                        style: textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'lao-mn',
-                        ),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const _SearchField(),
+                    const SizedBox(height: 16),
+                    const _CategoryChips(),
+                    const SizedBox(height: 16),
+                    const _AdCarousel(),
+                    const SizedBox(height: 20),
+                    Text(
+                      'Discover Destinations',
+                      style: textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
                       ),
-                      const SizedBox(height: 12),
-                      const _DestinationGrid(),
-                      const SizedBox(height: 24),
-                      Text(
-                        'Top Deals',
-                        style: textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'lao-mn',
-                        ),
+                    ),
+                    const SizedBox(height: 12),
+                    const _DestinationGrid(),
+                    const SizedBox(height: 20),
+                    Text(
+                      'Top Deals',
+                      style: textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
                       ),
-                      const SizedBox(height: 12),
-                      const _TopDealsList(),
-                      const SizedBox(height: 16),
-                      Center(child: const _InsightCard()),
-                      const SizedBox(height: 24),
-                      Text(
-                        'Top Rated Agencies',
-                        style: textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'lao-mn',
-                        ),
+                    ),
+                    const SizedBox(height: 12),
+                    const _TopDealsList(),
+                    const SizedBox(height: 20),
+                    const _InsightCard(),
+                    const SizedBox(height: 20),
+                    Text(
+                      'Top Rated Agencies',
+                      style: textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
                       ),
-                      const SizedBox(height: 12),
-                      const _AgenciesList(),
-                      const SizedBox(height: 24),
-                      Text(
-                        'Recommended For You',
-                        style: textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'lao-mn',
-                        ),
+                    ),
+                    const SizedBox(height: 12),
+                    const _AgenciesList(),
+                    const SizedBox(height: 20),
+                    Text(
+                      'Recommended For You',
+                      style: textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
                       ),
-                      const SizedBox(height: 12),
-                      const _RecommendedList(),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: 12),
+                    const _RecommendedList(),
+                    const SizedBox(height: 24),
+                  ],
                 ),
               ),
             ),
@@ -99,6 +90,8 @@ class BxHomeBottomScreenMobile extends StatelessWidget {
     );
   }
 }
+
+// ─── Header ───────────────────────────────────────────────────────────────────
 
 class _Header extends StatelessWidget {
   const _Header();
@@ -108,53 +101,50 @@ class _Header extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    return SizedBox(
-      height: 56,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        // Tayara logo text
+        Text(
+          'Tayara',
+          style: textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: BxAppColors.primary,
+            fontSize: 24,
+          ),
+        ),
+        // Notification bell + Profile avatar
+        Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              'Tayara',
-              style: textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                fontFamily: 'lao-mn',
+            IconButton(
+              onPressed: () {},
+              icon: Icon(
+                Icons.notifications_outlined,
+                size: 24,
+                color: colorScheme.onSurface,
               ),
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
             ),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Image.asset(
-                  BxAppConstant.billImage,
-                  width: 24,
-                  height: 24,
-                  color: colorScheme.onSurface.withOpacity(0.8),
-                ),
-                const SizedBox(width: 12),
-                Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    color: colorScheme.onSurface.withOpacity(0.8),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Center(
-                    child: Icon(
-                      Icons.person,
-                      size: 14.58,
-                      color: colorScheme.onPrimary,
-                    ),
-                  ),
-                ),
-              ],
+            const SizedBox(width: 8),
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: BxAppColors.primary,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.person, size: 20, color: Colors.white),
             ),
           ],
         ),
-      ),
+      ],
     );
   }
 }
+
+// ─── Search Field ─────────────────────────────────────────────────────────────
 
 class _SearchField extends StatelessWidget {
   const _SearchField();
@@ -165,19 +155,24 @@ class _SearchField extends StatelessWidget {
 
     return SizedBox(
       width: double.infinity,
-      height: 52,
+      height: 48,
       child: TextField(
-        style: TextStyle(color: colorScheme.onSurface, fontSize: 14),
+        style: TextStyle(
+          color: colorScheme.onSurface,
+          fontSize: 14,
+          fontFamily: 'Poppins',
+        ),
         decoration: InputDecoration(
           hintText: 'Search destinations, trips, or agencies...',
           hintStyle: TextStyle(
-            color: colorScheme.onSurface.withOpacity(0.5),
+            color: colorScheme.onSurface.withOpacity(0.4),
             fontSize: 14,
-            fontFamily: 'lao-mn',
+            fontFamily: 'Poppins',
           ),
           suffixIcon: Icon(
             Icons.search,
-            color: colorScheme.onSurface.withOpacity(0.6),
+            color: colorScheme.onSurface.withOpacity(0.4),
+            size: 20,
           ),
           filled: true,
           fillColor: colorScheme.surface,
@@ -186,15 +181,15 @@ class _SearchField extends StatelessWidget {
             vertical: 0,
           ),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(9999),
+            borderRadius: BorderRadius.circular(24),
             borderSide: BorderSide.none,
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(9999),
+            borderRadius: BorderRadius.circular(24),
             borderSide: BorderSide.none,
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(9999),
+            borderRadius: BorderRadius.circular(24),
             borderSide: BorderSide(color: BxAppColors.primary, width: 2),
           ),
         ),
@@ -202,6 +197,8 @@ class _SearchField extends StatelessWidget {
     );
   }
 }
+
+// ─── Category Chips ───────────────────────────────────────────────────────────
 
 class _CategoryChips extends StatelessWidget {
   const _CategoryChips();
@@ -211,35 +208,46 @@ class _CategoryChips extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    const categories = [
-      'All',
-      'Beaches',
-      'Adventure',
-      'Culture',
-      'Family',
-      'Romantic',
-    ];
+    const categories = ['Egypt Nile Cruise', 'Bali Beach', 'Tokyo Adventure'];
 
     return SizedBox(
-      height: 30,
+      height: 36,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: categories.length,
         separatorBuilder: (_, _) => const SizedBox(width: 8),
         itemBuilder: (context, index) {
-          return Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: colorScheme.surface,
-              borderRadius: BorderRadius.circular(9999),
-              border: Border.all(color: colorScheme.onSurface.withOpacity(0.1)),
-            ),
-            child: Text(
-              categories[index],
-              style: textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurface,
-                fontFamily: 'lao-mn',
+          final isSelected = index == 0;
+          return GestureDetector(
+            onTap: () {},
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: isSelected ? BxAppColors.primary : colorScheme.surface,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: isSelected
+                      ? BxAppColors.primary
+                      : colorScheme.onSurface.withOpacity(0.15),
+                  width: 1,
+                ),
+                boxShadow: isSelected
+                    ? [
+                        BoxShadow(
+                          color: BxAppColors.primary.withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ]
+                    : null,
+              ),
+              child: Text(
+                categories[index],
+                style: textTheme.bodySmall?.copyWith(
+                  color: isSelected ? Colors.white : colorScheme.onSurface,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                  fontFamily: 'Poppins',
+                ),
               ),
             ),
           );
@@ -248,6 +256,8 @@ class _CategoryChips extends StatelessWidget {
     );
   }
 }
+
+// ─── Ad Carousel ──────────────────────────────────────────────────────────────
 
 class _AdCarousel extends StatefulWidget {
   const _AdCarousel();
@@ -347,9 +357,11 @@ class _AdPageView extends StatelessWidget {
               ),
               child: Stack(
                 children: [
+                  // Content
                   Positioned(
                     left: 16,
-                    bottom: 16,
+                    bottom: 48,
+                    right: 16,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
@@ -359,6 +371,7 @@ class _AdPageView extends StatelessWidget {
                           style: textTheme.titleMedium?.copyWith(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
+                            fontSize: 18,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -366,25 +379,31 @@ class _AdPageView extends StatelessWidget {
                           ad['subtitle']!,
                           style: textTheme.bodySmall?.copyWith(
                             color: Colors.white.withOpacity(0.9),
+                            fontSize: 13,
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 25),
                         SizedBox(
-                          width: 114,
-                          height: 28,
+                          height: 36,
+                          width: 150,
                           child: ElevatedButton(
                             onPressed: () {},
                             style: ElevatedButton.styleFrom(
-                              padding: EdgeInsets.zero,
+                              backgroundColor: BxAppColors.primary,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                              ),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(4),
+                                borderRadius: BorderRadius.circular(8),
                               ),
                               textStyle: const TextStyle(
-                                fontSize: 12,
+                                fontSize: 14,
                                 fontWeight: FontWeight.bold,
+                                fontFamily: 'Poppins',
                               ),
                             ),
-                            child: Text('Explore Now'),
+                            child: Text(ad['buttonText'] ?? 'Explore Now'),
                           ),
                         ),
                       ],
@@ -395,6 +414,7 @@ class _AdPageView extends StatelessWidget {
             );
           },
         ),
+        // Pagination dots
         Positioned(
           bottom: 12,
           left: 0,
@@ -405,7 +425,7 @@ class _AdPageView extends StatelessWidget {
               final isActive = index == currentPage;
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 3),
-                child: _buildDot(active: isActive),
+                child: _buildDot(active: isActive, context: context),
               );
             }),
           ),
@@ -414,17 +434,22 @@ class _AdPageView extends StatelessWidget {
     );
   }
 
-  Widget _buildDot({required bool active}) {
-    return Container(
-      width: active ? 16 : 8,
+  Widget _buildDot({required bool active, required BuildContext context}) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      width: active ? 20 : 8,
       height: 8,
       decoration: BoxDecoration(
-        color: active ? Colors.white : Colors.white.withOpacity(0.6),
+        color: active
+            ? Theme.of(context).colorScheme.primary
+            : Colors.white.withOpacity(0.5),
         borderRadius: BorderRadius.circular(4),
       ),
     );
   }
 }
+
+// ─── Destination Grid ─────────────────────────────────────────────────────────
 
 class _DestinationGrid extends StatelessWidget {
   const _DestinationGrid();
@@ -434,21 +459,13 @@ class _DestinationGrid extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     final destinations = [
+      {'image': BxAppConstant.baliImage, 'name': 'Bali', 'price': '\$750'},
+      {'image': BxAppConstant.pairsImage, 'name': 'Paris', 'price': '\$1,200'},
+      {'image': BxAppConstant.tokyoImage, 'name': 'Tokyo', 'price': '\$950'},
       {
         'image': BxAppConstant.swazirelandImage,
-        'name': 'Santorini',
-        'price': 'From \$750',
-      },
-      {'image': BxAppConstant.baliImage, 'name': 'Bali', 'price': 'From \$620'},
-      {
-        'image': BxAppConstant.pairsImage,
-        'name': 'Paris',
-        'price': 'From \$850',
-      },
-      {
-        'image': BxAppConstant.tokyoImage,
-        'name': 'Tokyo',
-        'price': 'From \$980',
+        'name': 'Switzerland',
+        'price': '\$1,400',
       },
     ];
 
@@ -458,9 +475,9 @@ class _DestinationGrid extends StatelessWidget {
       itemCount: destinations.length,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        mainAxisSpacing: 14,
+        mainAxisSpacing: 12,
         crossAxisSpacing: 12,
-        childAspectRatio: 1.5,
+        childAspectRatio: 0.85,
       ),
       itemBuilder: (context, index) {
         final item = destinations[index];
@@ -469,24 +486,26 @@ class _DestinationGrid extends StatelessWidget {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              // Background image
               Image.asset(item['image']!, fit: BoxFit.cover),
-              // Gradient overlay for better text visibility
+              // Gradient overlay
               Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [Colors.transparent, Colors.black.withOpacity(0.7)],
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withOpacity(0.65),
+                    ],
                     stops: const [0.5, 1.0],
                   ),
                 ),
               ),
-              // Text content at the bottom
+              // Text at bottom
               Positioned(
-                left: 8,
-                right: 8,
-                bottom: 8,
+                left: 12,
+                right: 12,
+                bottom: 12,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
@@ -502,9 +521,9 @@ class _DestinationGrid extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      item['price']!,
+                      'From ${item['price']}',
                       style: textTheme.bodySmall?.copyWith(
-                        color: Colors.white.withOpacity(0.95),
+                        color: Colors.white.withOpacity(0.9),
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -519,6 +538,8 @@ class _DestinationGrid extends StatelessWidget {
   }
 }
 
+// ─── Top Deals List ───────────────────────────────────────────────────────────
+
 class _TopDealsList extends StatelessWidget {
   const _TopDealsList();
 
@@ -529,24 +550,27 @@ class _TopDealsList extends StatelessWidget {
         'image': BxAppConstant.topDealsImage1,
         'name': 'Paris Escape 4D/3N',
         'price': '\$950 - \$1,050',
-        'views': '18 people are viewing this trip',
+        'discount': 'Save 8%',
+        'views': '18',
       },
       {
         'image': BxAppConstant.topDealsImage2,
         'name': 'Rome Discovery 5D/4N',
         'price': '\$1,100 - \$1,250',
-        'views': '12 people are viewing this trip',
+        'discount': 'Save 12%',
+        'views': '24',
       },
       {
         'image': BxAppConstant.topDealsImage1,
         'name': 'Dubai Luxury 3D/2N',
         'price': '\$600 - \$800',
-        'views': '25 people are viewing this trip',
+        'discount': 'Save 5%',
+        'views': '31',
       },
     ];
 
     return SizedBox(
-      height: 304,
+      height: 320,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: deals.length,
@@ -568,144 +592,143 @@ class _TopDealCard extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return Container(
-      width: 288,
-      height: 304,
+      width: 280,
+      height: 320,
       decoration: BoxDecoration(
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            height: 160,
-            decoration: BoxDecoration(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(16),
+          // Image section
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(16),
+                ),
+                child: Image.asset(
+                  deal['image']!,
+                  width: 280,
+                  height: 160,
+                  fit: BoxFit.cover,
+                ),
               ),
-              color: colorScheme.primary.withOpacity(0.15),
-            ),
-            child: Stack(
-              children: [
-                Positioned.fill(
-                  child: Image.asset(
-                    deal['image']!,
-                    width: 48,
-                    height: 48,
-                    fit: BoxFit.cover,
+              // Discount badge
+              Positioned(
+                top: 10,
+                left: 10,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
                   ),
-                ),
-                Positioned(
-                  top: 8,
-                  left: 8,
-                  child: Container(
-                    width: 57.63,
-                    height: 21,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [BxAppColors.warning, Colors.white],
-                      ),
-                      borderRadius: BorderRadius.all(Radius.circular(8)),
-                    ),
-                    child: const Text(
-                      'Hot',
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                  decoration: BoxDecoration(
+                    color: BxAppColors.error,
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                ),
-                Positioned(
-                  top: 8,
-                  right: 8,
-                  child: Container(
-                    width: 26,
-                    height: 26,
-                    decoration: BoxDecoration(
+                  child: Text(
+                    deal['discount']!,
+                    style: const TextStyle(
                       color: Colors.white,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 4,
-                        ),
-                      ],
-                    ),
-                    child: Icon(
-                      Icons.favorite_border,
-                      size: 14.58,
-                      color: colorScheme.error,
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Poppins',
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+              // Wishlist heart
+              Positioned(
+                top: 10,
+                right: 10,
+                child: GestureDetector(
+                  onTap: () {},
+                  child: Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      color: colorScheme.surface,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.favorite_border,
+                      size: 18,
+                      color: BxAppColors.pink,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
+          // Content
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+              padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Flexible(
-                    child: Text(
-                      deal['name']!,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                  // Title
+                  Text(
+                    deal['name']!,
+                    style: textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Poppins',
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
+                  // Price
                   Text(
                     deal['price']!,
                     style: textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.primary,
+                      color: BxAppColors.primary,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Poppins',
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    '${deal['views']}',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurface.withOpacity(0.6),
-                    ),
-                  ),
-                  const Spacer(),
-                  Center(
-                    child: SizedBox(
-                      width: 256,
-                      height: 36,
-                      child: ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: BxAppColors.primary,
-                          foregroundColor: Colors.white,
-                          padding: EdgeInsets.zero,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          textStyle: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        child: Text(
-                          'Explore Deal',
-                          style: TextStyle(fontFamily: 'lao-mn'),
+                  // Viewer count with eye icon
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.visibility,
+                        size: 14,
+                        color: Colors.grey,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${deal['views']} people are viewing this trip',
+                        style: textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurface.withOpacity(0.6),
+                          fontFamily: 'Poppins',
                         ),
                       ),
+                    ],
+                  ),
+                  const Spacer(),
+                  // Explore Deal button
+                  SizedBox(
+                    width: double.infinity,
+                    height: 36,
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: BxAppColors.primary,
+                        foregroundColor: Colors.white,
+                        padding: EdgeInsets.zero,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        textStyle: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Poppins',
+                        ),
+                      ),
+                      child: const Text('Explore Deal'),
                     ),
                   ),
                 ],
@@ -718,134 +741,10 @@ class _TopDealCard extends StatelessWidget {
   }
 }
 
+// ─── Insight Card ─────────────────────────────────────────────────────────────
+
 class _InsightCard extends StatelessWidget {
   const _InsightCard();
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
-    return Container(
-      width: 400,
-      height: 95,
-      clipBehavior: Clip.antiAlias,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Theme.of(context).colorScheme.primary,
-            const Color.fromARGB(255, 190, 205, 238),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Stack(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 90,
-                height: 87,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Image.asset(
-                  BxAppConstant.eyeBirdImage,
-                  width: 32,
-                  height: 32,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Row(
-                      children: [
-                        Image.asset(
-                          BxAppConstant.lightImage,
-                          width: 16,
-                          height: 16,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          'Tayara Insight',
-                          style: textTheme.bodySmall?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      'Looking for a quick escape?',
-                      style: textTheme.bodySmall?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      'Check out weekend trips in UAE.',
-                      style: textTheme.bodySmall?.copyWith(
-                        color: BxAppColors.primaryDark,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          Positioned(
-            right: 8,
-            bottom: 8,
-            child: Container(
-              width: 61,
-              height: 22,
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(4)),
-              child: Image.asset(
-                BxAppConstant.tayaraObjectImage,
-                width: 16,
-                height: 16,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _AgenciesList extends StatelessWidget {
-  const _AgenciesList();
-
-  @override
-  Widget build(BuildContext context) {
-    const agencies = [
-      'Nile Voyages',
-      'Tayara Travel',
-      'Skyline Tours',
-      'Oceanic',
-    ];
-
-    return SizedBox(
-      height: 179,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: agencies.length,
-        separatorBuilder: (_, _) => const SizedBox(width: 12),
-        itemBuilder: (context, index) => _AgencyCard(name: agencies[index]),
-      ),
-    );
-  }
-}
-
-class _AgencyCard extends StatelessWidget {
-  final String name;
-
-  const _AgencyCard({required this.name});
 
   @override
   Widget build(BuildContext context) {
@@ -853,65 +752,215 @@ class _AgencyCard extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return Container(
-      width: 145.27,
-      height: 176,
+      width: double.infinity,
+      height: 110,
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        color: BxAppColors.primary.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(16),
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Row(
         children: [
-          Container(
-            width: 64,
-            height: 64,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: colorScheme.primary.withOpacity(0.1),
+          // Bird mascot
+          SizedBox(
+            width: 80,
+            height: 80,
+            child: Image.asset(BxAppConstant.eyeBirdImage, fit: BoxFit.contain),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Badge row
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.lightbulb_outline,
+                      size: 14,
+                      color: BxAppColors.primary,
+                    ),
+                    const SizedBox(width: 4),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: BxAppColors.primary.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: const Text(
+                        'TAYARA INSIGHT',
+                        style: TextStyle(
+                          fontSize: 9,
+                          fontWeight: FontWeight.bold,
+                          color: BxAppColors.primary,
+                          fontFamily: 'Poppins',
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                // Main text
+                Text(
+                  'Looking for a quick escape?',
+                  style: textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurface,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                    fontFamily: 'Poppins',
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'Check out weekend trips in UAE.',
+                  style: textTheme.bodySmall?.copyWith(
+                    color: BxAppColors.primary,
+                    fontSize: 12,
+                    fontFamily: 'Poppins',
+                  ),
+                ),
+              ],
             ),
-            child: Icon(Icons.business, color: colorScheme.primary, size: 32),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            name,
-            style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 4),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ...List.generate(
-                5,
-                (_) => const Icon(Icons.star, size: 14, color: Colors.amber),
-              ),
-              const SizedBox(width: 4),
-              Text('4.9', style: textTheme.bodySmall),
-            ],
-          ),
-          const SizedBox(height: 8),
-          TextButton(
-            onPressed: () {},
-            style: TextButton.styleFrom(
-              foregroundColor: BxAppColors.primary,
-              padding: EdgeInsets.zero,
-              minimumSize: Size.zero,
-            ),
-            child: const Text('View Trips'),
           ),
         ],
       ),
     );
   }
 }
+
+// ─── Agencies List ────────────────────────────────────────────────────────────
+
+class _AgenciesList extends StatelessWidget {
+  const _AgenciesList();
+
+  @override
+  Widget build(BuildContext context) {
+    const agencies = [
+      {'name': 'Nile Voyages', 'rating': '4.9'},
+      {'name': 'Tayara Travel', 'rating': '4.8'},
+      {'name': 'Skyline Tours', 'rating': '4.7'},
+      {'name': 'Oceanic', 'rating': '4.9'},
+    ];
+
+    return SizedBox(
+      height: 170,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: agencies.length,
+        separatorBuilder: (_, _) => const SizedBox(width: 12),
+        itemBuilder: (context, index) => _AgencyCard(
+          name: agencies[index]['name']!,
+          rating: agencies[index]['rating']!,
+        ),
+      ),
+    );
+  }
+}
+
+class _AgencyCard extends StatelessWidget {
+  final String name;
+  final String rating;
+
+  const _AgencyCard({required this.name, required this.rating});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Container(
+      width: 140,
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Circular logo placeholder
+          Container(
+            width: 64,
+            height: 64,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: BxAppColors.primary.withOpacity(0.12),
+            ),
+            child: const Center(
+              child: Text(
+                'logo',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: BxAppColors.primary,
+                  fontFamily: 'Poppins',
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          // Name
+          Text(
+            name,
+            style: textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Poppins',
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 4),
+          // Rating
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.star, size: 14, color: Colors.amber),
+              const SizedBox(width: 2),
+              Text(
+                rating,
+                style: textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurface,
+                  fontFamily: 'Poppins',
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          // View Trips button
+          SizedBox(
+            width: 80,
+            height: 28,
+            child: ElevatedButton(
+              onPressed: () {},
+              style: ElevatedButton.styleFrom(
+                backgroundColor: BxAppColors.primary,
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.zero,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                textStyle: const TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Poppins',
+                ),
+              ),
+              child: const Text('View Trips'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Recommended List ─────────────────────────────────────────────────────────
 
 class _RecommendedList extends StatelessWidget {
   const _RecommendedList();
@@ -922,19 +971,22 @@ class _RecommendedList extends StatelessWidget {
       {
         'image': BxAppConstant.recommendImage1,
         'name': 'Thailand Getaway 8D/7N',
-        'rating': '4.6 (95 reviews)',
+        'rating': '4.6',
+        'reviews': '(95 reviews)',
         'price': 'From \$680',
       },
       {
         'image': BxAppConstant.recommendImage2,
         'name': 'Maldives Honeymoon 5D/4N',
-        'rating': '4.8 (120 reviews)',
+        'rating': '4.8',
+        'reviews': '(120 reviews)',
         'price': 'From \$1,200',
       },
       {
         'image': BxAppConstant.recommendImage1,
         'name': 'Japan Discovery 6D/5N',
-        'rating': '4.7 (80 reviews)',
+        'rating': '4.7',
+        'reviews': '(80 reviews)',
         'price': 'From \$1,450',
       },
     ];
@@ -943,7 +995,7 @@ class _RecommendedList extends StatelessWidget {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: trips.length,
-      separatorBuilder: (_, _) => const SizedBox(height: 12),
+      separatorBuilder: (_, _) => const SizedBox(height: 10),
       itemBuilder: (context, index) => _RecommendedCard(trip: trips[index]),
     );
   }
@@ -961,29 +1013,26 @@ class _RecommendedCard extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      height: 88,
+      height: 90,
       decoration: BoxDecoration(
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
       ),
       child: Row(
         children: [
-          Container(
-            width: 96,
-            height: 88,
-            decoration: const BoxDecoration(
-              borderRadius: BorderRadius.horizontal(left: Radius.circular(16)),
-              color: Color(0xFFE0E0E0),
+          // Image
+          ClipRRect(
+            borderRadius: const BorderRadius.horizontal(
+              left: Radius.circular(16),
             ),
-            child: Image.asset(trip['image']!, fit: BoxFit.cover),
+            child: Image.asset(
+              trip['image']!,
+              width: 100,
+              height: 90,
+              fit: BoxFit.cover,
+            ),
           ),
+          // Content
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -993,7 +1042,10 @@ class _RecommendedCard extends StatelessWidget {
                 children: [
                   Text(
                     trip['name']!,
-                    style: textTheme.titleSmall,
+                    style: textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Poppins',
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -1003,14 +1055,22 @@ class _RecommendedCard extends StatelessWidget {
                       const Icon(Icons.star, size: 14, color: Colors.amber),
                       const SizedBox(width: 4),
                       Text(trip['rating']!, style: textTheme.bodySmall),
+                      const SizedBox(width: 4),
+                      Text(
+                        trip['reviews']!,
+                        style: textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurface.withOpacity(0.5),
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 4),
                   Text(
                     trip['price']!,
                     style: textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.primary,
+                      color: BxAppColors.primary,
                       fontWeight: FontWeight.bold,
+                      fontFamily: 'Poppins',
                     ),
                   ),
                 ],

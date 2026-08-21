@@ -95,13 +95,15 @@ class _BxHomeWidgetTabletState extends State<BxHomeWidgetTablet>
                   children: [
                     BxHomeBottomScreenTablet(),
                     BlocProvider(
-                      create: (_) => BxExploreBottomScreenControllerBloc()
-                        ..add(const BxLoadExploreContent()),
+                      create: (_) =>
+                          BxExploreBottomScreenControllerBloc()
+                            ..add(const BxLoadExploreContent()),
                       child: const BxExploreBottomScreenTablet(),
                     ),
                     BlocProvider(
-                      create: (_) => BxBookingBottomScreenControllerBloc()
-                        ..add(const BxLoadBookings()),
+                      create: (_) =>
+                          BxBookingBottomScreenControllerBloc()
+                            ..add(const BxLoadBookings()),
                       child: const BxBookingBottomScreenTablet(),
                     ),
                     BlocProvider(

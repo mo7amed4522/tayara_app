@@ -35,16 +35,19 @@ class BxHomeBottomScreenControllerBloc
           'imageUrl': BxAppConstant.adsBackground,
           'title': 'Maldives Escape',
           'subtitle': '4D/3N luxury stay',
+          'buttonText': 'Explore Now',
         },
         {
           'imageUrl': BxAppConstant.adsBackground,
           'title': 'Bali Beach Vibes',
           'subtitle': '5D/4N tropical getaway',
+          'buttonText': 'Explore Now',
         },
         {
           'imageUrl': BxAppConstant.adsBackground,
           'title': 'Santorini Sunset',
           'subtitle': '3D/2N romantic trip',
+          'buttonText': 'Explore Now',
         },
       ];
       emit(

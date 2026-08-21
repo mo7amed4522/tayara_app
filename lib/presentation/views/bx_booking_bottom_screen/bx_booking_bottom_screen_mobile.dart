@@ -19,8 +19,8 @@ class BxBookingBottomScreenMobile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => BxBookingBottomScreenControllerBloc()
-        ..add(const BxLoadBookings()),
+      create: (_) =>
+          BxBookingBottomScreenControllerBloc()..add(const BxLoadBookings()),
       child: const _BookingBody(),
     );
   }
@@ -43,67 +43,85 @@ class _BookingBody extends StatelessWidget {
             _buildTabBar(context),
             // Booking list
             Expanded(
-              child: BlocBuilder<
-                BxBookingBottomScreenControllerBloc,
-                BxBookingBottomScreenControllerState
-              >(
-                builder: (context, state) {
-                  if (state.status == BxBookingBottomScreenControllerStatus.loading) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  if (state.status == BxBookingBottomScreenControllerStatus.failure) {
-                    return const Center(child: Text('Failed to load bookings'));
-                  }
-                  final allBookings = state.bookings;
-                  final activeTab = state.selectedTab;
-                  final filteredBookings = activeTab == 0
-                      ? allBookings.where((b) => b['status'] == 'pending' || b['status'] == 'confirmed').toList()
-                      : activeTab == 1
-                          ? allBookings.where((b) => b['status'] == 'confirmed').toList()
-                          : allBookings.where((b) => b['status'] == 'expired').toList();
+              child:
+                  BlocBuilder<
+                    BxBookingBottomScreenControllerBloc,
+                    BxBookingBottomScreenControllerState
+                  >(
+                    builder: (context, state) {
+                      if (state.status ==
+                          BxBookingBottomScreenControllerStatus.loading) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      if (state.status ==
+                          BxBookingBottomScreenControllerStatus.failure) {
+                        return const Center(
+                          child: Text('Failed to load bookings'),
+                        );
+                      }
+                      final allBookings = state.bookings;
+                      final activeTab = state.selectedTab;
+                      final filteredBookings = activeTab == 0
+                          ? allBookings
+                                .where(
+                                  (b) =>
+                                      b['status'] == 'pending' ||
+                                      b['status'] == 'confirmed',
+                                )
+                                .toList()
+                          : activeTab == 1
+                          ? allBookings
+                                .where((b) => b['status'] == 'confirmed')
+                                .toList()
+                          : allBookings
+                                .where((b) => b['status'] == 'expired')
+                                .toList();
 
-                  if (filteredBookings.isEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.calendar_today_outlined,
-                            size: 64,
-                            color: colorScheme.onSurface.withOpacity(0.3),
+                      if (filteredBookings.isEmpty) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.calendar_today_outlined,
+                                size: 64,
+                                color: colorScheme.onSurface.withOpacity(0.3),
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                'No bookings yet',
+                                style: textTheme.titleMedium?.copyWith(
+                                  color: colorScheme.onSurface.withOpacity(0.5),
+                                  fontFamily: 'lao-mn',
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Book your first trip to see it here',
+                                style: textTheme.bodyMedium?.copyWith(
+                                  color: colorScheme.onSurface.withOpacity(0.4),
+                                  fontFamily: 'lao-mn',
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'No bookings yet',
-                            style: textTheme.titleMedium?.copyWith(
-                              color: colorScheme.onSurface.withOpacity(0.5),
-                              fontFamily: 'lao-mn',
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Book your first trip to see it here',
-                            style: textTheme.bodyMedium?.copyWith(
-                              color: colorScheme.onSurface.withOpacity(0.4),
-                              fontFamily: 'lao-mn',
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
+                        );
+                      }
 
-                  return ListView.separated(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    itemCount: filteredBookings.length,
-                    separatorBuilder: (_, _) => const SizedBox(height: 12),
-                    itemBuilder: (context, index) {
-                      final booking = filteredBookings.elementAt(index);
-                      return _BookingCard(booking: booking);
+                      return ListView.separated(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        itemCount: filteredBookings.length,
+                        separatorBuilder: (_, _) => const SizedBox(height: 12),
+                        itemBuilder: (context, index) {
+                          final booking = filteredBookings.elementAt(index);
+                          return _BookingCard(booking: booking);
+                        },
+                      );
                     },
-                  );
-                },
-              ),
+                  ),
             ),
           ],
         ),
@@ -148,7 +166,9 @@ class _BookingBody extends StatelessWidget {
                       color: isSelected
                           ? BxAppColors.primary
                           : colorScheme.onSurface.withOpacity(0.6),
-                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                      fontWeight: isSelected
+                          ? FontWeight.w600
+                          : FontWeight.w400,
                       fontFamily: 'lao-mn',
                     ),
                   ),
@@ -176,8 +196,8 @@ class _BookingCard extends StatelessWidget {
     final statusColor = status == 'confirmed'
         ? BxAppColors.success
         : status == 'pending'
-            ? BxAppColors.warning
-            : const Color(0xFF6B7280);
+        ? BxAppColors.warning
+        : const Color(0xFF6B7280);
 
     return InkWell(
       onTap: () {
