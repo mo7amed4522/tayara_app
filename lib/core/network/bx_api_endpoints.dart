@@ -38,8 +38,7 @@ class BxApiEndpoints {
 
   // trip detail endpoint
   /// POST endpoint for fetching trip detail by ID.
-  static String get tripDetailUrl =>
-      '/api/${BxAppData.appVersion}/trip/detail';
+  static String get tripDetailUrl => '/api/${BxAppData.appVersion}/trip/detail';
 
   // filter trips endpoint
   /// POST endpoint for filtering trips by criteria.
