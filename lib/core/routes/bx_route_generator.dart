@@ -20,6 +20,16 @@ import 'package:tayara/presentation/views/bx_home_screen/bx_home_screen.dart';
 import 'package:tayara/presentation/views/bx_login_screen/bx_login_screen.dart';
 import 'package:tayara/presentation/views/bx_on_boarding_screen/bx_on_boarding_screen.dart';
 import 'package:tayara/presentation/views/bx_splash_screen/bx_splash_screen.dart';
+import 'package:tayara/presentation/views/bx_trip_detail_screen/bx_trip_detail_screen.dart';
+import 'package:tayara/presentation/views/bx_sign_up_screen/bx_sign_up_screen.dart';
+import 'package:tayara/presentation/views/bx_enter_phone_screen/bx_enter_phone_screen.dart';
+import 'package:tayara/presentation/views/bx_booking_detail_screen/bx_booking_detail_screen.dart';
+import 'package:tayara/presentation/views/bx_payment_screen/bx_payment_screen.dart';
+import 'package:tayara/presentation/views/bx_filter_trips_screen/bx_filter_trips_screen.dart';
+import 'package:tayara/presentation/views/bx_agencies_screen/bx_agencies_screen.dart';
+import 'package:tayara/presentation/views/bx_similar_trips_screen/bx_similar_trips_screen.dart';
+import 'package:tayara/presentation/views/bx_custom_trip_screen/bx_custom_trip_screen.dart';
+import 'package:tayara/presentation/views/bx_review_travelers_screen/bx_review_travelers_screen.dart';
 import 'package:flutter/material.dart';
 
 /// Central route generator that maps route names to screens and
@@ -51,6 +61,26 @@ class BxRouteGenerator {
         return _buildRoute(settings, const BxLoginScreen());
       case BxRouteNames.bxHomeScreen:
         return _buildRoute(settings, const BxHomeScreen());
+      case BxRouteNames.bxSignUpScreen:
+        return _buildRoute(settings, const BxSignUpScreen());
+      case BxRouteNames.bxEnterPhoneScreen:
+        return _buildRoute(settings, const BxEnterPhoneScreen());
+      case BxRouteNames.bxTripDetailScreen:
+        return _buildRoute(settings, const BxTripDetailScreen());
+      case BxRouteNames.bxBookingDetailScreen:
+        return _buildRoute(settings, const BxBookingDetailScreen());
+      case BxRouteNames.bxPaymentScreen:
+        return _buildRoute(settings, const BxPaymentScreen());
+      case BxRouteNames.bxFilterTripsScreen:
+        return _buildRoute(settings, const BxFilterTripsScreen());
+      case BxRouteNames.bxAgenciesScreen:
+        return _buildRoute(settings, const BxAgenciesScreen());
+      case BxRouteNames.bxSimilarTripsScreen:
+        return _buildRoute(settings, const BxSimilarTripsScreen());
+      case BxRouteNames.bxCustomTripScreen:
+        return _buildRoute(settings, const BxCustomTripScreen());
+      case BxRouteNames.bxReviewTravelersScreen:
+        return _buildRoute(settings, const BxReviewTravelersScreen());
       // Default route (404)
       default:
         return _buildRoute(settings, const BxLoginScreen());

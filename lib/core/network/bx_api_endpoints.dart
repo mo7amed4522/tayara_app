@@ -35,4 +35,28 @@ class BxApiEndpoints {
   /// POST endpoint for user login.
   static String get loginUrl =>
       '/api/${BxAppData.appVersion}/user/firebase-login';
+
+  // trip detail endpoint
+  /// POST endpoint for fetching trip detail by ID.
+  static String get tripDetailUrl =>
+      '/api/${BxAppData.appVersion}/trip/detail';
+
+  // filter trips endpoint
+  /// POST endpoint for filtering trips by criteria.
+  static String get filterTripsUrl =>
+      '/api/${BxAppData.appVersion}/trip/filter';
+
+  // booking endpoints
+  /// POST endpoint for fetching booking detail.
+  static String get bookingDetailUrl =>
+      '/api/${BxAppData.appVersion}/booking/detail';
+
+  /// POST endpoint for cancelling a booking.
+  static String get cancelBookingUrl =>
+      '/api/${BxAppData.appVersion}/booking/cancel';
+
+  // payment endpoint
+  /// POST endpoint for processing a payment.
+  static String get paymentUrl =>
+      '/api/${BxAppData.appVersion}/payment/process';
 }
