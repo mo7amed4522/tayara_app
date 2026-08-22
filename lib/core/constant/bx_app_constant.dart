@@ -71,6 +71,12 @@ class BxAppConstant {
   static const String recommendImage1 = '${baseImageUrl}recommend_image1.png';
   static const String recommendImage2 = '${baseImageUrl}recommend_image2.png';
 
+  /// explore bottom nav bar images.
+  /// explore icon image.
+  static const String buildCustomTrip = '${baseImageUrl}build_custom_trip.png';
+  static const String expireLogo = '${baseImageUrl}expire_logo.png';
+  static const String expireLogoSec = '${baseImageUrl}expire_logo_sec.png';
+
   /// setting bottom nav bar images.
   /// Setting icon image.
   static const String settingLogo = '${baseImageUrl}setting_logo.png';

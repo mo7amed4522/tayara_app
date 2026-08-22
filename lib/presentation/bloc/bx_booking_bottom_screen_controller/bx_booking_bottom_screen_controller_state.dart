@@ -17,7 +17,7 @@ enum BxBookingBottomScreenControllerStatus {
 class BxBookingBottomScreenControllerState extends Equatable {
   final BxBookingBottomScreenControllerStatus status;
   final String? errorMessage;
-  final List<Map<String, String>> bookings;
+  final List<Map<String, String?>> bookings;
   final int selectedTab;
 
   const BxBookingBottomScreenControllerState({
@@ -30,7 +30,7 @@ class BxBookingBottomScreenControllerState extends Equatable {
   BxBookingBottomScreenControllerState copyWith({
     BxBookingBottomScreenControllerStatus? status,
     String? errorMessage,
-    List<Map<String, String>>? bookings,
+    List<Map<String, String?>>? bookings,
     int? selectedTab,
   }) {
     return BxBookingBottomScreenControllerState(
