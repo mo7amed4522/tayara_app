@@ -32,39 +32,36 @@ class _ExploreBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Top bar: search + filter
-            const _TopBar(),
-            const SizedBox(height: 12),
-            // Scrollable content
-            Expanded(
-              child: CustomScrollView(
-                slivers: [
-                  SliverToBoxAdapter(child: const _HeroCarousel()),
-                  const SliverToBoxAdapter(child: SizedBox(height: 24)),
-                  const _ExploreByThemeSliver(),
-                  const SliverToBoxAdapter(child: SizedBox(height: 24)),
-                  const _PopularRightNowSliver(),
-                  const SliverToBoxAdapter(child: SizedBox(height: 24)),
-                  const _TrustedAgenciesSliver(),
-                  const SliverToBoxAdapter(child: SizedBox(height: 24)),
-                ],
-              ),
+    return SafeArea(
+      child: Column(
+        children: [
+          // Top bar: search + filter
+          const _TopBar(),
+          const SizedBox(height: 12),
+          // Scrollable content
+          Expanded(
+            child: CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(child: const _HeroCarousel()),
+                const SliverToBoxAdapter(child: SizedBox(height: 24)),
+                const _ExploreByThemeSliver(),
+                const SliverToBoxAdapter(child: SizedBox(height: 24)),
+                const _PopularRightNowSliver(),
+                const SliverToBoxAdapter(child: SizedBox(height: 24)),
+                const _TrustedAgenciesSliver(),
+                const SliverToBoxAdapter(child: SizedBox(height: 24)),
+              ],
             ),
-            // Bottom CTA bar
-            const _BottomCtaBar(),
-            // Bottom navigation bar
-            const _BottomNavBar(),
-          ],
-        ),
+          ),
+          // Bottom CTA bar
+          const _BottomCtaBar(),
+        ],
       ),
     );
   }
 }
+
+// ─── Top Bar (Search + Filter) ─────────────────────────────────────────────────
 
 // ─── Top Bar (Search + Filter) ─────────────────────────────────────────────────
 
@@ -74,43 +71,68 @@ class _TopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
-          // Tayara brand
-          Text(
-            'Tayara',
-            style: textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: BxAppColors.primary,
-              fontSize: 22,
+          // Search field – styled like _SearchField, responsive width
+          SizedBox(
+            width: MediaQuery.of(context).size.width - 105,
+            height: 48,
+            child: TextField(
+              style: TextStyle(
+                color: colorScheme.onSurface,
+                fontSize: 14,
+                fontFamily: 'Poppins',
+              ),
+              decoration: InputDecoration(
+                hintText: 'Search destinations or experiences..',
+                hintStyle: TextStyle(
+                  color: colorScheme.onSurface.withOpacity(0.4),
+                  fontSize: 14,
+                  fontFamily: 'Poppins',
+                ),
+                suffixIcon: Icon(
+                  Icons.search,
+                  color: colorScheme.onSurface.withOpacity(0.4),
+                  size: 20,
+                ),
+                filled: true,
+                fillColor: colorScheme.surface,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 0,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(24),
+                  borderSide: BorderSide.none,
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(24),
+                  borderSide: BorderSide.none,
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(24),
+                  borderSide: BorderSide(color: BxAppColors.primary, width: 2),
+                ),
+              ),
             ),
           ),
-          const Spacer(),
-          // Notification bell
-          IconButton(
-            onPressed: () {},
-            icon: Icon(
-              Icons.notifications_outlined,
-              size: 24,
-              color: colorScheme.onSurface,
-            ),
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(),
-          ),
-          const SizedBox(width: 8),
-          // Profile avatar
+          const SizedBox(width: 25),
+          // Circular filter button – unchanged from your version
           Container(
-            width: 36,
-            height: 36,
+            width: 48,
+            height: 48,
             decoration: BoxDecoration(
-              color: BxAppColors.primary,
+              color: Theme.of(context).colorScheme.onSecondary,
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.person, size: 20, color: Colors.white),
+            child: Icon(
+              Icons.filter_list,
+              size: 16,
+              color: Theme.of(context).colorScheme.onBackground,
+            ),
           ),
         ],
       ),
@@ -196,64 +218,67 @@ class _HeroPageView extends StatelessWidget {
 
     return Stack(
       children: [
-        PageView.builder(
-          controller: pageController,
-          itemCount: ads.length,
-          onPageChanged: onPageChanged,
-          itemBuilder: (context, index) {
-            final ad = ads[index];
-            return ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  Image.asset(ad['imageUrl']!, fit: BoxFit.cover),
-                  // Gradient overlay
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.transparent,
-                          Colors.black.withOpacity(0.55),
-                        ],
-                        stops: const [0.4, 1.0],
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: PageView.builder(
+            controller: pageController,
+            itemCount: ads.length,
+            onPageChanged: onPageChanged,
+            itemBuilder: (context, index) {
+              final ad = ads[index];
+              return ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Image.asset(ad['imageUrl']!, fit: BoxFit.cover),
+                    // Gradient overlay
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.transparent,
+                            Colors.black.withOpacity(0.55),
+                          ],
+                          stops: const [0.4, 1.0],
+                        ),
                       ),
                     ),
-                  ),
-                  // Text content
-                  Positioned(
-                    left: 16,
-                    bottom: 40,
-                    right: 16,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          ad['title']!,
-                          style: textTheme.titleMedium?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 17,
+                    // Text content
+                    Positioned(
+                      left: 16,
+                      bottom: 40,
+                      right: 16,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            ad['title']!,
+                            style: textTheme.titleMedium?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 17,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          ad['subtitle']!,
-                          style: textTheme.bodySmall?.copyWith(
-                            color: Colors.white.withOpacity(0.9),
-                            fontSize: 13,
+                          const SizedBox(height: 2),
+                          Text(
+                            ad['subtitle']!,
+                            style: textTheme.bodySmall?.copyWith(
+                              color: Colors.white.withOpacity(0.9),
+                              fontSize: 13,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            );
-          },
+                  ],
+                ),
+              );
+            },
+          ),
         ),
         // Pagination dots
         Positioned(
@@ -438,7 +463,7 @@ class _PopularRightNowSliver extends StatelessWidget {
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: SizedBox(
-                  height: 180,
+                  height: 210,
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
                     itemCount: trips.length,
@@ -514,7 +539,7 @@ class _PopularTripCard extends StatelessWidget {
               children: [
                 Text(
                   name,
-                  style: textTheme.titleSmall?.copyWith(
+                  style: textTheme.bodySmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                   maxLines: 1,
@@ -593,14 +618,17 @@ class _TrustedAgenciesList extends StatelessWidget {
     ];
 
     return SizedBox(
-      height: 150,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: agencies.length,
-        separatorBuilder: (_, _) => const SizedBox(width: 12),
-        itemBuilder: (context, index) => _AgencyCard(
-          name: agencies[index]['name']!,
-          rating: agencies[index]['rating']!,
+      height: 200,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: ListView.separated(
+          scrollDirection: Axis.horizontal,
+          itemCount: agencies.length,
+          separatorBuilder: (_, _) => const SizedBox(width: 12),
+          itemBuilder: (context, index) => _AgencyCard(
+            name: agencies[index]['name']!,
+            rating: agencies[index]['rating']!,
+          ),
         ),
       ),
     );
@@ -650,7 +678,7 @@ class _AgencyCard extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             name,
-            style: textTheme.titleSmall?.copyWith(
+            style: textTheme.bodySmall?.copyWith(
               fontWeight: FontWeight.bold,
               fontFamily: 'Poppins',
             ),
@@ -676,24 +704,14 @@ class _AgencyCard extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           SizedBox(
-            width: 80,
-            height: 28,
-            child: ElevatedButton(
+            child: TextButton(
               onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: BxAppColors.primary,
-                foregroundColor: Colors.white,
-                padding: EdgeInsets.zero,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                textStyle: const TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Poppins',
+              child: Text(
+                "View Trips",
+                style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
-              child: const Text('View Trips'),
             ),
           ),
         ],
@@ -727,17 +745,17 @@ class _BottomCtaBar extends StatelessWidget {
         children: [
           Expanded(
             child: Text(
-              "Didn't find what you need?",
-              style: textTheme.bodyMedium?.copyWith(
+              "Didn't find what you need ?",
+              style: textTheme.bodySmall?.copyWith(
                 color: Theme.of(context).colorScheme.onSurface,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w100,
                 fontFamily: 'Poppins',
               ),
             ),
           ),
           const SizedBox(width: 12),
           SizedBox(
-            width: 160,
+            width: 180,
             height: 40,
             child: ElevatedButton(
               onPressed: () {},
@@ -754,114 +772,17 @@ class _BottomCtaBar extends StatelessWidget {
                   fontFamily: 'Poppins',
                 ),
               ),
-              child: const Text('Build Custom Plan'),
+              child: Row(
+                children: [
+                  Image.asset(BxAppConstant.buildCustomTrip),
+                  const SizedBox(width: 5),
+                  const Text('Build Custom Plan'),
+                ],
+              ),
             ),
           ),
         ],
       ),
-    );
-  }
-}
-
-// ─── Bottom Navigation Bar ─────────────────────────────────────────────────────
-
-class _BottomNavBar extends StatelessWidget {
-  const _BottomNavBar();
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 8,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          // Home
-          _NavItem(
-            icon: BxAppConstant.homeIcon,
-            label: 'Home',
-            isActive: false,
-          ),
-          // Explore – active
-          _NavItem(
-            icon: BxAppConstant.exploreIcon,
-            label: 'Explore',
-            isActive: true,
-          ),
-          // Bookings
-          _NavItem(
-            icon: BxAppConstant.bookingsIcon,
-            label: 'Bookings',
-            isActive: false,
-          ),
-          // Profile
-          _NavItem(
-            icon: BxAppConstant.profileIcon,
-            label: 'Profile',
-            isActive: false,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _NavItem extends StatelessWidget {
-  final String icon;
-  final String label;
-  final bool isActive;
-
-  const _NavItem({
-    required this.icon,
-    required this.label,
-    required this.isActive,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        // Icon – TODO: replace with active-state icon assets
-        // TODO: add home_icon_active.png, explore_icon_active.png,
-        //       bookings_icon_active.png, profile_icon_active.png
-        SizedBox(
-          width: 28,
-          height: 28,
-          child: Image.asset(
-            icon,
-            fit: BoxFit.contain,
-            color: isActive
-                ? BxAppColors.primary
-                : colorScheme.onSurface.withOpacity(0.5),
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 11,
-            fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
-            color: isActive
-                ? BxAppColors.primary
-                : colorScheme.onSurface.withOpacity(0.5),
-            fontFamily: 'Poppins',
-          ),
-        ),
-      ],
     );
   }
 }
