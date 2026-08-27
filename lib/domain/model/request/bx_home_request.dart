@@ -42,11 +42,7 @@ class BxCustomerExploreRequest {
   @JsonKey(name: 'pageSize')
   final int pageSize;
 
-  BxCustomerExploreRequest({
-    this.category,
-    this.page = 1,
-    this.pageSize = 12,
-  });
+  BxCustomerExploreRequest({this.category, this.page = 1, this.pageSize = 12});
 
   factory BxCustomerExploreRequest.fromJson(Map<String, dynamic> json) =>
       _$BxCustomerExploreRequestFromJson(json);
@@ -65,11 +61,7 @@ class BxCustomerDealsRequest {
   @JsonKey(name: 'pageSize')
   final int pageSize;
 
-  BxCustomerDealsRequest({
-    this.category,
-    this.page = 1,
-    this.pageSize = 12,
-  });
+  BxCustomerDealsRequest({this.category, this.page = 1, this.pageSize = 12});
 
   factory BxCustomerDealsRequest.fromJson(Map<String, dynamic> json) =>
       _$BxCustomerDealsRequestFromJson(json);

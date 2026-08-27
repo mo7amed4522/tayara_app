@@ -21,13 +21,14 @@ class BxBookingBottomScreenControllerBloc
         > {
   final BxBookingUsecase _bookingUsecase;
 
-  BxBookingBottomScreenControllerBloc({required BxBookingUsecase bookingUsecase})
-    : _bookingUsecase = bookingUsecase,
-      super(
-        const BxBookingBottomScreenControllerState(
-          status: BxBookingBottomScreenControllerStatus.initial,
-        ),
-      ) {
+  BxBookingBottomScreenControllerBloc({
+    required BxBookingUsecase bookingUsecase,
+  }) : _bookingUsecase = bookingUsecase,
+       super(
+         const BxBookingBottomScreenControllerState(
+           status: BxBookingBottomScreenControllerStatus.initial,
+         ),
+       ) {
     on<BxLoadBookings>(_onLoadBookings);
     on<BxFilterBookings>(_onFilterBookings);
   }
@@ -45,10 +46,9 @@ class BxBookingBottomScreenControllerBloc
           'name': 'Booking #${booking.id ?? booking.bookingCode ?? ''}',
           'date': booking.startDate ?? booking.requestedAt ?? '',
           'status': booking.bookingStatus ?? 'pending',
-          'price':
-              booking.amountGross != null
-                  ? '\$${booking.amountGross}'
-                  : '\$0',
+          'price': booking.amountGross != null
+              ? '\$${booking.amountGross}'
+              : '\$0',
         };
       }).toList();
       emit(

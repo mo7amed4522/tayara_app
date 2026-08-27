@@ -43,7 +43,12 @@ class BxCustomerSearchData {
   @JsonKey(name: 'topExplore')
   final List<BxCustomerExploreResult>? topExplore;
 
-  BxCustomerSearchData({this.keyword, this.agents, this.packages, this.topExplore});
+  BxCustomerSearchData({
+    this.keyword,
+    this.agents,
+    this.packages,
+    this.topExplore,
+  });
 
   factory BxCustomerSearchData.fromJson(Map<String, dynamic> json) =>
       _$BxCustomerSearchDataFromJson(json);
@@ -613,7 +618,13 @@ class BxPageResult {
   @JsonKey(name: 'pageSize')
   final int? pageSize;
 
-  BxPageResult({this.list, this.total, this.totalPage, this.page, this.pageSize});
+  BxPageResult({
+    this.list,
+    this.total,
+    this.totalPage,
+    this.page,
+    this.pageSize,
+  });
 
   factory BxPageResult.fromJson(Map<String, dynamic> json) =>
       _$BxPageResultFromJson(json);

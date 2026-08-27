@@ -359,7 +359,13 @@ class BxBookingListData {
   @JsonKey(name: 'pageSize')
   final int? pageSize;
 
-  BxBookingListData({this.list, this.total, this.totalPage, this.page, this.pageSize});
+  BxBookingListData({
+    this.list,
+    this.total,
+    this.totalPage,
+    this.page,
+    this.pageSize,
+  });
 
   factory BxBookingListData.fromJson(Map<String, dynamic> json) =>
       _$BxBookingListDataFromJson(json);
