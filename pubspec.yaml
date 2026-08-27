@@ -116,6 +116,9 @@ flutter:
     - family: lao-mn
       fonts:
         - asset: assets/fonts/lao-mn.ttf
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/Poppins-Regular.ttf
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
