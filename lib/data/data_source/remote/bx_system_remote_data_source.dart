@@ -22,7 +22,7 @@ import 'package:tayara/domain/model/response/bx_package_response.dart';
 import 'package:tayara/domain/model/response/bx_booking_response.dart';
 import 'package:tayara/domain/model/response/bx_profile_response.dart';
 
-/// Helper: decodes a Dio response into a Map<String, dynamic>.
+/// Helper: decodes a Dio response into a map of [String] to [dynamic].
 /// Handles both Map responses and String (raw JSON) responses.
 Map<String, dynamic> _decodeResponse(dynamic response) {
   if (response is Map<String, dynamic>) return response;
