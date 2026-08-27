@@ -21,10 +21,9 @@ class BxBookingBottomScreenMobile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) =>
-          BxBookingBottomScreenControllerBloc(
-            bookingUsecase: BxDependencyInjector.instance.get(),
-          )..add(const BxLoadBookings()),
+      create: (_) => BxBookingBottomScreenControllerBloc(
+        bookingUsecase: BxDependencyInjector.instance.get(),
+      )..add(const BxLoadBookings()),
       child: const _BookingBody(),
     );
   }

@@ -253,7 +253,13 @@ class BxPackageAvailability {
   @JsonKey(name: 'price')
   final int? price;
 
-  BxPackageAvailability({this.id, this.startDate, this.endDate, this.seats, this.price});
+  BxPackageAvailability({
+    this.id,
+    this.startDate,
+    this.endDate,
+    this.seats,
+    this.price,
+  });
 
   factory BxPackageAvailability.fromJson(Map<String, dynamic> json) =>
       _$BxPackageAvailabilityFromJson(json);
@@ -275,7 +281,12 @@ class BxPackageRequiredField {
   @JsonKey(name: 'isRequired')
   final bool? isRequired;
 
-  BxPackageRequiredField({this.id, this.fieldName, this.fieldType, this.isRequired});
+  BxPackageRequiredField({
+    this.id,
+    this.fieldName,
+    this.fieldType,
+    this.isRequired,
+  });
 
   factory BxPackageRequiredField.fromJson(Map<String, dynamic> json) =>
       _$BxPackageRequiredFieldFromJson(json);
@@ -319,7 +330,13 @@ class BxItineraryDay {
   @JsonKey(name: 'items')
   final List<BxItineraryItem>? items;
 
-  BxItineraryDay({this.id, this.dayNumber, this.title, this.description, this.items});
+  BxItineraryDay({
+    this.id,
+    this.dayNumber,
+    this.title,
+    this.description,
+    this.items,
+  });
 
   factory BxItineraryDay.fromJson(Map<String, dynamic> json) =>
       _$BxItineraryDayFromJson(json);
@@ -485,7 +502,13 @@ class BxPackageReviewsData {
   @JsonKey(name: 'pageSize')
   final int? pageSize;
 
-  BxPackageReviewsData({this.list, this.total, this.totalPage, this.page, this.pageSize});
+  BxPackageReviewsData({
+    this.list,
+    this.total,
+    this.totalPage,
+    this.page,
+    this.pageSize,
+  });
 
   factory BxPackageReviewsData.fromJson(Map<String, dynamic> json) =>
       _$BxPackageReviewsDataFromJson(json);
