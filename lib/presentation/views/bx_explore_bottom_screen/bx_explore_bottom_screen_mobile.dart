@@ -12,6 +12,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tayara/core/constant/bx_app_constant.dart';
 import 'package:tayara/core/theme/bx_app_colors.dart';
 import 'package:tayara/presentation/bloc/bx_explore_bottom_screen_controller/bx_explore_bottom_screen_controller_bloc.dart';
+import 'package:tayara/injection/bx_dependency_injector.dart';
 
 class BxExploreBottomScreenMobile extends StatelessWidget {
   const BxExploreBottomScreenMobile({super.key});
@@ -19,9 +20,9 @@ class BxExploreBottomScreenMobile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) =>
-          BxExploreBottomScreenControllerBloc()
-            ..add(const BxLoadExploreContent()),
+      create: (_) => BxExploreBottomScreenControllerBloc(
+        homeUsecase: BxDependencyInjector.instance.get(),
+      )..add(const BxLoadExploreContent()),
       child: const _ExploreBody(),
     );
   }
@@ -835,9 +836,6 @@ class _NavItem extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Icon – TODO: replace with active-state icon assets
-        // TODO: add home_icon_active.png, explore_icon_active.png,
-        //       bookings_icon_active.png, profile_icon_active.png
         SizedBox(
           width: 28,
           height: 28,

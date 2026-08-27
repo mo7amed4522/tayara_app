@@ -7,6 +7,8 @@
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tayara/core/constant/bx_app_constant.dart';
+import 'package:tayara/domain/usecase/bx_booking_usecase.dart';
 
 part 'bx_booking_bottom_screen_controller_state.dart';
 part 'bx_booking_bottom_screen_controller_event.dart';
@@ -17,8 +19,11 @@ class BxBookingBottomScreenControllerBloc
           BxBookingBottomScreenControllerEvent,
           BxBookingBottomScreenControllerState
         > {
-  BxBookingBottomScreenControllerBloc()
-    : super(
+  final BxBookingUsecase _bookingUsecase;
+
+  BxBookingBottomScreenControllerBloc({required BxBookingUsecase bookingUsecase})
+    : _bookingUsecase = bookingUsecase,
+      super(
         const BxBookingBottomScreenControllerState(
           status: BxBookingBottomScreenControllerStatus.initial,
         ),
@@ -27,35 +32,25 @@ class BxBookingBottomScreenControllerBloc
     on<BxFilterBookings>(_onFilterBookings);
   }
 
-  void _onLoadBookings(
+  Future<void> _onLoadBookings(
     BxLoadBookings event,
     Emitter<BxBookingBottomScreenControllerState> emit,
-  ) {
+  ) async {
     emit(state.copyWith(status: BxBookingBottomScreenControllerStatus.loading));
     try {
-      final bookings = [
-        {
-          'image': 'assets/images/recommend_image1.png',
-          'name': 'Bali Paradise 5D/4N',
-          'date': '15 Jan 2026',
-          'status': 'confirmed',
-          'price': '\$1,250',
-        },
-        {
-          'image': 'assets/images/recommend_image2.png',
-          'name': 'Paris Romance 4D/3N',
-          'date': '22 Feb 2026',
-          'status': 'pending',
-          'price': '\$1,100',
-        },
-        {
-          'image': 'assets/images/recommend_image1.png',
-          'name': 'Tokyo Discovery 6D/5N',
-          'date': '10 Mar 2026',
-          'status': 'expired',
-          'price': '\$1,450',
-        },
-      ];
+      final result = await _bookingUsecase.loadBookings();
+      final bookings = (result.data?.list ?? []).map((booking) {
+        return <String, String>{
+          'image': BxAppConstant.recommendImage1,
+          'name': 'Booking #${booking.id ?? booking.bookingCode ?? ''}',
+          'date': booking.startDate ?? booking.requestedAt ?? '',
+          'status': booking.bookingStatus ?? 'pending',
+          'price':
+              booking.amountGross != null
+                  ? '\$${booking.amountGross}'
+                  : '\$0',
+        };
+      }).toList();
       emit(
         state.copyWith(
           status: BxBookingBottomScreenControllerStatus.success,

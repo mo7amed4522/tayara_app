@@ -12,48 +12,35 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tayara/data/repositories/bx_firebase_login_repositories_impl.dart';
 import 'package:tayara/domain/repositories/bx_firebase_login_repositories.dart';
 import 'package:tayara/domain/usecase/bx_firebase_login_usecase.dart';
+import 'package:tayara/data/repositories/bx_home_repositories_impl.dart';
+import 'package:tayara/domain/repositories/bx_home_repositories.dart';
+import 'package:tayara/domain/usecase/bx_home_usecase.dart';
+import 'package:tayara/data/repositories/bx_booking_repositories_impl.dart';
+import 'package:tayara/domain/repositories/bx_booking_repositories.dart';
+import 'package:tayara/domain/usecase/bx_booking_usecase.dart';
+import 'package:tayara/data/repositories/bx_package_repositories_impl.dart';
+import 'package:tayara/domain/repositories/bx_package_repositories.dart';
+import 'package:tayara/domain/usecase/bx_package_usecase.dart';
+import 'package:tayara/data/repositories/bx_agent_repositories_impl.dart';
+import 'package:tayara/domain/repositories/bx_agent_repositories.dart';
+import 'package:tayara/domain/usecase/bx_agent_usecase.dart';
+import 'package:tayara/data/repositories/bx_profile_repositories_impl.dart';
+import 'package:tayara/domain/repositories/bx_profile_repositories.dart';
+import 'package:tayara/domain/usecase/bx_profile_usecase.dart';
 
 /// Central dependency injection container based on [GetIt].
-///
-/// This singleton initialises and wires together all core services,
-/// data sources, repositories and use cases. The [setup] method must
-/// be called once during app startup (e.g. in `main()` or a splash
-/// screen) to register all dependencies before any other part of the
-/// application attempts to retrieve them via the [get] method.
-///
-/// Usage:
-/// ```dart
-/// final injector = BxDependencyInjector.instance;
-/// await injector.setup();
-/// // later…
-/// final loginUsecase = injector.get<BxLoginUserUsecase>();
-/// ```
 class BxDependencyInjector {
   static final BxDependencyInjector _singleton =
       BxDependencyInjector._internal();
   static final GetIt _getIt = GetIt.instance;
 
-  /// Returns the singleton instance of the injector.
-  factory BxDependencyInjector() {
-    return _singleton;
-  }
+  factory BxDependencyInjector() => _singleton;
 
   BxDependencyInjector._internal();
 
-  /// Provides access to the singleton from anywhere.
   static BxDependencyInjector get instance => _singleton;
 
   /// Registers all application dependencies.
-  ///
-  /// Must be called once before the first [get] call. It initialises:
-  /// - Core: [BxDioClient] (singleton HTTP client)
-  /// - SharedPreferences (singleton, obtained asynchronously)
-  /// - Remote data source ([BxSystemRemoteDataSource])
-  /// - Local data source ([BxSharedPreferencesDataSource])
-  /// - All domain repositories (each bound to their implementation)
-  /// - All use cases, with their required repositories injected
-  ///
-  /// After this completes, any registered type can be retrieved via [get].
   Future<void> setup() async {
     // Core
     _getIt.registerLazySingleton<BxDioClient>(() => BxDioClient.instance);
@@ -70,18 +57,59 @@ class BxDependencyInjector {
       () => BxSharedPreferencesDataSourceImpl(_getIt()),
     );
 
-    // Repositories
+    // ── Auth Repositories & UseCases ─────────────────────────────────────────
+
     _getIt.registerLazySingleton<BxFirebaseLoginRepositories>(
       () => BxFirebaseLoginRepositoriesImpl(bxsystemRemoteDataSource: _getIt()),
     );
-    // UseCases
     _getIt.registerLazySingleton<BxFirebaseLoginUsecase>(
       () => BxFirebaseLoginUsecase(_getIt()),
+    );
+
+    // ── Home Repositories & UseCases ─────────────────────────────────────────
+
+    _getIt.registerLazySingleton<BxHomeRepositories>(
+      () => BxHomeRepositoriesImpl(remoteDataSource: _getIt()),
+    );
+    _getIt.registerLazySingleton<BxHomeUsecase>(() => BxHomeUsecase(_getIt()));
+
+    // ── Booking Repositories & UseCases ───────────────────────────────────────
+
+    _getIt.registerLazySingleton<BxBookingRepositories>(
+      () => BxBookingRepositoriesImpl(remoteDataSource: _getIt()),
+    );
+    _getIt.registerLazySingleton<BxBookingUsecase>(
+      () => BxBookingUsecase(_getIt()),
+    );
+
+    // ── Package Repositories & UseCases ───────────────────────────────────────
+
+    _getIt.registerLazySingleton<BxPackageRepositories>(
+      () => BxPackageRepositoriesImpl(remoteDataSource: _getIt()),
+    );
+    _getIt.registerLazySingleton<BxPackageUsecase>(
+      () => BxPackageUsecase(_getIt()),
+    );
+
+    // ── Agent Repositories & UseCases ─────────────────────────────────────────
+
+    _getIt.registerLazySingleton<BxAgentRepositories>(
+      () => BxAgentRepositoriesImpl(remoteDataSource: _getIt()),
+    );
+    _getIt.registerLazySingleton<BxAgentUsecase>(
+      () => BxAgentUsecase(_getIt()),
+    );
+
+    // ── Profile Repositories & UseCases ───────────────────────────────────────
+
+    _getIt.registerLazySingleton<BxProfileRepositories>(
+      () => BxProfileRepositoriesImpl(remoteDataSource: _getIt()),
+    );
+    _getIt.registerLazySingleton<BxProfileUsecase>(
+      () => BxProfileUsecase(_getIt()),
     );
   }
 
   /// Retrieves a previously registered dependency of type [T].
-  ///
-  /// Throws a [GetIt] error if the type has not been registered.
   T get<T extends Object>() => _getIt.get<T>();
 }
