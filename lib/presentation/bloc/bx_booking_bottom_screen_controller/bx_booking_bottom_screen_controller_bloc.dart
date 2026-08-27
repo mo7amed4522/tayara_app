@@ -7,6 +7,8 @@
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tayara/core/constant/bx_app_constant.dart';
+import 'package:tayara/domain/usecase/bx_booking_usecase.dart';
 
 part 'bx_booking_bottom_screen_controller_state.dart';
 part 'bx_booking_bottom_screen_controller_event.dart';
@@ -17,8 +19,11 @@ class BxBookingBottomScreenControllerBloc
           BxBookingBottomScreenControllerEvent,
           BxBookingBottomScreenControllerState
         > {
-  BxBookingBottomScreenControllerBloc()
-    : super(
+  final BxBookingUsecase _bookingUsecase;
+
+  BxBookingBottomScreenControllerBloc({required BxBookingUsecase bookingUsecase})
+    : _bookingUsecase = bookingUsecase,
+      super(
         const BxBookingBottomScreenControllerState(
           status: BxBookingBottomScreenControllerStatus.initial,
         ),
@@ -27,79 +32,25 @@ class BxBookingBottomScreenControllerBloc
     on<BxFilterBookings>(_onFilterBookings);
   }
 
-  void _onLoadBookings(
+  Future<void> _onLoadBookings(
     BxLoadBookings event,
     Emitter<BxBookingBottomScreenControllerState> emit,
-  ) {
+  ) async {
     emit(state.copyWith(status: BxBookingBottomScreenControllerStatus.loading));
     try {
-      final List<Map<String, String?>> bookings = [
-        {
-          'image': 'assets/images/recommend_image1.png',
-          'name': 'Cairo Explorer',
-          'days': '5 Days',
-          'date': 'March 15 - 20, 2025',
-          'agency': 'Travel Vista Tours',
-          'agencyRating': '4.8',
-          'priceLabel': 'Estimated Price Range',
-          'price': r'$800 - $1,200',
-          'status': 'pending',
-          'timeLeft': '18h left',
-          'expiredDate': null,
-        },
-        {
-          'image': 'assets/images/recommend_image2.png',
-          'name': 'Paris Romance',
-          'days': '4 Days',
-          'date': 'April 10 - 14, 2025',
-          'agency': 'Luxury Getaways',
-          'agencyRating': '4.5',
-          'priceLabel': 'Estimated Price Range',
-          'price': r'$1,100 - $1,500',
-          'status': 'pending',
-          'timeLeft': '6h left',
-          'expiredDate': null,
-        },
-        {
-          'image': 'assets/images/recommend_image1.png',
-          'name': 'Cairo Explorer',
-          'days': '5 Days',
-          'date': 'March 15 - 20, 2025',
-          'agency': 'Travel Vista Tours',
-          'agencyRating': '4.8',
-          'priceLabel': 'Final Price',
-          'price': r'$950',
-          'status': 'confirmed',
-          'timeLeft': null,
-          'expiredDate': null,
-        },
-        {
-          'image': 'assets/images/recommend_image2.png',
-          'name': 'Tokyo Discovery',
-          'days': '6 Days',
-          'date': 'May 1 - 7, 2025',
-          'agency': 'Asia Travels Co.',
-          'agencyRating': '4.2',
-          'priceLabel': 'Estimated Price Range',
-          'price': r'$1,450 - $1,800',
-          'status': 'expired',
-          'timeLeft': null,
-          'expiredDate': 'Mar 22, 2025',
-        },
-        {
-          'image': 'assets/images/recommend_image1.png',
-          'name': 'Bali Paradise',
-          'days': '5 Days',
-          'date': 'June 10 - 15, 2025',
-          'agency': 'Island Escapes',
-          'agencyRating': '4.9',
-          'priceLabel': 'Estimated Price Range',
-          'price': r'$1,200 - $1,600',
-          'status': 'expired',
-          'timeLeft': null,
-          'expiredDate': 'Apr 5, 2025',
-        },
-      ];
+      final result = await _bookingUsecase.loadBookings();
+      final bookings = (result.data?.list ?? []).map((booking) {
+        return <String, String>{
+          'image': BxAppConstant.recommendImage1,
+          'name': 'Booking #${booking.id ?? booking.bookingCode ?? ''}',
+          'date': booking.startDate ?? booking.requestedAt ?? '',
+          'status': booking.bookingStatus ?? 'pending',
+          'price':
+              booking.amountGross != null
+                  ? '\$${booking.amountGross}'
+                  : '\$0',
+        };
+      }).toList();
       emit(
         state.copyWith(
           status: BxBookingBottomScreenControllerStatus.success,

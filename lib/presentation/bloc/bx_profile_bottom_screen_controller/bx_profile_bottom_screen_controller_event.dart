@@ -10,9 +10,17 @@ abstract class BxProfileBottomScreenControllerEvent extends Equatable {
   const BxProfileBottomScreenControllerEvent();
 
   @override
-  List<Object?> get props => [];
+  List<Object> get props => [];
 }
 
-class BxLoadProfileThemeEvent extends BxProfileBottomScreenControllerEvent {}
+class BxLoadProfileThemeEvent extends BxProfileBottomScreenControllerEvent {
+  const BxLoadProfileThemeEvent();
+}
 
-class BxToggleProfileThemeEvent extends BxProfileBottomScreenControllerEvent {}
+class BxToggleProfileThemeEvent extends BxProfileBottomScreenControllerEvent {
+  const BxToggleProfileThemeEvent();
+}
+
+class BxLoadProfileEvent extends BxProfileBottomScreenControllerEvent {
+  const BxLoadProfileEvent();
+}

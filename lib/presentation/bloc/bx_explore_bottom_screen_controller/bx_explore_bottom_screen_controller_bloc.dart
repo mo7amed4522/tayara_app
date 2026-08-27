@@ -8,6 +8,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tayara/core/constant/bx_app_constant.dart';
+import 'package:tayara/domain/model/request/bx_home_request.dart';
+import 'package:tayara/domain/usecase/bx_home_usecase.dart';
 
 part 'bx_explore_bottom_screen_controller_event.dart';
 part 'bx_explore_bottom_screen_controller_state.dart';
@@ -18,107 +20,59 @@ class BxExploreBottomScreenControllerBloc
           BxExploreBottomScreenControllerEvent,
           BxExploreBottomScreenControllerState
         > {
-  BxExploreBottomScreenControllerBloc()
-    : super(const BxExploreBottomScreenControllerState()) {
+  final BxHomeUsecase _homeUsecase;
+
+  BxExploreBottomScreenControllerBloc({required BxHomeUsecase homeUsecase})
+    : _homeUsecase = homeUsecase,
+      super(const BxExploreBottomScreenControllerState()) {
     on<BxLoadExploreContent>(_onLoadExploreContent);
   }
 
-  void _onLoadExploreContent(
+  Future<void> _onLoadExploreContent(
     BxLoadExploreContent event,
     Emitter<BxExploreBottomScreenControllerState> emit,
-  ) {
+  ) async {
     emit(state.copyWith(status: BxExploreBottomScreenControllerStatus.loading));
     try {
-      final destinations = [
-        {'image': BxAppConstant.baliImage, 'name': 'Bali', 'trips': '48 trips'},
-        {
-          'image': BxAppConstant.pairsImage,
-          'name': 'Paris',
-          'trips': '62 trips',
-        },
-        {
-          'image': BxAppConstant.tokyoImage,
-          'name': 'Tokyo',
-          'trips': '35 trips',
-        },
-        {
-          'image': BxAppConstant.swazirelandImage,
-          'name': 'Switzerland',
-          'trips': '29 trips',
-        },
-      ];
-      final trendingTrips = [
-        {
-          'image': BxAppConstant.recommendImage1,
-          'name': 'Bali Paradise 5D/4N',
-          'price': 'From \$890',
-          'rating': '4.8 (210 reviews)',
-        },
-        {
-          'image': BxAppConstant.recommendImage2,
-          'name': 'Paris Romance 4D/3N',
-          'price': 'From \$1,100',
-          'rating': '4.9 (185 reviews)',
-        },
-        {
-          'image': BxAppConstant.recommendImage1,
-          'name': 'Tokyo Discovery 6D/5N',
-          'price': 'From \$1,350',
-          'rating': '4.7 (142 reviews)',
-        },
-      ];
-      final themes = [
-        {
-          'image': BxAppConstant.baliImage,
-          'name': 'Adventure Trips',
-          'description': 'Exciting outdoor experiences',
-        },
-        {
-          'image': BxAppConstant.pairsImage,
-          'name': 'Luxury Escapes',
-          'description': 'Premium travel packages',
-        },
-        {
-          'image': BxAppConstant.tokyoImage,
-          'name': 'Cultural Journeys',
-          'description': 'Immersive local experiences',
-        },
-        {
-          'image': BxAppConstant.eyeBirdImage,
-          'name': 'Honeymoon Deals',
-          'description': 'Romantic getaways for two',
-        },
-        {
-          'image': BxAppConstant.swazirelandImage,
-          'name': 'Family Holidays',
-          'description': 'Fun for all ages',
-        },
-        {
-          'image': BxAppConstant.recommendImage2,
-          'name': 'Friends Trip',
-          'description': 'Group adventures & bondings',
-        },
-      ];
-      final heroAds = [
-        {
-          'imageUrl': BxAppConstant.adsBackground,
-          'title': 'Top Summer Getaways',
-          'subtitle': 'Discover amazing destinations',
+      final exploreResult = await _homeUsecase.loadExploreTrips(
+        BxCustomerExploreRequest(),
+      );
+      final destinations = exploreResult.trips.map((dest) {
+        return <String, String>{
+          'image': dest.coverImageURL ?? BxAppConstant.baliImage,
+          'name': dest.name ?? '',
+          'trips': '${dest.daysDuration ?? 0} trips',
+        };
+      }).toList();
+
+      final trendingTrips = exploreResult.trips.map((trip) {
+        return <String, String>{
+          'image': trip.coverImageURL ?? BxAppConstant.recommendImage1,
+          'name': trip.name ?? '',
+          'price': 'From \$${trip.displayPrice ?? 0}',
+          'rating': trip.rating != null
+              ? '${trip.rating} (${trip.reviewCount ?? 0} reviews)'
+              : '',
+        };
+      }).toList();
+
+      final themes = exploreResult.trips.map((trip) {
+        return <String, String>{
+          'image': trip.coverImageURL ?? BxAppConstant.baliImage,
+          'name': trip.category ?? 'Explore',
+          'description': trip.name ?? '',
+        };
+      }).toList();
+
+      final heroAds = exploreResult.trips.map((trip) {
+        return <String, String>{
+          'imageUrl': trip.coverImageURL ?? BxAppConstant.adsBackground,
+          'title': trip.name ?? '',
+          'subtitle': trip.description ?? '',
           'buttonText': 'Explore Now',
-        },
-        {
-          'imageUrl': BxAppConstant.adsBackground,
-          'title': 'Winter Wonderland',
-          'subtitle': 'Ski trips & cozy retreats',
-          'buttonText': 'View Deals',
-        },
-        {
-          'imageUrl': BxAppConstant.adsBackground,
-          'title': 'Island Adventures',
-          'subtitle': 'Paradise beaches await',
-          'buttonText': 'Book Now',
-        },
-      ];
+        };
+      }).toList();
+
       emit(
         state.copyWith(
           status: BxExploreBottomScreenControllerStatus.success,

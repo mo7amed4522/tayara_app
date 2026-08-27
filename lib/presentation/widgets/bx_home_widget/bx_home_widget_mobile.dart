@@ -95,25 +95,28 @@ class _BxHomeWidgetMobileState extends State<BxHomeWidgetMobile>
             },
             children: [
               BlocProvider(
-                create: (_) => BxHomeBottomScreenControllerBloc(),
+                create: (_) => BxHomeBottomScreenControllerBloc(
+                  homeUsecase: BxDependencyInjector.instance.get(),
+                ),
                 child: const BxHomeBottomScreenMobile(),
               ),
               BlocProvider(
-                create: (_) =>
-                    BxExploreBottomScreenControllerBloc()
-                      ..add(const BxLoadExploreContent()),
+                create: (_) => BxExploreBottomScreenControllerBloc(
+                  homeUsecase: BxDependencyInjector.instance.get(),
+                )..add(const BxLoadExploreContent()),
                 child: const BxExploreBottomScreenMobile(),
               ),
               BlocProvider(
-                create: (_) =>
-                    BxBookingBottomScreenControllerBloc()
-                      ..add(const BxLoadBookings()),
+                create: (_) => BxBookingBottomScreenControllerBloc(
+                  bookingUsecase: BxDependencyInjector.instance.get(),
+                )..add(const BxLoadBookings()),
                 child: const BxBookingBottomScreenMobile(),
               ),
               BlocProvider(
                 create: (context) => BxProfileBottomScreenControllerBloc(
                   sharedPreferencesDataSource: BxDependencyInjector.instance
                       .get<BxSharedPreferencesDataSource>(),
+                  profileUsecase: BxDependencyInjector.instance.get(),
                 )..add(BxLoadProfileThemeEvent()),
                 child: const BxProfileBottomScreenMobile(),
               ),

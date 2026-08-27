@@ -2,7 +2,7 @@
 //
 // File: lib/presentation/widgets/bx_agencies_widget/bx_agencies_widget_tablet.dart
 // Architecture: Presentation Layer - Agencies Widget (Tablet)
-// Purpose: Tablet UI for agencies listing screen
+// Purpose: Tablet UI for agency profile screen
 
 import 'package:flutter/material.dart';
 import 'package:tayara/presentation/widgets/bx_agencies_widget/bx_agencies_widget_mobile.dart';
@@ -15,7 +15,7 @@ class BxAgenciesWidgetTablet extends StatelessWidget {
     return Center(
       child: ConstrainedBox(
         constraints: BoxConstraints(maxWidth: 480),
-        child: BxAgenciesWidgetMobile(),
+        child: const BxAgenciesWidgetMobile(),
       ),
     );
   }

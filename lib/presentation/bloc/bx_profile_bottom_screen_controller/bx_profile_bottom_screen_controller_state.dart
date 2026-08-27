@@ -18,25 +18,29 @@ class BxProfileBottomScreenControllerState extends Equatable {
   final BxProfileBottomScreenControllerStatus status;
   final String? errorMessage;
   final bool isDarkMode;
+  final BxFirebaseUser? firebaseUser;
 
   const BxProfileBottomScreenControllerState({
     required this.status,
     this.errorMessage,
     this.isDarkMode = false,
+    this.firebaseUser,
   });
 
   BxProfileBottomScreenControllerState copyWith({
     BxProfileBottomScreenControllerStatus? status,
     String? errorMessage,
     bool? isDarkMode,
+    BxFirebaseUser? firebaseUser,
   }) {
     return BxProfileBottomScreenControllerState(
       status: status ?? this.status,
       errorMessage: errorMessage ?? this.errorMessage,
       isDarkMode: isDarkMode ?? this.isDarkMode,
+      firebaseUser: firebaseUser ?? this.firebaseUser,
     );
   }
 
   @override
-  List<Object?> get props => [status, errorMessage, isDarkMode];
+  List<Object?> get props => [status, errorMessage, isDarkMode, firebaseUser];
 }
