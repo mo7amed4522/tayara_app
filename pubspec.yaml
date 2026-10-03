@@ -72,6 +72,7 @@ dependencies:
   sign_in_with_apple: ^8.1.0
   # facebook sign in for login
   flutter_facebook_auth: ^7.2.0
+  device_info_plus: ^13.2.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

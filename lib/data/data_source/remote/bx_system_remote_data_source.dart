@@ -35,6 +35,7 @@ Map<String, dynamic> _decodeResponse(dynamic response) {
   throw const FormatException('Unexpected response type');
 }
 
+
 /// Defines the contract for remote API calls across the application.
 ///
 /// Every method returns a response object *without throwing exceptions*;
@@ -239,8 +240,8 @@ class BxSystemRemoteDataSourceImpl implements BxSystemRemoteDataSource {
       if (map['code'] != 0) {
         return BxAdsResult(ads: [], errorMessage: map['msg']);
       }
-      final data = map['data'] as Map<String, dynamic>?;
-      final list = data?['list'] as List<dynamic>?;
+      final data = map['data'];
+      final list = (data is Map<String, dynamic> ? data['list'] : null) as List<dynamic>?;
       final ads =
           list
               ?.map((e) => BxAdBannerResult.fromJson(e as Map<String, dynamic>))
@@ -262,8 +263,8 @@ class BxSystemRemoteDataSourceImpl implements BxSystemRemoteDataSource {
       if (map['code'] != 0) {
         return BxDestinationsResult(destinations: [], errorMessage: map['msg']);
       }
-      final data = map['data'] as Map<String, dynamic>?;
-      final list = data?['list'] as List<dynamic>?;
+      final data = map['data'];
+      final list = (data is Map<String, dynamic> ? data['list'] : null) as List<dynamic>?;
       final destinations =
           list
               ?.map(
@@ -299,8 +300,8 @@ class BxSystemRemoteDataSourceImpl implements BxSystemRemoteDataSource {
       if (map['code'] != 0) {
         return BxExploreTripsResult(trips: [], errorMessage: map['msg']);
       }
-      final data = map['data'] as Map<String, dynamic>?;
-      final list = data?['list'] as List<dynamic>?;
+      final data = map['data'];
+      final list = (data is Map<String, dynamic> ? data['list'] : null) as List<dynamic>?;
       final trips =
           list
               ?.map(
@@ -333,8 +334,8 @@ class BxSystemRemoteDataSourceImpl implements BxSystemRemoteDataSource {
       if (map['code'] != 0) {
         return BxDealsResult(deals: [], errorMessage: map['msg']);
       }
-      final data = map['data'] as Map<String, dynamic>?;
-      final list = data?['list'] as List<dynamic>?;
+      final data = map['data'];
+      final list = (data is Map<String, dynamic> ? data['list'] : null) as List<dynamic>?;
       final deals =
           list
               ?.map(
@@ -358,8 +359,8 @@ class BxSystemRemoteDataSourceImpl implements BxSystemRemoteDataSource {
       if (map['code'] != 0) {
         return BxAgentsResult(agents: [], errorMessage: map['msg']);
       }
-      final data = map['data'] as Map<String, dynamic>?;
-      final list = data?['list'] as List<dynamic>?;
+      final data = map['data'];
+      final list = (data is Map<String, dynamic> ? data['list'] : null) as List<dynamic>?;
       final agents =
           list
               ?.map(
@@ -383,8 +384,8 @@ class BxSystemRemoteDataSourceImpl implements BxSystemRemoteDataSource {
       if (map['code'] != 0) {
         return BxRecommendedResult(packages: [], errorMessage: map['msg']);
       }
-      final data = map['data'] as Map<String, dynamic>?;
-      final list = data?['list'] as List<dynamic>?;
+      final data = map['data'];
+      final list = (data is Map<String, dynamic> ? data['list'] : null) as List<dynamic>?;
       final packages =
           list
               ?.map(
@@ -422,13 +423,14 @@ class BxSystemRemoteDataSourceImpl implements BxSystemRemoteDataSource {
       if (map['code'] != 0) {
         return BxSearchResult(errorMessage: map['msg']);
       }
-      final data = BxCustomerSearchData.fromJson(
-        map['data'] as Map<String, dynamic>,
-      );
+      final data = map['data'];
+      final searchData = data is Map<String, dynamic>
+          ? BxCustomerSearchData.fromJson(data)
+          : BxCustomerSearchData();
       return BxSearchResult(
-        agents: data.agents,
-        packages: data.packages,
-        topExplore: data.topExplore,
+        agents: searchData.agents,
+        packages: searchData.packages,
+        topExplore: searchData.topExplore,
       );
     } on BxNetworkException catch (e) {
       return BxSearchResult(errorMessage: e.message);

@@ -77,7 +77,7 @@ class BxOnBoardingControllerBloc
         BxSharedPreferencesKeys.onboardingCompleted,
         true,
       );
-      BxAppRouter.pushReplacement(event.context, BxRouteNames.bxLoginScreen);
+      BxAppRouter.pushReplacement(event.context, BxRouteNames.bxHomeScreen);
       emit(state.copyWith(status: BxOnBoardingControllerStatus.completed));
     });
   }

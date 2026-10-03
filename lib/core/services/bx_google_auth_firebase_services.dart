@@ -22,16 +22,17 @@ library;
 
 import 'dart:io';
 
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 /// Returns `true` when running on the iOS simulator.
-bool get _isSimulator =>
-    Platform.isIOS &&
-    Process.runSync('sysctl', [
-      ' -n',
-      'hw.model',
-    ]).stdout.toString().contains('Simulator');
+Future<bool> get _isSimulator async {
+  if (!Platform.isIOS) return false;
+  final deviceInfo = DeviceInfoPlugin();
+  final iosInfo = await deviceInfo.iosInfo;
+  return iosInfo.isPhysicalDevice == false;
+}
 
 /// Represents the outcome of a Google authentication attempt.
 ///
@@ -126,7 +127,8 @@ class BxGoogleAuthFirebaseServices {
   ///   failed (e.g. account disabled, invalid token).
   /// - Generic exceptions – unexpected errors.
   Future<BxGoogleAuthResult> signIn() async {
-    if (_isSimulator) {
+    final isSimulator = await _isSimulator;
+    if (isSimulator) {
       return BxGoogleAuthResult.failure(
         'Google Sign‑In is not available on the iOS simulator. Please use a physical device.',
       );

@@ -50,6 +50,13 @@ class BxCustomerSearchData {
     this.topExplore,
   });
 
+  // Empty constructor for handling missing/invalid data
+  BxCustomerSearchData.empty()
+      : keyword = null,
+        agents = null,
+        packages = null,
+        topExplore = null;
+
   factory BxCustomerSearchData.fromJson(Map<String, dynamic> json) =>
       _$BxCustomerSearchDataFromJson(json);
 
