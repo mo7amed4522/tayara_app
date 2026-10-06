@@ -247,35 +247,24 @@ class BxDioClient {
     return _processResponse(response);
   }
 
-  /// Inspects the HTTP [response] and returns its data if the status code
-  /// indicates success (200–299).  Otherwise, it may attempt to extract
-  /// additional error information from HTML or JSON content (currently only
-  /// logs or does nothing, leaving error handling to the caller interceptor).
+  /// Inspects the HTTP [response] and returns its data.
   ///
-  /// This method is a placeholder for future response validation logic.
+  /// The data sources are responsible for inspecting the response's `code`
+  /// field to determine business success or failure. Actual network errors
+  /// (connection timeouts, DNS failures, etc.) are thrown as
+  /// [BxNetworkException] by the Dio error handlers above, so they never
+  /// reach this method. Returning the raw data for every HTTP response
+  /// lets data sources handle non-200 status codes (e.g. an authenticated
+  /// endpoint returning 401) without crashing on a `null` receiver.
   dynamic _processResponse(Response response) {
     final statusCode = response.statusCode;
     final data = response.data;
 
     debugPrint('📥 Response Status: $statusCode');
 
-    // Success case - return data directly
-    if (statusCode != null && statusCode >= 200 && statusCode < 300) {
-      return data;
-    }
-
-    // Check for HTML error response
-    if (data is String && data.trim().startsWith('<!DOCTYPE', 0)) {
-      // HTML error – parsing is done later in _handleDioError for badResponse
-    }
-    // Check for JSON error response
-    else if (data is Map<String, dynamic>) {
-      // JSON error – could extract message here
-    }
-    // Other cases
-    else {
-      // Unknown format
-    }
+    // Return the response data for all HTTP responses. Data sources
+    // inspect the `code` field to determine success/failure.
+    return data;
   }
 
   /// Converts a [DioException] into a [BxNetworkException] with a

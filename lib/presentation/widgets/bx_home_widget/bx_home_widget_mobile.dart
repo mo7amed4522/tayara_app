@@ -12,6 +12,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tayara/core/constant/bx_app_constant.dart';
 import 'package:tayara/core/theme/bx_app_colors.dart';
+import 'package:tayara/domain/usecase/bx_active_top_banner_ads_usecase.dart';
+import 'package:tayara/domain/usecase/bx_get_destinations_usecase.dart';
+import 'package:tayara/domain/usecase/bx_get_explore_trips_usecase.dart';
+import 'package:tayara/domain/usecase/bx_get_recommended_for_customer_usecase.dart';
+import 'package:tayara/domain/usecase/bx_get_search_usecase.dart';
 import 'package:tayara/presentation/bloc/bx_explore_bottom_screen_controller/bx_explore_bottom_screen_controller_bloc.dart';
 import 'package:tayara/presentation/bloc/bx_home_bottom_screen_controller/bx_home_bottom_screen_controller_bloc.dart';
 import 'package:tayara/presentation/bloc/bx_home_screen_controller/bx_home_screen_controller_bloc.dart';
@@ -42,6 +47,17 @@ class _BxHomeWidgetMobileState extends State<BxHomeWidgetMobile>
   static const double _circleRadius = 24.0;
 
   int _previousIndex = 0;
+
+  BxHomeBottomScreenControllerBloc createHomeBottomController() {
+    final injector = BxDependencyInjector.instance;
+    return BxHomeBottomScreenControllerBloc(
+      adsUsecase: injector.get<BxActiveTopBannerAdsUsecase>(),
+      destinationsUsecase: injector.get<BxGetDestinationsUsecase>(),
+      exploreTripsUsecase: injector.get<BxGetExploreTripsUsecase>(),
+      recommendedUsecase: injector.get<BxGetRecommendedForCustomerUsecase>(),
+      searchUsecase: injector.get<BxGetSearchUsecase>(),
+    );
+  }
 
   @override
   void initState() {
@@ -95,7 +111,7 @@ class _BxHomeWidgetMobileState extends State<BxHomeWidgetMobile>
             },
             children: [
               BlocProvider(
-                create: (_) => BxHomeBottomScreenControllerBloc(),
+                create: (context) => createHomeBottomController(),
                 child: const BxHomeBottomScreenMobile(),
               ),
               BlocProvider(

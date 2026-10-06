@@ -466,7 +466,7 @@ class BxSystemRemoteDataSourceImpl implements BxSystemRemoteDataSource {
         options: options,
         queryParameters: request.toJson(),
       );
-      if (response['code'] == 0) {
+      if (response is Map<String, dynamic> && response['code'] == 0) {
         return BxGetRecommendedForCustomerResponse.fromJson(response);
       }
 
@@ -481,11 +481,18 @@ class BxSystemRemoteDataSourceImpl implements BxSystemRemoteDataSource {
         }
       }
 
+      // Non-zero code (e.g. 1001 unauthorized) or malformed response.
+      // Preserve the actual code from the API so callers can branch on it.
+      final int code = (response is Map<String, dynamic>)
+          ? (response['code'] as int?) ?? 1
+          : 1;
+      final String? msg = (response is Map<String, dynamic> && response['msg'] != null)
+          ? response['msg'] as String?
+          : null;
       return BxGetRecommendedForCustomerResponse(
-        code: 1,
+        code: code,
         data: null,
-        msg:
-            response['msg'] ??
+        msg: msg ??
             'Unknown error occurred while fetching recommended items .',
       );
     } on BxNetworkException catch (e) {

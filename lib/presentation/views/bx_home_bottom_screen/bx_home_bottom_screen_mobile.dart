@@ -3,7 +3,7 @@
 // File: lib/presentation/views/bx_home_bottom_screen/bx_home_bottom_screen_mobile.dart
 // Architecture: Presentation Layer - Bx Home Bottom Screen
 // Purpose: Mobile home bottom screen implementation matching Figma design
-
+//          Uses BLoC for all data fetching (ads, destinations, explore trips, recommended)
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
@@ -19,6 +19,13 @@ class BxHomeBottomScreenMobile extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
+    // Trigger initial data load when widget is built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<BxHomeBottomScreenControllerBloc>().add(
+        const BxLoadHomeContentEvent(),
+      );
+    });
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
       body: SafeArea(
@@ -31,58 +38,69 @@ class BxHomeBottomScreenMobile extends StatelessWidget {
             ),
             // Scrollable content
             Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const _SearchField(),
-                    const SizedBox(height: 16),
-                    const _CategoryChips(),
-                    const SizedBox(height: 16),
-                    const _AdCarousel(),
-                    const SizedBox(height: 20),
-                    Text(
-                      'Discover Destinations',
-                      style: textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    const _DestinationGrid(),
-                    const SizedBox(height: 20),
-                    Text(
-                      'Top Deals',
-                      style: textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    const _TopDealsList(),
-                    const SizedBox(height: 20),
-                    const _InsightCard(),
-                    const SizedBox(height: 20),
-                    Text(
-                      'Top Rated Agencies',
-                      style: textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    const _AgenciesList(),
-                    const SizedBox(height: 20),
-                    Text(
-                      'Recommended For You',
-                      style: textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    const _RecommendedList(),
-                    const SizedBox(height: 24),
-                  ],
-                ),
-              ),
+              child:
+                  BlocBuilder<
+                    BxHomeBottomScreenControllerBloc,
+                    BxHomeBottomScreenControllerState
+                  >(
+                    builder: (context, state) {
+                      return SingleChildScrollView(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const _SearchField(),
+                            const SizedBox(height: 16),
+                            const _CategoryChips(),
+                            const SizedBox(height: 16),
+                            Visibility(
+                              visible: state.ads.isNotEmpty,
+                              child: const _AdCarousel(),
+                            ),
+                            const SizedBox(height: 20),
+                            Text(
+                              'Discover Destinations',
+                              style: textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            _DestinationGrid(destinations: state.destinations),
+                            const SizedBox(height: 20),
+                            Text(
+                              'Top Deals',
+                              style: textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            const _TopDealsList(),
+                            const SizedBox(height: 20),
+                            const _InsightCard(),
+                            const SizedBox(height: 20),
+                            Text(
+                              'Top Rated Agencies',
+                              style: textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            const _AgenciesList(),
+                            const SizedBox(height: 20),
+                            Text(
+                              'Recommended For You',
+                              style: textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            _RecommendedList(recommended: state.recommended),
+                            const SizedBox(height: 24),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
             ),
           ],
         ),
@@ -273,9 +291,6 @@ class _AdCarouselState extends State<_AdCarousel> {
   void initState() {
     super.initState();
     _pageController = PageController();
-    context.read<BxHomeBottomScreenControllerBloc>().add(
-      const BxLoadAdsEvent(),
-    );
   }
 
   @override
@@ -308,7 +323,7 @@ class _AdCarouselState extends State<_AdCarousel> {
         return _AdPageView(
           ads: state.ads,
           pageController: _pageController,
-          currentPage: state.currentPage,
+          currentPage: state.adCurrentPage,
           onPageChanged: (index) {
             context.read<BxHomeBottomScreenControllerBloc>().add(
               BxAdPageChanged(pageIndex: index),
@@ -454,22 +469,20 @@ class _AdPageView extends StatelessWidget {
 // ─── Destination Grid ─────────────────────────────────────────────────────────
 
 class _DestinationGrid extends StatelessWidget {
-  const _DestinationGrid();
+  final List<Map<String, String>> destinations;
+
+  const _DestinationGrid({required this.destinations});
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
-    final destinations = [
-      {'image': BxAppConstant.baliImage, 'name': 'Bali', 'price': '\$750'},
-      {'image': BxAppConstant.pairsImage, 'name': 'Paris', 'price': '\$1,200'},
-      {'image': BxAppConstant.tokyoImage, 'name': 'Tokyo', 'price': '\$950'},
-      {
-        'image': BxAppConstant.swazirelandImage,
-        'name': 'Switzerland',
-        'price': '\$1,400',
-      },
-    ];
+    if (destinations.isEmpty) {
+      return const SizedBox(
+        height: 200,
+        child: Center(child: Text('No destinations available')),
+      );
+    }
 
     return GridView.builder(
       shrinkWrap: true,
@@ -488,7 +501,12 @@ class _DestinationGrid extends StatelessWidget {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              Image.asset(item['image']!, fit: BoxFit.cover),
+              Image.asset(
+                item['imageUrl']!.startsWith('http')
+                    ? item['imageUrl']!
+                    : 'assets/images/recommend_image1.png', // fallback
+                fit: BoxFit.cover,
+              ),
               // Gradient overlay
               Container(
                 decoration: BoxDecoration(
@@ -523,7 +541,8 @@ class _DestinationGrid extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'From ${item['price']}',
+                      // Since destination model doesn't have price, we'll show a placeholder
+                      'From \$0',
                       style: textTheme.bodySmall?.copyWith(
                         color: Colors.white.withOpacity(0.9),
                         fontWeight: FontWeight.w500,
@@ -965,40 +984,26 @@ class _AgencyCard extends StatelessWidget {
 // ─── Recommended List ─────────────────────────────────────────────────────────
 
 class _RecommendedList extends StatelessWidget {
-  const _RecommendedList();
+  final List<Map<String, String>> recommended;
+
+  const _RecommendedList({required this.recommended});
 
   @override
   Widget build(BuildContext context) {
-    const trips = [
-      {
-        'image': BxAppConstant.recommendImage1,
-        'name': 'Thailand Getaway 8D/7N',
-        'rating': '4.6',
-        'reviews': '(95 reviews)',
-        'price': 'From \$680',
-      },
-      {
-        'image': BxAppConstant.recommendImage2,
-        'name': 'Maldives Honeymoon 5D/4N',
-        'rating': '4.8',
-        'reviews': '(120 reviews)',
-        'price': 'From \$1,200',
-      },
-      {
-        'image': BxAppConstant.recommendImage1,
-        'name': 'Japan Discovery 6D/5N',
-        'rating': '4.7',
-        'reviews': '(80 reviews)',
-        'price': 'From \$1,450',
-      },
-    ];
+    if (recommended.isEmpty) {
+      return const SizedBox(
+        height: 100,
+        child: Center(child: Text('No recommendations available')),
+      );
+    }
 
     return ListView.separated(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: trips.length,
+      itemCount: recommended.length,
       separatorBuilder: (_, _) => const SizedBox(height: 10),
-      itemBuilder: (context, index) => _RecommendedCard(trip: trips[index]),
+      itemBuilder: (context, index) =>
+          _RecommendedCard(trip: recommended[index]),
     );
   }
 }
@@ -1028,7 +1033,9 @@ class _RecommendedCard extends StatelessWidget {
               left: Radius.circular(16),
             ),
             child: Image.asset(
-              trip['image']!,
+              trip['imageUrl']!.startsWith('http')
+                  ? trip['imageUrl']!
+                  : 'assets/images/recommend_image1.png', // fallback
               width: 100,
               height: 90,
               fit: BoxFit.cover,
@@ -1059,7 +1066,7 @@ class _RecommendedCard extends StatelessWidget {
                       Text(trip['rating']!, style: textTheme.bodySmall),
                       const SizedBox(width: 4),
                       Text(
-                        trip['reviews']!,
+                        trip['reviewCount']!,
                         style: textTheme.bodySmall?.copyWith(
                           color: colorScheme.onSurface.withOpacity(0.5),
                         ),

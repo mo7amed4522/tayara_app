@@ -17,7 +17,7 @@ _$BxGetRecommendedForCustomerResponseFromJson(Map<String, dynamic> json) =>
             ),
           )
           .toList(),
-      msg: json['msg'] as String,
+      msg: json['msg'] as String?,
     );
 
 Map<String, dynamic> _$BxGetRecommendedForCustomerResponseToJson(

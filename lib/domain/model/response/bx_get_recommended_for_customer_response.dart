@@ -15,12 +15,12 @@ class BxGetRecommendedForCustomerResponse {
   final List<BxRecommendedForCustomerPackage>? data;
 
   @JsonKey(name: 'msg')
-  final String msg;
+  final String? msg;
 
   BxGetRecommendedForCustomerResponse({
     required this.code,
     this.data,
-    required this.msg,
+    this.msg,
   });
 
   factory BxGetRecommendedForCustomerResponse.fromJson(
