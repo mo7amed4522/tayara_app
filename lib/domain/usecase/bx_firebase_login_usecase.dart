@@ -4,14 +4,14 @@
 // Architecture: Domain Layer - Bx Firebase Login UseCase
 // Purpose: Defines the Firebase login use case
 
-import 'package:tayara/domain/model/request/bx_firebase_login_request.dart';
-import 'package:tayara/domain/model/response/bx_firebase_login_response.dart';
+import 'package:tayara/domain/model/request/bx_login_user_request.dart';
+import 'package:tayara/domain/model/response/bx_login_user_response.dart';
 import 'package:tayara/domain/repositories/bx_firebase_login_repositories.dart';
 
 /// Use case that logs in the user with the provided credentials.
 ///
 /// It invokes the repository with the login request and returns a
-/// [BxFirebaseLoginResponse] indicating success or failure.
+/// [BxLoginUserResponse] indicating success or failure.
 class BxFirebaseLoginUsecase {
   final BxFirebaseLoginRepositories repositories;
 
@@ -21,7 +21,7 @@ class BxFirebaseLoginUsecase {
   /// Logs in the user with the provided credentials.
   ///
   /// Returns the server's login response.
-  Future<BxFirebaseLoginResponse> execute(BxFirebaseLoginRequest request) {
+  Future<BxLoginUserResponse> execute(BxLoginUserRequest request) {
     return repositories.loginUser(request);
   }
 }

@@ -13,7 +13,6 @@ import 'package:tayara/core/routes/bx_app_routes.dart';
 import 'package:tayara/core/routes/bx_route_names.dart';
 import 'package:tayara/core/theme/bx_app_colors.dart';
 import 'package:tayara/presentation/bloc/bx_booking_bottom_screen_controller/bx_booking_bottom_screen_controller_bloc.dart';
-import 'package:tayara/injection/bx_dependency_injector.dart';
 
 class BxBookingBottomScreenMobile extends StatelessWidget {
   const BxBookingBottomScreenMobile({super.key});
@@ -21,9 +20,8 @@ class BxBookingBottomScreenMobile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => BxBookingBottomScreenControllerBloc(
-        bookingUsecase: BxDependencyInjector.instance.get(),
-      )..add(const BxLoadBookings()),
+      create: (_) =>
+          BxBookingBottomScreenControllerBloc()..add(const BxLoadBookings()),
       child: const _BookingBody(),
     );
   }

@@ -12,7 +12,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tayara/core/constant/bx_app_constant.dart';
 import 'package:tayara/core/theme/bx_app_colors.dart';
 import 'package:tayara/presentation/bloc/bx_explore_bottom_screen_controller/bx_explore_bottom_screen_controller_bloc.dart';
-import 'package:tayara/injection/bx_dependency_injector.dart';
 
 class BxExploreBottomScreenMobile extends StatelessWidget {
   const BxExploreBottomScreenMobile({super.key});
@@ -20,9 +19,9 @@ class BxExploreBottomScreenMobile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => BxExploreBottomScreenControllerBloc(
-        homeUsecase: BxDependencyInjector.instance.get(),
-      )..add(const BxLoadExploreContent()),
+      create: (_) =>
+          BxExploreBottomScreenControllerBloc()
+            ..add(const BxLoadExploreContent()),
       child: const _ExploreBody(),
     );
   }
@@ -213,6 +212,25 @@ class _HeroPageView extends StatelessWidget {
     required this.onPageChanged,
   });
 
+  Widget _buildImage(String imageUrl, {required BoxFit fit}) {
+    if (imageUrl.startsWith('http')) {
+      return Image.network(
+        imageUrl,
+        fit: fit,
+        errorBuilder: (context, error, stackTrace) {
+          return Image.asset(BxAppConstant.adsBackground, fit: fit);
+        },
+      );
+    }
+    return Image.asset(
+      imageUrl,
+      fit: fit,
+      errorBuilder: (context, error, stackTrace) {
+        return Image.asset(BxAppConstant.adsBackground, fit: fit);
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -232,7 +250,7 @@ class _HeroPageView extends StatelessWidget {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    Image.asset(ad['imageUrl']!, fit: BoxFit.cover),
+                    _buildImage(ad['imageUrl']!, fit: BoxFit.cover),
                     // Gradient overlay
                     Container(
                       decoration: BoxDecoration(

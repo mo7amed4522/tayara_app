@@ -11,7 +11,7 @@ enum BxEnterPhoneControllerStatus { initial, loading, success, error }
 class BxEnterPhoneControllerState extends Equatable {
   final BxEnterPhoneControllerStatus status;
   final String? errorMessage;
-  final BxFirebaseLoginResponse? loginResponse;
+  final BxLoginUserResponse? loginResponse;
   final String? phoneVerificationId;
 
   const BxEnterPhoneControllerState({
@@ -32,7 +32,7 @@ class BxEnterPhoneControllerState extends Equatable {
   BxEnterPhoneControllerState copyWith({
     BxEnterPhoneControllerStatus? status,
     String? errorMessage,
-    BxFirebaseLoginResponse? loginResponse,
+    BxLoginUserResponse? loginResponse,
     String? phoneVerificationId,
   }) {
     return BxEnterPhoneControllerState(

@@ -31,100 +31,48 @@ class BxApiEndpoints {
   /// Convenience getter that returns the same value as [BxAppConfig.baseUrl].
   static String get baseUrl => BxAppConfig.baseUrl;
 
-  // login url endpoint
-  /// POST endpoint for user login.
+  /// login url endpoint
+  /// [POST] endpoint for user login.
   static String get loginUrl =>
       '/api/${BxAppData.appVersion}/user/firebase-login';
 
-  // trip detail endpoint
-  /// POST endpoint for fetching trip detail by ID.
-  static String get tripDetailUrl => '/api/${BxAppData.appVersion}/trip/detail';
+  /// login customer url endpoint
+  /// [POST] endpoint for customer login.
+  static String get loginCustomerUrl =>
+      '/api/${BxAppData.appVersion}/user/login';
 
-  // filter trips endpoint
-  /// POST endpoint for filtering trips by criteria.
-  static String get filterTripsUrl =>
-      '/api/${BxAppData.appVersion}/trip/filter';
-
-  // booking endpoints
-  /// POST endpoint for fetching booking detail.
-  static String get bookingDetailUrl =>
-      '/api/${BxAppData.appVersion}/booking/detail';
-
-  /// POST endpoint for cancelling a booking.
-  static String get cancelBookingUrl =>
-      '/api/${BxAppData.appVersion}/booking/cancel';
-
-  // payment endpoint
-  /// POST endpoint for processing a payment.
-  static String get paymentUrl =>
-      '/api/${BxAppData.appVersion}/payment/process';
-
-  // ── Home ────────────────────────────────────────────────────────────────────
-
-  /// GET endpoint for home ad banners.
+  /// home ads url endpoint
+  /// [GET] endpoint for fetching home ads.
   static String get homeAdsUrl =>
       '/api/${BxAppData.appVersion}/customer/home/ads';
 
-  /// GET endpoint for home destinations.
+  /// home destinations url endpoint
+  /// [GET] endpoint for fetching home destinations.
   static String get homeDestinationsUrl =>
       '/api/${BxAppData.appVersion}/customer/home/destinations';
 
-  /// GET endpoint for explore trips.
-  static String get exploreTripsUrl =>
+  /// home explore trips url endpoint
+  /// [GET] endpoint for fetching home explore trips.
+  static String get homeExploreTripsUrl =>
       '/api/${BxAppData.appVersion}/customer/explore/trips';
 
-  /// GET endpoint for home deals.
-  static String get homeDealsUrl =>
+  /// home get top deals url endpoint
+  /// [GET] endpoint for fetching home get top deals.
+  static String get homeTopDealsUrl =>
       '/api/${BxAppData.appVersion}/customer/home/deals';
 
-  /// GET endpoint for top rated agents.
-  static String get homeAgentsUrl =>
+  /// home get top agents url endpoint
+  /// [GET] endpoint for fetching home get top agents.
+  static String get homeTopAgentsUrl =>
       '/api/${BxAppData.appVersion}/customer/home/agents';
 
-  /// GET endpoint for recommended packages (auth required).
-  static String get homeRecommendedUrl =>
+  /// home search url endpoint
+  /// [GET] endpoint for fetching home search results.
+  static String get homeSearchUrl =>
+      '/api/${BxAppData.appVersion}/customer/search';
+
+  /// home recommendation url endpoint
+  /// [GET] endpoint for fetching home recommendation results.
+  static String get homeRecommendationUrl =>
       '/api/${BxAppData.appVersion}/customer/home/recommended';
-
-  /// GET endpoint for customer search.
-  static String customerSearchUrl(
-    String keyword, {
-    int page = 1,
-    int pageSize = 10,
-  }) =>
-      '/api/${BxAppData.appVersion}/customer/search?keyword=${Uri.encodeComponent(keyword)}&page=$page&pageSize=$pageSize';
-
-  // ── Package Detail ──────────────────────────────────────────────────────────
-
-  /// GET endpoint for package detail.
-  static String packageDetailUrl(int packageId) =>
-      '/api/${BxAppData.appVersion}/customer/packages/detail?id=$packageId';
-
-  /// GET endpoint for package reviews.
-  static String packageReviewsUrl(
-    int packageId, {
-    int page = 1,
-    int pageSize = 10,
-  }) =>
-      '/api/${BxAppData.appVersion}/customer/packages/detail/reviews?packageId=$packageId&page=$page&pageSize=$pageSize';
-
-  // ── Agent Detail ────────────────────────────────────────────────────────────
-
-  /// GET endpoint for agent detail.
-  static String agentDetailUrl(
-    int agentId, {
-    int page = 1,
-    int pageSize = 12,
-  }) =>
-      '/api/${BxAppData.appVersion}/customer/agent/detail?agentId=$agentId&page=$page&pageSize=$pageSize';
-
-  // ── Profile ─────────────────────────────────────────────────────────────────
-
-  /// GET endpoint for user profile (auth required).
-  static String get userProfileUrl =>
-      '/api/${BxAppData.appVersion}/user/profile';
-
-  // ── Booking ─────────────────────────────────────────────────────────────────
-
-  /// GET endpoint for listing own bookings.
-  static String get bookingListUrl => '/api/${BxAppData.appVersion}/booking';
 }

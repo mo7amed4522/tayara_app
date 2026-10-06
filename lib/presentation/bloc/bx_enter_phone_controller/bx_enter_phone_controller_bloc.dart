@@ -12,8 +12,8 @@ import 'package:tayara/core/services/bx_phone_auth_firebase_services.dart';
 import 'package:tayara/core/services/bx_apple_auth_firebase_services.dart';
 import 'package:tayara/core/services/bx_facebook_auth_firebase_services.dart';
 import 'package:tayara/core/services/bx_google_auth_firebase_services.dart';
-import 'package:tayara/domain/model/request/bx_firebase_login_request.dart';
-import 'package:tayara/domain/model/response/bx_firebase_login_response.dart';
+import 'package:tayara/domain/model/request/bx_login_user_request.dart';
+import 'package:tayara/domain/model/response/bx_login_user_response.dart';
 import 'package:tayara/domain/usecase/bx_firebase_login_usecase.dart';
 
 part 'bx_enter_phone_controller_event.dart';
@@ -236,7 +236,7 @@ class BxEnterPhoneControllerBloc
   ) async {
     try {
       final response = await _useCase.execute(
-        BxFirebaseLoginRequest(idToken: idToken),
+        BxLoginUserRequest(idToken: idToken),
       );
       if (response.code == 0 && response.data != null) {
         emit(
@@ -250,8 +250,7 @@ class BxEnterPhoneControllerBloc
         emit(
           state.copyWith(
             status: BxEnterPhoneControllerStatus.error,
-            errorMessage:
-                response.message ?? 'Sign-up failed. Please try again.',
+            errorMessage: response.msg,
           ),
         );
       }

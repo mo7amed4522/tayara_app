@@ -11,9 +11,10 @@ library;
 
 import 'package:tayara/core/network/interceptors/bx_network_exception.dart';
 import 'package:tayara/data/data_source/remote/bx_system_remote_data_source.dart';
-import 'package:tayara/domain/model/request/bx_firebase_login_request.dart';
-import 'package:tayara/domain/model/response/bx_firebase_login_response.dart';
+import 'package:tayara/domain/model/request/bx_login_user_request.dart';
+import 'package:tayara/domain/model/response/bx_login_user_response.dart';
 import 'package:tayara/domain/repositories/bx_firebase_login_repositories.dart';
+
 // File: lib/data/repositories/bx_firebase_login_repositories_impl.dart
 // Architecture: Data Layer - Bx Firebase Login Repository Implementation
 // Purpose: Provides concrete implementation of the Firebase login interface using remote data source
@@ -35,22 +36,20 @@ class BxFirebaseLoginRepositoriesImpl implements BxFirebaseLoginRepositories {
   /// corresponding status code and message is returned. Any other
   /// exception results in a generic 7 error response.
   @override
-  Future<BxFirebaseLoginResponse> loginUser(
-    BxFirebaseLoginRequest request,
-  ) async {
+  Future<BxLoginUserResponse> loginUser(BxLoginUserRequest request) async {
     try {
-      final result = await _bxsystemRemoteDataSource.loginUser(request);
+      final result = await _bxsystemRemoteDataSource.loginUserFire(request);
       return result;
     } on BxNetworkException catch (e) {
-      return BxFirebaseLoginResponse(
+      return BxLoginUserResponse(
         code: e.statusCode,
-        message: e.message,
+        msg: e.message,
         data: null,
       );
     } catch (e) {
-      return BxFirebaseLoginResponse(
+      return BxLoginUserResponse(
         code: 500,
-        message: 'Login failed. Please try again.',
+        msg: 'Login failed. Please try again.',
         data: null,
       );
     }

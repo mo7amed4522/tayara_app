@@ -13,29 +13,25 @@ class BxTripDetailControllerState extends Equatable {
   final BxTripDetailControllerStatus status;
   final bool isFavorite;
   final String? errorMessage;
-  final BxPackageDetailData? package;
 
   const BxTripDetailControllerState({
     this.status = BxTripDetailControllerStatus.initial,
     this.isFavorite = false,
     this.errorMessage,
-    this.package,
   });
 
   @override
-  List<Object?> get props => [status, isFavorite, errorMessage, package];
+  List<Object?> get props => [status, isFavorite, errorMessage];
 
   BxTripDetailControllerState copyWith({
     BxTripDetailControllerStatus? status,
     bool? isFavorite,
     String? errorMessage,
-    BxPackageDetailData? package,
   }) {
     return BxTripDetailControllerState(
       status: status ?? this.status,
       isFavorite: isFavorite ?? this.isFavorite,
       errorMessage: errorMessage ?? this.errorMessage,
-      package: package ?? this.package,
     );
   }
 }

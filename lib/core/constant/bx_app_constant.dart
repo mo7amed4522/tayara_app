@@ -15,10 +15,12 @@
 /// - [BxAppFonts]: font family names used across the application.
 /// - [BxAppData]: global mutable data (current user, language code).
 library;
+
 // File: lib/core/constant/bx_app_constant.dart
 // Architecture: Core Layer - Bx App Constant
 // Purpose: Define the app constant for the application
 
+import 'package:tayara/domain/model/response/bx_login_user_response.dart';
 import 'package:tayara/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 
@@ -133,4 +135,7 @@ class BxAppData {
 
   /// App version of url
   static String appVersion = 'v1';
+
+  /// The currently logged‑in user response, if any.
+  static BxLoginUserResponse? currentUser;
 }

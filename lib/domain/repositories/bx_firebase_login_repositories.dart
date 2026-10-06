@@ -4,8 +4,8 @@
 // Architecture: Domain Layer - Bx Firebase Login Repository
 // Purpose: Define the Firebase login repository for the application
 
-import 'package:tayara/domain/model/request/bx_firebase_login_request.dart';
-import 'package:tayara/domain/model/response/bx_firebase_login_response.dart';
+import 'package:tayara/domain/model/request/bx_login_user_request.dart';
+import 'package:tayara/domain/model/response/bx_login_user_response.dart';
 
 ///
 /// Implementations call the remote login endpoint using the
@@ -13,6 +13,6 @@ import 'package:tayara/domain/model/response/bx_firebase_login_response.dart';
 abstract class BxFirebaseLoginRepositories {
   /// Logs in the user with the provided credentials.
   ///
-  /// Returns a [BxFirebaseLoginResponse] indicating success or failure.
-  Future<BxFirebaseLoginResponse> loginUser(BxFirebaseLoginRequest request);
+  /// Returns a [BxLoginUserResponse] indicating success or failure.
+  Future<BxLoginUserResponse> loginUser(BxLoginUserRequest request);
 }

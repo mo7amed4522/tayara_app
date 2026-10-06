@@ -7,8 +7,6 @@
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tayara/core/constant/bx_app_constant.dart';
-import 'package:tayara/domain/usecase/bx_booking_usecase.dart';
 
 part 'bx_booking_bottom_screen_controller_state.dart';
 part 'bx_booking_bottom_screen_controller_event.dart';
@@ -19,16 +17,12 @@ class BxBookingBottomScreenControllerBloc
           BxBookingBottomScreenControllerEvent,
           BxBookingBottomScreenControllerState
         > {
-  final BxBookingUsecase _bookingUsecase;
-
-  BxBookingBottomScreenControllerBloc({
-    required BxBookingUsecase bookingUsecase,
-  }) : _bookingUsecase = bookingUsecase,
-       super(
-         const BxBookingBottomScreenControllerState(
-           status: BxBookingBottomScreenControllerStatus.initial,
-         ),
-       ) {
+  BxBookingBottomScreenControllerBloc()
+    : super(
+        const BxBookingBottomScreenControllerState(
+          status: BxBookingBottomScreenControllerStatus.initial,
+        ),
+      ) {
     on<BxLoadBookings>(_onLoadBookings);
     on<BxFilterBookings>(_onFilterBookings);
   }
@@ -36,33 +30,7 @@ class BxBookingBottomScreenControllerBloc
   Future<void> _onLoadBookings(
     BxLoadBookings event,
     Emitter<BxBookingBottomScreenControllerState> emit,
-  ) async {
-    emit(state.copyWith(status: BxBookingBottomScreenControllerStatus.loading));
-    try {
-      final result = await _bookingUsecase.loadBookings();
-      final bookings = (result.data?.list ?? []).map((booking) {
-        return <String, String>{
-          'image': BxAppConstant.recommendImage1,
-          'name': 'Booking #${booking.id ?? booking.bookingCode ?? ''}',
-          'date': booking.startDate ?? booking.requestedAt ?? '',
-          'status': booking.bookingStatus ?? 'pending',
-          'price': booking.amountGross != null
-              ? '\$${booking.amountGross}'
-              : '\$0',
-        };
-      }).toList();
-      emit(
-        state.copyWith(
-          status: BxBookingBottomScreenControllerStatus.success,
-          bookings: bookings,
-        ),
-      );
-    } catch (e) {
-      emit(
-        state.copyWith(status: BxBookingBottomScreenControllerStatus.failure),
-      );
-    }
-  }
+  ) async {}
 
   void _onFilterBookings(
     BxFilterBookings event,

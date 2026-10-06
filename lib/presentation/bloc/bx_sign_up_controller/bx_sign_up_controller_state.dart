@@ -5,7 +5,7 @@ enum BxSignUpControllerStatus { initial, loading, success, error }
 class BxSignUpControllerState extends Equatable {
   final BxSignUpControllerStatus status;
   final String? errorMessage;
-  final BxFirebaseLoginResponse? loginResponse;
+  final BxLoginUserResponse? loginResponse;
 
   const BxSignUpControllerState({
     this.status = BxSignUpControllerStatus.initial,
@@ -19,7 +19,7 @@ class BxSignUpControllerState extends Equatable {
   BxSignUpControllerState copyWith({
     BxSignUpControllerStatus? status,
     String? errorMessage,
-    BxFirebaseLoginResponse? loginResponse,
+    BxLoginUserResponse? loginResponse,
   }) {
     return BxSignUpControllerState(
       status: status ?? this.status,

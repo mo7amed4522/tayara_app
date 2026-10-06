@@ -11,8 +11,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tayara/core/services/bx_apple_auth_firebase_services.dart';
 import 'package:tayara/core/services/bx_facebook_auth_firebase_services.dart';
 import 'package:tayara/core/services/bx_google_auth_firebase_services.dart';
-import 'package:tayara/domain/model/request/bx_firebase_login_request.dart';
-import 'package:tayara/domain/model/response/bx_firebase_login_response.dart';
+import 'package:tayara/domain/model/request/bx_login_user_request.dart';
+import 'package:tayara/domain/model/response/bx_login_user_response.dart';
 import 'package:tayara/domain/usecase/bx_firebase_login_usecase.dart';
 
 part 'bx_sign_up_controller_event.dart';
@@ -147,7 +147,7 @@ class BxSignUpControllerBloc
   ) async {
     try {
       final response = await _useCase.execute(
-        BxFirebaseLoginRequest(idToken: idToken),
+        BxLoginUserRequest(idToken: idToken),
       );
       if (response.code == 0 && response.data != null) {
         emit(
@@ -161,8 +161,7 @@ class BxSignUpControllerBloc
         emit(
           state.copyWith(
             status: BxSignUpControllerStatus.error,
-            errorMessage:
-                response.message ?? 'Sign-up failed. Please try again.',
+            errorMessage: response.msg,
           ),
         );
       }

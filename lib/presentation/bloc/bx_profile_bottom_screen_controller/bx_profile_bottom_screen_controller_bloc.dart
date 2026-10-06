@@ -8,8 +8,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tayara/data/data_source/local/bx_shared_preferences_datasource.dart';
-import 'package:tayara/domain/model/response/bx_firebase_login_response.dart';
-import 'package:tayara/domain/usecase/bx_profile_usecase.dart';
+import 'package:tayara/domain/model/response/bx_login_user_response.dart';
 
 part 'bx_profile_bottom_screen_controller_event.dart';
 part 'bx_profile_bottom_screen_controller_state.dart';
@@ -21,13 +20,11 @@ class BxProfileBottomScreenControllerBloc
           BxProfileBottomScreenControllerState
         > {
   final BxSharedPreferencesDataSource _sharedPreferencesDataSource;
-  final BxProfileUsecase _profileUsecase;
 
   BxProfileBottomScreenControllerBloc({
     required BxSharedPreferencesDataSource sharedPreferencesDataSource,
-    required BxProfileUsecase profileUsecase,
   }) : _sharedPreferencesDataSource = sharedPreferencesDataSource,
-       _profileUsecase = profileUsecase,
+
        super(
          const BxProfileBottomScreenControllerState(
            status: BxProfileBottomScreenControllerStatus.initial,
@@ -71,32 +68,5 @@ class BxProfileBottomScreenControllerBloc
   Future<void> _onLoadProfile(
     BxLoadProfileEvent event,
     Emitter<BxProfileBottomScreenControllerState> emit,
-  ) async {
-    emit(state.copyWith(status: BxProfileBottomScreenControllerStatus.loading));
-    try {
-      final result = await _profileUsecase.loadProfile();
-      if (result.data != null) {
-        emit(
-          state.copyWith(
-            status: BxProfileBottomScreenControllerStatus.success,
-            firebaseUser: result.data,
-          ),
-        );
-      } else {
-        emit(
-          state.copyWith(
-            status: BxProfileBottomScreenControllerStatus.failure,
-            errorMessage: result.message,
-          ),
-        );
-      }
-    } catch (e) {
-      emit(
-        state.copyWith(
-          status: BxProfileBottomScreenControllerStatus.failure,
-          errorMessage: e.toString(),
-        ),
-      );
-    }
-  }
+  ) async {}
 }

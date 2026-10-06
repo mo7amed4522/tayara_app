@@ -351,7 +351,9 @@ class _AdPageView extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
                 image: DecorationImage(
-                  image: AssetImage(ad['imageUrl']!),
+                  image: ad['imageUrl']!.startsWith('http')
+                      ? NetworkImage(ad['imageUrl']!)
+                      : AssetImage(ad['imageUrl']!),
                   fit: BoxFit.cover,
                 ),
               ),

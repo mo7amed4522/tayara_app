@@ -95,15 +95,15 @@ class _BxHomeWidgetTabletState extends State<BxHomeWidgetTablet>
                   children: [
                     BxHomeBottomScreenTablet(),
                     BlocProvider(
-                      create: (_) => BxExploreBottomScreenControllerBloc(
-                        homeUsecase: BxDependencyInjector.instance.get(),
-                      )..add(const BxLoadExploreContent()),
+                      create: (_) =>
+                          BxExploreBottomScreenControllerBloc()
+                            ..add(const BxLoadExploreContent()),
                       child: const BxExploreBottomScreenTablet(),
                     ),
                     BlocProvider(
-                      create: (_) => BxBookingBottomScreenControllerBloc(
-                        bookingUsecase: BxDependencyInjector.instance.get(),
-                      )..add(const BxLoadBookings()),
+                      create: (_) =>
+                          BxBookingBottomScreenControllerBloc()
+                            ..add(const BxLoadBookings()),
                       child: const BxBookingBottomScreenTablet(),
                     ),
                     BlocProvider(
@@ -111,7 +111,6 @@ class _BxHomeWidgetTabletState extends State<BxHomeWidgetTablet>
                         sharedPreferencesDataSource: BxDependencyInjector
                             .instance
                             .get<BxSharedPreferencesDataSource>(),
-                        profileUsecase: BxDependencyInjector.instance.get(),
                       )..add(BxLoadProfileThemeEvent()),
                       child: const BxProfileBottomScreenTablet(),
                     ),

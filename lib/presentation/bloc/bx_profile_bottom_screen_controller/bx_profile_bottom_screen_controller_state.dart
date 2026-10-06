@@ -18,7 +18,7 @@ class BxProfileBottomScreenControllerState extends Equatable {
   final BxProfileBottomScreenControllerStatus status;
   final String? errorMessage;
   final bool isDarkMode;
-  final BxFirebaseUser? firebaseUser;
+  final BxLoginUserResponse? firebaseUser;
 
   const BxProfileBottomScreenControllerState({
     required this.status,
@@ -31,7 +31,7 @@ class BxProfileBottomScreenControllerState extends Equatable {
     BxProfileBottomScreenControllerStatus? status,
     String? errorMessage,
     bool? isDarkMode,
-    BxFirebaseUser? firebaseUser,
+    BxLoginUserResponse? firebaseUser,
   }) {
     return BxProfileBottomScreenControllerState(
       status: status ?? this.status,
