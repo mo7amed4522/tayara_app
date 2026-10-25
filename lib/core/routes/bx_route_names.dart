@@ -59,6 +59,9 @@ class BxRouteNames {
   /// Review travelers screen route.
   static const String bxReviewTravelersScreen = '/review-travelers-screen';
 
+  /// Search screen route.
+  static const String bxSearchScreen = '/search-screen';
+
   // Route groups
   /// All publicly accessible routes in the application.
   static const List<String> publicRoutes = [
@@ -68,6 +71,7 @@ class BxRouteNames {
     bxSignUpScreen,
     bxEnterPhoneScreen,
     bxTripDetailScreen,
+    bxSearchScreen,
   ];
 
   /// All authenticated (protected) routes in the application.
@@ -180,6 +184,8 @@ class BxRouteNames {
         return 'Bx-Login-screen';
       case bxHomeScreen:
         return 'Bx-Home-screen';
+      case bxSearchScreen:
+        return 'Bx-Search-Screen';
       default:
         return 'Bx-Unknown-screen';
     }

@@ -9,6 +9,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tayara/core/constant/bx_app_constant.dart';
+import 'package:tayara/core/routes/bx_app_routes.dart';
+import 'package:tayara/core/routes/bx_route_names.dart';
 import 'package:tayara/core/theme/bx_app_colors.dart';
 import 'package:tayara/presentation/bloc/bx_home_bottom_screen_controller/bx_home_bottom_screen_controller_bloc.dart';
 
@@ -171,51 +173,57 @@ class _SearchField extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return SizedBox(
-      width: double.infinity,
-      height: 48,
-      child: TextField(
-        style: TextStyle(
-          color: colorScheme.onSurface,
-          fontSize: 14,
-          fontFamily: 'Poppins',
-        ),
-        decoration: InputDecoration(
-          hintText: 'Search destinations, trips, or agencies...',
-          hintStyle: TextStyle(
-            color: colorScheme.onSurface.withOpacity(0.4),
-            fontSize: 14,
-            fontFamily: 'Poppins',
-          ),
-          suffixIcon: Icon(
-            Icons.search,
-            color: colorScheme.onSurface.withOpacity(0.4),
-            size: 20,
-          ),
-          filled: true,
-          fillColor: colorScheme.surface,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: 0,
-          ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(24),
-            borderSide: BorderSide.none,
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(24),
-            borderSide: BorderSide.none,
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(24),
-            borderSide: BorderSide(color: BxAppColors.primary, width: 2),
+    return GestureDetector(
+      onTap: () => BxAppRouter.push(context, BxRouteNames.bxSearchScreen),
+      child: AbsorbPointer(
+        // prevent the inner TextField from stealing focus
+        child: SizedBox(
+          width: double.infinity,
+          height: 48,
+          child: TextField(
+            readOnly: true, // visual only — real input lives on BxSearchScreen
+            style: TextStyle(
+              color: colorScheme.onSurface,
+              fontSize: 14,
+              fontFamily: 'Poppins',
+            ),
+            decoration: InputDecoration(
+              hintText: 'Search destinations, trips, or agencies...',
+              hintStyle: TextStyle(
+                color: colorScheme.onSurface.withOpacity(0.4),
+                fontSize: 14,
+                fontFamily: 'Poppins',
+              ),
+              suffixIcon: Icon(
+                Icons.search,
+                color: colorScheme.onSurface.withOpacity(0.4),
+                size: 20,
+              ),
+              filled: true,
+              fillColor: colorScheme.surface,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 0,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(24),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(24),
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(24),
+                borderSide: BorderSide(color: BxAppColors.primary, width: 2),
+              ),
+            ),
           ),
         ),
       ),
     );
   }
 }
-
 // ─── Category Chips ───────────────────────────────────────────────────────────
 
 class _CategoryChips extends StatelessWidget {
