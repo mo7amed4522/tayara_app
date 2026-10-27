@@ -18,9 +18,10 @@ class BxSearchScreenControllerBloc
     extends Bloc<BxSearchScreenControllerEvent, BxSearchScreenControllerState> {
   final BxCustomSearchUsecase _customSearchUsecase;
 
-  BxSearchScreenControllerBloc({required BxCustomSearchUsecase customSearchUsecase})
-      : _customSearchUsecase = customSearchUsecase,
-        super(const BxSearchScreenControllerState()) {
+  BxSearchScreenControllerBloc({
+    required BxCustomSearchUsecase customSearchUsecase,
+  }) : _customSearchUsecase = customSearchUsecase,
+       super(const BxSearchScreenControllerState()) {
     on<BxLoadSearch>(_onLoadSearch);
     on<BxUpdateSearchQuery>(_onUpdateSearchQuery);
     on<BxSearchCustom>(_onSearchCustom);
@@ -45,11 +46,13 @@ class BxSearchScreenControllerBloc
     Emitter<BxSearchScreenControllerState> emit,
   ) async {
     if (event.keyword.trim().isEmpty) {
-      emit(state.copyWith(
-        status: BxSearchScreenControllerStatus.success,
-        customSearchResponse: null,
-        errorMessage: null,
-      ));
+      emit(
+        state.copyWith(
+          status: BxSearchScreenControllerStatus.success,
+          customSearchResponse: null,
+          errorMessage: null,
+        ),
+      );
       return;
     }
 
@@ -64,17 +67,21 @@ class BxSearchScreenControllerBloc
     final response = await _customSearchUsecase.execute(request);
 
     if (response.code == 0) {
-      emit(state.copyWith(
-        status: BxSearchScreenControllerStatus.success,
-        customSearchResponse: response,
-        errorMessage: null,
-      ));
+      emit(
+        state.copyWith(
+          status: BxSearchScreenControllerStatus.success,
+          customSearchResponse: response,
+          errorMessage: null,
+        ),
+      );
     } else {
-      emit(state.copyWith(
-        status: BxSearchScreenControllerStatus.failure,
-        errorMessage: response.msg,
-        customSearchResponse: null,
-      ));
+      emit(
+        state.copyWith(
+          status: BxSearchScreenControllerStatus.failure,
+          errorMessage: response.msg,
+          customSearchResponse: null,
+        ),
+      );
     }
   }
 }

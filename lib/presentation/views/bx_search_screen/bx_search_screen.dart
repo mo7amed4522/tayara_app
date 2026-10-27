@@ -19,17 +19,21 @@ class BxSearchScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Get the keyword from route arguments
-    final arguments = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    final arguments =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     final initialKeyword = arguments?['keyword'] as String? ?? '';
 
     return BlocProvider(
       create: (_) => BxSearchScreenControllerBloc(
-        customSearchUsecase: BxDependencyInjector.instance.get<BxCustomSearchUsecase>(),
+        customSearchUsecase: BxDependencyInjector.instance
+            .get<BxCustomSearchUsecase>(),
       )..add(const BxLoadSearch()),
       child: Scaffold(
         body: BxResponsiveBuilder(
-          mobileBuilder: (context) => BxSearchWidgetMobile(initialKeyword: initialKeyword),
-          tabletBuilder: (context) => BxSearchWidgetTablet(initialKeyword: initialKeyword),
+          mobileBuilder: (context) =>
+              BxSearchWidgetMobile(initialKeyword: initialKeyword),
+          tabletBuilder: (context) =>
+              BxSearchWidgetTablet(initialKeyword: initialKeyword),
         ),
       ),
     );

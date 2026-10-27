@@ -104,9 +104,7 @@ class BxHomeBottomScreenControllerBloc
         page: 1,
         pageSize: _pageSize,
       );
-      final topAgentsRequest = BxGetTopAgentRequest(
-        limit: _pageSize,
-      );
+      final topAgentsRequest = BxGetTopAgentRequest(limit: _pageSize);
 
       final results = await Future.wait([
         _adsUsecase.execute(adsRequest),
@@ -120,7 +118,8 @@ class BxHomeBottomScreenControllerBloc
       final adsResponse = results[0] as BxActiveTopBannerAdsResponse;
       final destinationsResponse = results[1] as BxGetDestinationsResponse;
       final exploreTripsResponse = results[2] as BxGetExploreTripsResponse;
-      final recommendedResponse = results[3] as BxGetRecommendedForCustomerResponse;
+      final recommendedResponse =
+          results[3] as BxGetRecommendedForCustomerResponse;
       final topDealsResponse = results[4] as BxGetTopDealsResponse;
       final topAgentsResponse = results[5] as BxGetTopAgentResponse;
 
@@ -327,12 +326,7 @@ class BxHomeBottomScreenControllerBloc
           ? newItems
           : [...state.topDeals, ...newItems];
 
-      emit(
-        state.copyWith(
-          topDeals: allItems,
-          topDealsLoaded: true,
-        ),
-      );
+      emit(state.copyWith(topDeals: allItems, topDealsLoaded: true));
     } catch (_) {
       // Keep current state on error
     }
@@ -347,16 +341,12 @@ class BxHomeBottomScreenControllerBloc
       final response = await _topAgentsUsecase.execute(request);
 
       final newItems = response.data ?? [];
-      final allItems = (event.limit == 10) // first load
+      final allItems =
+          (event.limit == 10) // first load
           ? newItems
           : [...state.topAgents, ...newItems];
 
-      emit(
-        state.copyWith(
-          topAgents: allItems,
-          topAgentsLoaded: true,
-        ),
-      );
+      emit(state.copyWith(topAgents: allItems, topAgentsLoaded: true));
     } catch (_) {
       // Keep current state on error
     }
