@@ -54,10 +54,16 @@ class BxExploreBottomScreenControllerBloc
     emit(state.copyWith(status: BxExploreBottomScreenControllerStatus.loading));
     try {
       // Fetch all data in parallel
-      final exploreTopicRequest = BxGetExploreTopicRequest(page: 1, pageSize: 20);
+      final exploreTopicRequest = BxGetExploreTopicRequest(
+        page: 1,
+        pageSize: 20,
+      );
       final topAgentsRequest = BxGetTopAgentRequest(limit: 10);
       final heroAdsRequest = BxActiveTopBannerAdsRequest(page: 1, pageSize: 10);
-      final exploreTripsRequest = BxGetExploreTripsRequest(page: 1, pageSize: 10);
+      final exploreTripsRequest = BxGetExploreTripsRequest(
+        page: 1,
+        pageSize: 10,
+      );
 
       final results = await Future.wait([
         _getExploreTopicUsecase.execute(exploreTopicRequest),
@@ -72,22 +78,24 @@ class BxExploreBottomScreenControllerBloc
       final exploreTripsResponse = results[3] as BxGetExploreTripsResponse;
 
       if (exploreTopicResponse.code == 0 && exploreTopicResponse.data != null) {
-        emit(state.copyWith(
-          status: BxExploreBottomScreenControllerStatus.success,
-          exploreTopics: exploreTopicResponse.data!.list,
-          topAgents: topAgentsResponse.data ?? [],
-          heroAds: heroAdsResponse.data?.list ?? [],
-          trendingTrips: exploreTripsResponse.data?.list ?? [],
-        ));
+        emit(
+          state.copyWith(
+            status: BxExploreBottomScreenControllerStatus.success,
+            exploreTopics: exploreTopicResponse.data!.list,
+            topAgents: topAgentsResponse.data ?? [],
+            heroAds: heroAdsResponse.data?.list ?? [],
+            trendingTrips: exploreTripsResponse.data?.list ?? [],
+          ),
+        );
       } else {
-        emit(state.copyWith(
-          status: BxExploreBottomScreenControllerStatus.failure,
-        ));
+        emit(
+          state.copyWith(status: BxExploreBottomScreenControllerStatus.failure),
+        );
       }
     } catch (e) {
-      emit(state.copyWith(
-        status: BxExploreBottomScreenControllerStatus.failure,
-      ));
+      emit(
+        state.copyWith(status: BxExploreBottomScreenControllerStatus.failure),
+      );
     }
   }
 }

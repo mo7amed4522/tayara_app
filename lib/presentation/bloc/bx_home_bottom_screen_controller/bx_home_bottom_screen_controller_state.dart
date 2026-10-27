@@ -105,7 +105,9 @@ class BxHomeBottomScreenControllerState extends Equatable {
       destinationsPage: destinationsPage ?? this.destinationsPage,
       destinationsTotalPage:
           destinationsTotalPage ?? this.destinationsTotalPage,
-      selectedCategory: clearSelectedCategory ? null : (selectedCategory ?? this.selectedCategory),
+      selectedCategory: clearSelectedCategory
+          ? null
+          : (selectedCategory ?? this.selectedCategory),
       exploreTrips: exploreTrips ?? this.exploreTrips,
       exploreTripsPage: exploreTripsPage ?? this.exploreTripsPage,
       exploreTripsTotalPage:
@@ -125,25 +127,25 @@ class BxHomeBottomScreenControllerState extends Equatable {
 
   @override
   List<Object?> get props => [
-        status,
-        ads,
-        adCurrentPage,
-        destinations,
-        destinationsPage,
-        destinationsTotalPage,
-        selectedCategory,
-        exploreTrips,
-        exploreTripsPage,
-        exploreTripsTotalPage,
-        searchResults,
-        searchKeyword,
-        searchPage,
-        searchTotalPage,
-        recommended,
-        recommendedLoaded,
-        topDeals,
-        topDealsLoaded,
-        topAgents,
-        topAgentsLoaded,
-      ];
+    status,
+    ads,
+    adCurrentPage,
+    destinations,
+    destinationsPage,
+    destinationsTotalPage,
+    selectedCategory,
+    exploreTrips,
+    exploreTripsPage,
+    exploreTripsTotalPage,
+    searchResults,
+    searchKeyword,
+    searchPage,
+    searchTotalPage,
+    recommended,
+    recommendedLoaded,
+    topDeals,
+    topDealsLoaded,
+    topAgents,
+    topAgentsLoaded,
+  ];
 }

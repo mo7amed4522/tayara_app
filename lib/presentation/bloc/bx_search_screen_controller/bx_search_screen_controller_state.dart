@@ -22,7 +22,12 @@ class BxSearchScreenControllerState extends Equatable {
   });
 
   @override
-  List<Object?> get props => [status, query, customSearchResponse, errorMessage];
+  List<Object?> get props => [
+    status,
+    query,
+    customSearchResponse,
+    errorMessage,
+  ];
 
   BxSearchScreenControllerState copyWith({
     BxSearchScreenControllerStatus? status,

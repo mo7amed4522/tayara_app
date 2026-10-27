@@ -100,10 +100,14 @@ class _BxHomeWidgetTabletState extends State<BxHomeWidgetTablet>
                     BxHomeBottomScreenTablet(),
                     BlocProvider(
                       create: (_) => BxExploreBottomScreenControllerBloc(
-                        getExploreTopicUsecase: BxDependencyInjector.instance.get<BxGetExploreTopicUsecase>(),
-                        getTopAgentsUsecase: BxDependencyInjector.instance.get<BxGetTopAgentsUsecase>(),
-                        activeTopBannerAdsUsecase: BxDependencyInjector.instance.get<BxActiveTopBannerAdsUsecase>(),
-                        getExploreTripsUsecase: BxDependencyInjector.instance.get<BxGetExploreTripsUsecase>(),
+                        getExploreTopicUsecase: BxDependencyInjector.instance
+                            .get<BxGetExploreTopicUsecase>(),
+                        getTopAgentsUsecase: BxDependencyInjector.instance
+                            .get<BxGetTopAgentsUsecase>(),
+                        activeTopBannerAdsUsecase: BxDependencyInjector.instance
+                            .get<BxActiveTopBannerAdsUsecase>(),
+                        getExploreTripsUsecase: BxDependencyInjector.instance
+                            .get<BxGetExploreTripsUsecase>(),
                       )..add(const BxLoadExploreContent()),
                       child: const BxExploreBottomScreenTablet(),
                     ),
