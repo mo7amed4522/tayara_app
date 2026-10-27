@@ -16,41 +16,41 @@ enum BxExploreBottomScreenControllerStatus {
 
 class BxExploreBottomScreenControllerState extends Equatable {
   final BxExploreBottomScreenControllerStatus status;
-  final List<Map<String, String>> destinations;
-  final List<Map<String, String>> trendingTrips;
-  final List<Map<String, String>> themes;
-  final List<Map<String, String>> heroAds;
+  final List<BxExploreTopic> exploreTopics;
+  final List<BxGetTopAgent> topAgents;
+  final List<BxActiveTopBannerAd> heroAds;
+  final List<BxGetExploreTrip> trendingTrips;
 
   const BxExploreBottomScreenControllerState({
     this.status = BxExploreBottomScreenControllerStatus.initial,
-    this.destinations = const [],
-    this.trendingTrips = const [],
-    this.themes = const [],
+    this.exploreTopics = const [],
+    this.topAgents = const [],
     this.heroAds = const [],
+    this.trendingTrips = const [],
   });
 
   BxExploreBottomScreenControllerState copyWith({
     BxExploreBottomScreenControllerStatus? status,
-    List<Map<String, String>>? destinations,
-    List<Map<String, String>>? trendingTrips,
-    List<Map<String, String>>? themes,
-    List<Map<String, String>>? heroAds,
+    List<BxExploreTopic>? exploreTopics,
+    List<BxGetTopAgent>? topAgents,
+    List<BxActiveTopBannerAd>? heroAds,
+    List<BxGetExploreTrip>? trendingTrips,
   }) {
     return BxExploreBottomScreenControllerState(
       status: status ?? this.status,
-      destinations: destinations ?? this.destinations,
-      trendingTrips: trendingTrips ?? this.trendingTrips,
-      themes: themes ?? this.themes,
+      exploreTopics: exploreTopics ?? this.exploreTopics,
+      topAgents: topAgents ?? this.topAgents,
       heroAds: heroAds ?? this.heroAds,
+      trendingTrips: trendingTrips ?? this.trendingTrips,
     );
   }
 
   @override
   List<Object?> get props => [
     status,
-    destinations,
-    trendingTrips,
-    themes,
+    exploreTopics,
+    topAgents,
     heroAds,
+    trendingTrips,
   ];
 }

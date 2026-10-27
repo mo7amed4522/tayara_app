@@ -85,4 +85,9 @@ class BxApiEndpoints {
   /// [GET] endpoint for fetching agent profile detail results.
   static String get agentProfileUrl =>
       '/api/${BxAppData.appVersion}/customer/agent/detail';
+
+  /// explore topic url endpoint
+  /// [GET] endpoint for fetching explore topic results.
+  static String get exploreTopic =>
+      '/api/${BxAppData.appVersion}/customer/explore/topics';
 }
