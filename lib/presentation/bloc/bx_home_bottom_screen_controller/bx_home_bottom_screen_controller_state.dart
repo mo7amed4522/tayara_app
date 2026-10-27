@@ -10,36 +10,45 @@ part of 'bx_home_bottom_screen_controller_bloc.dart';
 /// Status shared by every home section (ads, destinations, trips, etc.).
 enum BxHomeBottomScreenControllerStatus { initial, loading, success, failure }
 
-/// All home-section data is modelled as [List<Map<String, dynamic>>> so that
-/// [Map]-based widgets ([_DestinationGrid], [_TopDealCard], etc.) continue to
-/// consume the data without changes. Each map holds the keys those widgets
-/// already reference (image/name/price, coverImageUrl/name/price, etc.).
+/// All home-section data is modelled using the actual response model types
+/// so that widgets can access type-safe properties directly.
 class BxHomeBottomScreenControllerState extends Equatable {
   final BxHomeBottomScreenControllerStatus status;
 
   /// Top banner ad carousel
-  final List<Map<String, String>> ads;
+  final List<BxActiveTopBannerAd> ads;
   final int adCurrentPage;
 
   /// Destinations grid
-  final List<Map<String, String>> destinations;
+  final List<BxGetDestination> destinations;
   final int destinationsPage;
   final int destinationsTotalPage;
 
+  /// Selected category filter for destinations (null = show all)
+  final String? selectedCategory;
+
   /// Explore trips (for the "Explore" section and search fallback)
-  final List<Map<String, String>> exploreTrips;
+  final List<BxGetExploreTrip> exploreTrips;
   final int exploreTripsPage;
   final int exploreTripsTotalPage;
 
   /// Search results
-  final List<Map<String, String>> searchResults;
+  final List<BxSearchPackage> searchResults;
   final String searchKeyword;
   final int searchPage;
   final int searchTotalPage;
 
   /// Recommended for authenticated customer
-  final List<Map<String, String>> recommended;
+  final List<BxRecommendedForCustomerPackage> recommended;
   final bool recommendedLoaded;
+
+  /// Top Deals
+  final List<BxGetTopDeal> topDeals;
+  final bool topDealsLoaded;
+
+  /// Top Agents
+  final List<BxGetTopAgent> topAgents;
+  final bool topAgentsLoaded;
 
   const BxHomeBottomScreenControllerState({
     this.status = BxHomeBottomScreenControllerStatus.initial,
@@ -48,6 +57,7 @@ class BxHomeBottomScreenControllerState extends Equatable {
     this.destinations = const [],
     this.destinationsPage = 0,
     this.destinationsTotalPage = 0,
+    this.selectedCategory,
     this.exploreTrips = const [],
     this.exploreTripsPage = 0,
     this.exploreTripsTotalPage = 0,
@@ -57,25 +67,35 @@ class BxHomeBottomScreenControllerState extends Equatable {
     this.searchTotalPage = 0,
     this.recommended = const [],
     this.recommendedLoaded = false,
+    this.topDeals = const [],
+    this.topDealsLoaded = false,
+    this.topAgents = const [],
+    this.topAgentsLoaded = false,
   });
 
   /// Merge newly fetched page data with the existing collection.
   BxHomeBottomScreenControllerState copyWith({
     BxHomeBottomScreenControllerStatus? status,
-    List<Map<String, String>>? ads,
+    List<BxActiveTopBannerAd>? ads,
     int? adCurrentPage,
-    List<Map<String, String>>? destinations,
+    List<BxGetDestination>? destinations,
     int? destinationsPage,
     int? destinationsTotalPage,
-    List<Map<String, String>>? exploreTrips,
+    String? selectedCategory,
+    bool clearSelectedCategory = false,
+    List<BxGetExploreTrip>? exploreTrips,
     int? exploreTripsPage,
     int? exploreTripsTotalPage,
-    List<Map<String, String>>? searchResults,
+    List<BxSearchPackage>? searchResults,
     String? searchKeyword,
     int? searchPage,
     int? searchTotalPage,
-    List<Map<String, String>>? recommended,
+    List<BxRecommendedForCustomerPackage>? recommended,
     bool? recommendedLoaded,
+    List<BxGetTopDeal>? topDeals,
+    bool? topDealsLoaded,
+    List<BxGetTopAgent>? topAgents,
+    bool? topAgentsLoaded,
   }) {
     return BxHomeBottomScreenControllerState(
       status: status ?? this.status,
@@ -85,6 +105,7 @@ class BxHomeBottomScreenControllerState extends Equatable {
       destinationsPage: destinationsPage ?? this.destinationsPage,
       destinationsTotalPage:
           destinationsTotalPage ?? this.destinationsTotalPage,
+      selectedCategory: clearSelectedCategory ? null : (selectedCategory ?? this.selectedCategory),
       exploreTrips: exploreTrips ?? this.exploreTrips,
       exploreTripsPage: exploreTripsPage ?? this.exploreTripsPage,
       exploreTripsTotalPage:
@@ -95,25 +116,34 @@ class BxHomeBottomScreenControllerState extends Equatable {
       searchTotalPage: searchTotalPage ?? this.searchTotalPage,
       recommended: recommended ?? this.recommended,
       recommendedLoaded: recommendedLoaded ?? this.recommendedLoaded,
+      topDeals: topDeals ?? this.topDeals,
+      topDealsLoaded: topDealsLoaded ?? this.topDealsLoaded,
+      topAgents: topAgents ?? this.topAgents,
+      topAgentsLoaded: topAgentsLoaded ?? this.topAgentsLoaded,
     );
   }
 
   @override
-  List<Object> get props => [
-    status,
-    ads,
-    adCurrentPage,
-    destinations,
-    destinationsPage,
-    destinationsTotalPage,
-    exploreTrips,
-    exploreTripsPage,
-    exploreTripsTotalPage,
-    searchResults,
-    searchKeyword,
-    searchPage,
-    searchTotalPage,
-    recommended,
-    recommendedLoaded,
-  ];
+  List<Object?> get props => [
+        status,
+        ads,
+        adCurrentPage,
+        destinations,
+        destinationsPage,
+        destinationsTotalPage,
+        selectedCategory,
+        exploreTrips,
+        exploreTripsPage,
+        exploreTripsTotalPage,
+        searchResults,
+        searchKeyword,
+        searchPage,
+        searchTotalPage,
+        recommended,
+        recommendedLoaded,
+        topDeals,
+        topDealsLoaded,
+        topAgents,
+        topAgentsLoaded,
+      ];
 }

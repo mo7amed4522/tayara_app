@@ -8,14 +8,15 @@ import 'package:flutter/material.dart';
 import 'package:tayara/presentation/widgets/bx_search_widget/bx_search_widget_mobile.dart';
 
 class BxSearchWidgetTablet extends StatelessWidget {
-  const BxSearchWidgetTablet({super.key});
+  final String initialKeyword;
+  const BxSearchWidgetTablet({super.key, this.initialKeyword = ''});
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 480),
-        child: const BxSearchWidgetMobile(),
+        child: BxSearchWidgetMobile(initialKeyword: initialKeyword),
       ),
     );
   }

@@ -17,6 +17,8 @@ import 'package:tayara/domain/usecase/bx_get_destinations_usecase.dart';
 import 'package:tayara/domain/usecase/bx_get_explore_trips_usecase.dart';
 import 'package:tayara/domain/usecase/bx_get_recommended_for_customer_usecase.dart';
 import 'package:tayara/domain/usecase/bx_get_search_usecase.dart';
+import 'package:tayara/domain/usecase/bx_get_top_agent_usecase.dart';
+import 'package:tayara/domain/usecase/bx_get_top_deals_usecase.dart';
 import 'package:tayara/presentation/bloc/bx_explore_bottom_screen_controller/bx_explore_bottom_screen_controller_bloc.dart';
 import 'package:tayara/presentation/bloc/bx_home_bottom_screen_controller/bx_home_bottom_screen_controller_bloc.dart';
 import 'package:tayara/presentation/bloc/bx_home_screen_controller/bx_home_screen_controller_bloc.dart';
@@ -56,6 +58,8 @@ class _BxHomeWidgetMobileState extends State<BxHomeWidgetMobile>
       exploreTripsUsecase: injector.get<BxGetExploreTripsUsecase>(),
       recommendedUsecase: injector.get<BxGetRecommendedForCustomerUsecase>(),
       searchUsecase: injector.get<BxGetSearchUsecase>(),
+      topDealsUsecase: injector.get<BxGetTopDealsUsecase>(),
+      topAgentsUsecase: injector.get<BxGetTopAgentsUsecase>(),
     );
   }
 

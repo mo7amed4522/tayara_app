@@ -48,24 +48,18 @@ Map<String, dynamic> _$BxGetDestinationsDataToJson(
 
 BxGetDestination _$BxGetDestinationFromJson(Map<String, dynamic> json) =>
     BxGetDestination(
-      id: (json['id'] as num?)?.toInt(),
-      name: json['name'] as String?,
-      code: json['code'] as String?,
-      imageUrl: json['imageURL'] as String?,
-      description: json['description'] as String?,
-      countryId: (json['countryId'] as num?)?.toInt(),
-      isActive: json['isActive'] as bool?,
-      createdAt: json['createdAt'] as String?,
+      id: (json['countryId'] as num?)?.toInt(),
+      name: json['countryName'] as String?,
+      code: json['countryCode'] as String?,
+      packageCount: (json['packageCount'] as num?)?.toInt(),
+      minDisplayPrice: (json['minDisplayPrice'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$BxGetDestinationToJson(BxGetDestination instance) =>
     <String, dynamic>{
-      'id': instance.id,
-      'name': instance.name,
-      'code': instance.code,
-      'imageURL': instance.imageUrl,
-      'description': instance.description,
-      'countryId': instance.countryId,
-      'isActive': instance.isActive,
-      'createdAt': instance.createdAt,
+      'countryId': instance.id,
+      'countryName': instance.name,
+      'countryCode': instance.code,
+      'packageCount': instance.packageCount,
+      'minDisplayPrice': instance.minDisplayPrice,
     };

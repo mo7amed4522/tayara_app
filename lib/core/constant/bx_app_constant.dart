@@ -72,6 +72,7 @@ class BxAppConstant {
   static const String tayaraObjectImage = '${baseImageUrl}tayara_object.png';
   static const String recommendImage1 = '${baseImageUrl}recommend_image1.png';
   static const String recommendImage2 = '${baseImageUrl}recommend_image2.png';
+  static const String sliderIcon = '${baseImageUrl}slider_icon.png';
 
   /// explore bottom nav bar images.
   /// explore icon image.

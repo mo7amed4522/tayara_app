@@ -58,43 +58,41 @@ class BxGetDestinationsData {
 
 @JsonSerializable()
 class BxGetDestination {
-  @JsonKey(name: 'id')
+  /// Backend sends this as `countryId` — treat it as the destination's ID.
+  @JsonKey(name: 'countryId')
   final int? id;
 
-  @JsonKey(name: 'name')
+  @JsonKey(name: 'countryName')
   final String? name;
 
-  @JsonKey(name: 'code')
+  @JsonKey(name: 'countryCode')
   final String? code;
 
-  @JsonKey(name: 'imageURL')
-  final String? imageUrl;
+  /// Number of active packages in this destination.
+  @JsonKey(name: 'packageCount')
+  final int? packageCount;
 
-  @JsonKey(name: 'description')
-  final String? description;
-
-  @JsonKey(name: 'countryId')
-  final int? countryId;
-
-  @JsonKey(name: 'isActive')
-  final bool? isActive;
-
-  @JsonKey(name: 'createdAt')
-  final String? createdAt;
+  /// Cheapest active package's display price, in minor units (fils).
+  @JsonKey(name: 'minDisplayPrice')
+  final int? minDisplayPrice;
 
   BxGetDestination({
     this.id,
     this.name,
     this.code,
-    this.imageUrl,
-    this.description,
-    this.countryId,
-    this.isActive,
-    this.createdAt,
+    this.packageCount,
+    this.minDisplayPrice,
   });
 
   factory BxGetDestination.fromJson(Map<String, dynamic> json) =>
       _$BxGetDestinationFromJson(json);
 
   Map<String, dynamic> toJson() => _$BxGetDestinationToJson(this);
+
+  /// Convenience getter: formatted "From $X" string, or null if no price.
+  String? get priceLabel {
+    final p = minDisplayPrice;
+    if (p == null || p <= 0) return null;
+    return 'From \$${(p / 100).toStringAsFixed(0)}';
+  }
 }

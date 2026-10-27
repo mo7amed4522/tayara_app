@@ -12,6 +12,7 @@ import 'package:tayara/core/network/bx_api_endpoints.dart';
 import 'package:tayara/core/network/bx_dio_client.dart';
 import 'package:tayara/core/network/interceptors/bx_network_exception.dart';
 import 'package:tayara/domain/model/request/bx_active_top_banner_ads_request.dart';
+import 'package:tayara/domain/model/request/bx_custom_search_request.dart';
 import 'package:tayara/domain/model/request/bx_get_destinations_request.dart';
 import 'package:tayara/domain/model/request/bx_get_explore_trips_request.dart';
 import 'package:tayara/domain/model/request/bx_get_recommended_for_customer_request.dart';
@@ -20,6 +21,7 @@ import 'package:tayara/domain/model/request/bx_get_top_agent_request.dart';
 import 'package:tayara/domain/model/request/bx_get_top_deals_request.dart';
 import 'package:tayara/domain/model/request/bx_login_user_request.dart';
 import 'package:tayara/domain/model/response/bx_active_top_banner_ads_response.dart';
+import 'package:tayara/domain/model/response/bx_custom_search_response.dart';
 import 'package:tayara/domain/model/response/bx_get_destinations_response.dart';
 import 'package:tayara/domain/model/response/bx_get_explore_trips_response.dart';
 import 'package:tayara/domain/model/response/bx_get_recommended_for_customer_response.dart';
@@ -85,6 +87,13 @@ abstract class BxSystemRemoteDataSource {
   /// Returns a [BxGetRecommendedForCustomerResponse] indicating success or failure.
   Future<BxGetRecommendedForCustomerResponse> fetchRecommendedForCustomer(
     BxGetRecommendedForCustomerRequest request,
+  );
+
+  /// Fetches the search that user want with the provided request.
+  ///
+  /// Returns a [BxCustomSearchResponse] indicating success or failure.
+  Future<BxCustomSearchResponse> fetchCustomSearch(
+    BxCustomSearchRequest request,
   );
 }
 
@@ -486,14 +495,14 @@ class BxSystemRemoteDataSourceImpl implements BxSystemRemoteDataSource {
       final int code = (response is Map<String, dynamic>)
           ? (response['code'] as int?) ?? 1
           : 1;
-      final String? msg = (response is Map<String, dynamic> && response['msg'] != null)
+      final String? msg =
+          (response is Map<String, dynamic> && response['msg'] != null)
           ? response['msg'] as String?
           : null;
       return BxGetRecommendedForCustomerResponse(
         code: code,
         data: null,
-        msg: msg ??
-            'Unknown error occurred while fetching recommended items .',
+        msg: msg ?? 'Unknown error occurred while fetching recommended items .',
       );
     } on BxNetworkException catch (e) {
       return BxGetRecommendedForCustomerResponse(
@@ -506,6 +515,55 @@ class BxSystemRemoteDataSourceImpl implements BxSystemRemoteDataSource {
         code: 2,
         data: null,
         msg: 'Unknown error occurred while fetching recommended items .',
+      );
+    }
+  }
+
+  @override
+  Future<BxCustomSearchResponse> fetchCustomSearch(
+    BxCustomSearchRequest request,
+  ) async {
+    try {
+      final options = Options(headers: {'Content-Type': 'application/json'});
+      final queryPramter = {
+        'keyword': request.keyword,
+        'page': request.page,
+        'pageSize': request.pageSize,
+      };
+      final response = await _dioClient.get(
+        BxApiEndpoints.customSearchUrl,
+        options: options,
+        queryParameters: queryPramter,
+      );
+      if (response['code'] == 0) {
+        return BxCustomSearchResponse.fromJson(response);
+      }
+
+      if (response is String) {
+        try {
+          final decoded = jsonDecode(response);
+          if (decoded is Map<String, dynamic>) {
+            return BxCustomSearchResponse.fromJson(decoded);
+          }
+        } catch (_) {
+          // Fall through to return failure below.
+        }
+      }
+
+      return BxCustomSearchResponse(
+        code: 1,
+        data: null,
+        msg:
+            response['msg'] ??
+            'Unknown error occurred while fetching user data .',
+      );
+    } on BxNetworkException catch (e) {
+      return BxCustomSearchResponse(code: 1, data: null, msg: e.message);
+    } catch (e) {
+      return BxCustomSearchResponse(
+        code: 2,
+        data: null,
+        msg: 'Unknown error occurred while fetching user data .',
       );
     }
   }

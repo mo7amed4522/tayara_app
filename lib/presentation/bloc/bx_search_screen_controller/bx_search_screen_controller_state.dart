@@ -11,22 +11,30 @@ enum BxSearchScreenControllerStatus { initial, loading, success, failure }
 class BxSearchScreenControllerState extends Equatable {
   final BxSearchScreenControllerStatus status;
   final String query;
+  final BxCustomSearchResponse? customSearchResponse;
+  final String? errorMessage;
 
   const BxSearchScreenControllerState({
     this.status = BxSearchScreenControllerStatus.initial,
     this.query = '',
+    this.customSearchResponse,
+    this.errorMessage,
   });
 
   @override
-  List<Object?> get props => [status, query];
+  List<Object?> get props => [status, query, customSearchResponse, errorMessage];
 
   BxSearchScreenControllerState copyWith({
     BxSearchScreenControllerStatus? status,
     String? query,
+    BxCustomSearchResponse? customSearchResponse,
+    String? errorMessage,
   }) {
     return BxSearchScreenControllerState(
       status: status ?? this.status,
       query: query ?? this.query,
+      customSearchResponse: customSearchResponse ?? this.customSearchResponse,
+      errorMessage: errorMessage ?? this.errorMessage,
     );
   }
 }

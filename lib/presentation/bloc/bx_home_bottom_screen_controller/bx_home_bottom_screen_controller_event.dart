@@ -82,3 +82,34 @@ class BxLoadRecommendedEvent extends BxHomeBottomScreenControllerEvent {
   @override
   List<Object> get props => [limit];
 }
+
+/// Select a destination category to filter the Discover Destinations grid.
+class BxCategorySelectedEvent extends BxHomeBottomScreenControllerEvent {
+  final String category;
+
+  const BxCategorySelectedEvent({required this.category});
+
+  @override
+  List<Object> get props => [category];
+}
+
+/// Load top deals (paginated).
+class BxLoadTopDealsEvent extends BxHomeBottomScreenControllerEvent {
+  final int page;
+  final int pageSize;
+
+  const BxLoadTopDealsEvent({required this.page, required this.pageSize});
+
+  @override
+  List<Object> get props => [page, pageSize];
+}
+
+/// Load top agents.
+class BxLoadTopAgentsEvent extends BxHomeBottomScreenControllerEvent {
+  final int limit;
+
+  const BxLoadTopAgentsEvent({required this.limit});
+
+  @override
+  List<Object> get props => [limit];
+}

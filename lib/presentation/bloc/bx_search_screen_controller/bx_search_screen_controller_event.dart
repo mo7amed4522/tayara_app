@@ -22,3 +22,16 @@ class BxUpdateSearchQuery extends BxSearchScreenControllerEvent {
   @override
   List<Object?> get props => [query];
 }
+
+class BxSearchCustom extends BxSearchScreenControllerEvent {
+  final String keyword;
+  final int page;
+  final int pageSize;
+  const BxSearchCustom({
+    required this.keyword,
+    this.page = 1,
+    this.pageSize = 10,
+  });
+  @override
+  List<Object?> get props => [keyword, page, pageSize];
+}

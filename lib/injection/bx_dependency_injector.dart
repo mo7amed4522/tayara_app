@@ -8,6 +8,7 @@ import 'package:tayara/core/network/bx_dio_client.dart';
 import 'package:tayara/data/data_source/local/bx_shared_preferences_datasource.dart';
 import 'package:tayara/data/data_source/remote/bx_system_remote_data_source.dart';
 import 'package:tayara/data/repositories/bx_active_top_banner_ads_repositories_impl.dart';
+import 'package:tayara/data/repositories/bx_custom_search_repositories_impl.dart';
 import 'package:tayara/data/repositories/bx_firebase_login_repositories_impl.dart';
 import 'package:tayara/data/repositories/bx_get_destinations_repositories_impl.dart';
 import 'package:tayara/data/repositories/bx_get_explore_trips_repositories_impl.dart';
@@ -17,6 +18,7 @@ import 'package:tayara/data/repositories/bx_get_top_agent_reposotories_impl.dart
 import 'package:tayara/data/repositories/bx_get_top_deals_repositories_impl.dart';
 import 'package:tayara/data/repositories/bx_login_user_repositories_impl.dart';
 import 'package:tayara/domain/repositories/bx_active_top_banner_ads_repositories.dart';
+import 'package:tayara/domain/repositories/bx_custom_search_repositories.dart';
 import 'package:tayara/domain/repositories/bx_firebase_login_repositories.dart';
 import 'package:tayara/domain/repositories/bx_get_destinations_repositories.dart';
 import 'package:tayara/domain/repositories/bx_get_explore_trips_repositories.dart';
@@ -26,6 +28,7 @@ import 'package:tayara/domain/repositories/bx_get_top_agent_repositories.dart';
 import 'package:tayara/domain/repositories/bx_get_top_deals_repositories.dart';
 import 'package:tayara/domain/repositories/bx_login_user_repositories.dart';
 import 'package:tayara/domain/usecase/bx_active_top_banner_ads_usecase.dart';
+import 'package:tayara/domain/usecase/bx_custom_search_usecase.dart';
 import 'package:tayara/domain/usecase/bx_firebase_login_usecase.dart';
 import 'package:tayara/domain/usecase/bx_get_destinations_usecase.dart';
 import 'package:tayara/domain/usecase/bx_get_explore_trips_usecase.dart';
@@ -126,6 +129,9 @@ class BxDependencyInjector {
         bxsystemRemoteDataSource: _getIt(),
       ),
     );
+    _getIt.registerLazySingleton<BxCustomSearchRepositories>(
+      () => BxCustomSearchRepositoriesImpl(bxsystemRemoteDataSource: _getIt()),
+    );
     // UseCases
     _getIt.registerLazySingleton<BxFirebaseLoginUsecase>(
       () => BxFirebaseLoginUsecase(_getIt()),
@@ -153,6 +159,9 @@ class BxDependencyInjector {
     );
     _getIt.registerLazySingleton<BxGetRecommendedForCustomerUsecase>(
       () => BxGetRecommendedForCustomerUsecase(_getIt()),
+    );
+    _getIt.registerLazySingleton<BxCustomSearchUsecase>(
+      () => BxCustomSearchUsecase(_getIt()),
     );
     // Tab Blocs — singleton so data stays cached and is NOT re-fetched on tab switch/swipe.
     // They live as long as the app lives; RefreshIndicator / retry explicitly reloads them.

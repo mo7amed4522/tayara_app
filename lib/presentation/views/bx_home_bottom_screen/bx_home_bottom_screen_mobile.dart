@@ -3,8 +3,10 @@
 // File: lib/presentation/views/bx_home_bottom_screen/bx_home_bottom_screen_mobile.dart
 // Architecture: Presentation Layer - Bx Home Bottom Screen
 // Purpose: Mobile home bottom screen implementation matching Figma design
-//          Uses BLoC for all data fetching (ads, destinations, explore trips, recommended)
-// ignore_for_file: deprecated_member_use
+//          Uses BLoC for all data fetching (ads, destinations, explore trips, recommended, top deals, top agents)
+// ignore_for_file: unnecessary_underscores, deprecated_member_use
+
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,6 +14,11 @@ import 'package:tayara/core/constant/bx_app_constant.dart';
 import 'package:tayara/core/routes/bx_app_routes.dart';
 import 'package:tayara/core/routes/bx_route_names.dart';
 import 'package:tayara/core/theme/bx_app_colors.dart';
+import 'package:tayara/domain/model/response/bx_active_top_banner_ads_response.dart';
+import 'package:tayara/domain/model/response/bx_get_destinations_response.dart';
+import 'package:tayara/domain/model/response/bx_get_recommended_for_customer_response.dart';
+import 'package:tayara/domain/model/response/bx_get_top_agent_response.dart';
+import 'package:tayara/domain/model/response/bx_get_top_deals_response.dart';
 import 'package:tayara/presentation/bloc/bx_home_bottom_screen_controller/bx_home_bottom_screen_controller_bloc.dart';
 
 class BxHomeBottomScreenMobile extends StatelessWidget {
@@ -53,7 +60,10 @@ class BxHomeBottomScreenMobile extends StatelessWidget {
                           children: [
                             const _SearchField(),
                             const SizedBox(height: 16),
-                            const _CategoryChips(),
+                            _CategoryChips(
+                              destinations: state.destinations,
+                              selectedCategory: state.selectedCategory,
+                            ),
                             const SizedBox(height: 16),
                             Visibility(
                               visible: state.ads.isNotEmpty,
@@ -67,7 +77,10 @@ class BxHomeBottomScreenMobile extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(height: 12),
-                            _DestinationGrid(destinations: state.destinations),
+                            _DestinationGrid(
+                              destinations: state.destinations,
+                              selectedCategory: state.selectedCategory,
+                            ),
                             const SizedBox(height: 20),
                             Text(
                               'Top Deals',
@@ -76,7 +89,7 @@ class BxHomeBottomScreenMobile extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(height: 12),
-                            const _TopDealsList(),
+                            _TopDealsList(topDeals: state.topDeals),
                             const SizedBox(height: 20),
                             const _InsightCard(),
                             const SizedBox(height: 20),
@@ -87,7 +100,7 @@ class BxHomeBottomScreenMobile extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(height: 12),
-                            const _AgenciesList(),
+                            _AgenciesList(topAgents: state.topAgents),
                             const SizedBox(height: 20),
                             Text(
                               'Recommended For You',
@@ -166,86 +179,152 @@ class _Header extends StatelessWidget {
 
 // ─── Search Field ─────────────────────────────────────────────────────────────
 
-class _SearchField extends StatelessWidget {
+// lib/presentation/views/bx_home_bottom_screen/bx_home_bottom_screen_mobile.dart
+class _SearchField extends StatefulWidget {
   const _SearchField();
+
+  @override
+  State<_SearchField> createState() => _SearchFieldState();
+}
+
+class _SearchFieldState extends State<_SearchField> {
+  final TextEditingController _controller = TextEditingController();
+  Timer? _debounceTimer;
+  bool _hasNavigated = false;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _debounceTimer?.cancel();
+    super.dispose();
+  }
+
+  void _goToSearch() {
+    if (_hasNavigated) return;
+    final keyword = _controller.text.trim();
+    if (keyword.isEmpty) return;
+    _hasNavigated = true;
+    BxAppRouter.push(
+      context,
+      BxRouteNames.bxSearchScreen,
+      arguments: {'keyword': keyword},
+    );
+  }
+
+  void _onChanged(String value) {
+    _hasNavigated = false;
+    _debounceTimer?.cancel();
+    final keyword = value.trim();
+    if (keyword.isNotEmpty) {
+      _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+        if (mounted && !_hasNavigated && _controller.text.trim() == keyword) {
+          _goToSearch();
+        }
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return GestureDetector(
-      onTap: () => BxAppRouter.push(context, BxRouteNames.bxSearchScreen),
-      child: AbsorbPointer(
-        // prevent the inner TextField from stealing focus
-        child: SizedBox(
-          width: double.infinity,
-          height: 48,
-          child: TextField(
-            readOnly: true, // visual only — real input lives on BxSearchScreen
-            style: TextStyle(
-              color: colorScheme.onSurface,
-              fontSize: 14,
-              fontFamily: 'Poppins',
+    return SizedBox(
+      width: double.infinity,
+      height: 48,
+      child: TextField(
+        controller: _controller,
+        textInputAction: TextInputAction.search,
+        onSubmitted: (_) => _goToSearch(),
+        onChanged: _onChanged,
+        onTap: () {
+          // Optional: navigate immediately so the user lands on the search screen.
+          // _goToSearch();
+        },
+        style: TextStyle(
+          color: colorScheme.onSurface,
+          fontSize: 14,
+          fontFamily: 'Poppins',
+        ),
+        decoration: InputDecoration(
+          hintText: 'Search destinations, trips, or agencies...',
+          hintStyle: TextStyle(
+            color: colorScheme.onSurface.withOpacity(0.4),
+            fontSize: 14,
+            fontFamily: 'Poppins',
+          ),
+          suffixIcon: IconButton(
+            icon: Icon(
+              Icons.search,
+              color: colorScheme.onSurface.withOpacity(0.4),
+              size: 20,
             ),
-            decoration: InputDecoration(
-              hintText: 'Search destinations, trips, or agencies...',
-              hintStyle: TextStyle(
-                color: colorScheme.onSurface.withOpacity(0.4),
-                fontSize: 14,
-                fontFamily: 'Poppins',
-              ),
-              suffixIcon: Icon(
-                Icons.search,
-                color: colorScheme.onSurface.withOpacity(0.4),
-                size: 20,
-              ),
-              filled: true,
-              fillColor: colorScheme.surface,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 0,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(24),
-                borderSide: BorderSide.none,
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(24),
-                borderSide: BorderSide.none,
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(24),
-                borderSide: BorderSide(color: BxAppColors.primary, width: 2),
-              ),
-            ),
+            onPressed: _goToSearch,
+          ),
+          filled: true,
+          fillColor: colorScheme.surface,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 0,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(24),
+            borderSide: BorderSide.none,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(24),
+            borderSide: BorderSide.none,
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(24),
+            borderSide: BorderSide(color: BxAppColors.primary, width: 2),
           ),
         ),
       ),
     );
   }
 }
+
 // ─── Category Chips ───────────────────────────────────────────────────────────
 
 class _CategoryChips extends StatelessWidget {
-  const _CategoryChips();
+  final List<BxGetDestination> destinations;
+  final String? selectedCategory;
+
+  const _CategoryChips({required this.destinations, this.selectedCategory});
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    const categories = ['Egypt Nile Cruise', 'Bali Beach', 'Tokyo Adventure'];
+    // Extract unique destination names as categories
+    final categories = destinations
+        .map((d) => d.name ?? '')
+        .where((name) => name.isNotEmpty)
+        .toSet()
+        .toList();
+
+    // Always show "All" as the first option
+    final allCategories = ['All', ...categories];
 
     return SizedBox(
       height: 36,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        itemCount: categories.length,
+        itemCount: allCategories.length,
         separatorBuilder: (_, _) => const SizedBox(width: 8),
         itemBuilder: (context, index) {
-          final isSelected = index == 0;
+          final category = allCategories[index];
+          final isSelected = selectedCategory == null
+              ? index == 0
+              : selectedCategory == category;
+
           return GestureDetector(
-            onTap: () {},
+            onTap: () {
+              context.read<BxHomeBottomScreenControllerBloc>().add(
+                BxCategorySelectedEvent(category: index == 0 ? '' : category),
+              );
+            },
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
@@ -268,7 +347,7 @@ class _CategoryChips extends StatelessWidget {
                     : null,
               ),
               child: Text(
-                categories[index],
+                category,
                 style: textTheme.bodySmall?.copyWith(
                   color: isSelected ? Colors.white : colorScheme.onSurface,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
@@ -346,7 +425,7 @@ class _AdCarouselState extends State<_AdCarousel> {
 }
 
 class _AdPageView extends StatelessWidget {
-  final List<Map<String, String>> ads;
+  final List<BxActiveTopBannerAd> ads;
   final PageController pageController;
   final int currentPage;
   final Function(int) onPageChanged;
@@ -374,9 +453,16 @@ class _AdPageView extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
                 image: DecorationImage(
-                  image: ad['imageUrl']!.startsWith('http')
-                      ? NetworkImage(ad['imageUrl']!)
-                      : AssetImage(ad['imageUrl']!),
+                  image:
+                      ((ad.bannerImageUrl ?? '').isNotEmpty &&
+                          (ad.bannerImageUrl ?? '').startsWith('http'))
+                      ? NetworkImage(ad.bannerImageUrl!)
+                      : AssetImage(
+                          (ad.bannerImageUrl != null &&
+                                  ad.bannerImageUrl!.isNotEmpty)
+                              ? ad.bannerImageUrl!
+                              : 'assets/images/recommend_image1.png',
+                        ),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -392,7 +478,7 @@ class _AdPageView extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          ad['title']!,
+                          ad.overlayTitle ?? '',
                           style: textTheme.titleMedium?.copyWith(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -401,7 +487,7 @@ class _AdPageView extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          ad['subtitle']!,
+                          ad.overlaySubtitle ?? '',
                           style: textTheme.bodySmall?.copyWith(
                             color: Colors.white.withOpacity(0.9),
                             fontSize: 13,
@@ -428,7 +514,7 @@ class _AdPageView extends StatelessWidget {
                                 fontFamily: 'Poppins',
                               ),
                             ),
-                            child: Text(ad['buttonText'] ?? 'Explore Now'),
+                            child: Text(ad.ctaLabel ?? 'Explore Now'),
                           ),
                         ),
                       ],
@@ -477,15 +563,22 @@ class _AdPageView extends StatelessWidget {
 // ─── Destination Grid ─────────────────────────────────────────────────────────
 
 class _DestinationGrid extends StatelessWidget {
-  final List<Map<String, String>> destinations;
+  final List<BxGetDestination> destinations;
+  final String? selectedCategory;
 
-  const _DestinationGrid({required this.destinations});
+  const _DestinationGrid({required this.destinations, this.selectedCategory});
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
-    if (destinations.isEmpty) {
+    // Filter destinations by selected category
+    final filteredDestinations =
+        selectedCategory == null || selectedCategory!.isEmpty
+        ? destinations
+        : destinations.where((d) => d.name == selectedCategory).toList();
+
+    if (filteredDestinations.isEmpty) {
       return const SizedBox(
         height: 200,
         child: Center(child: Text('No destinations available')),
@@ -495,7 +588,7 @@ class _DestinationGrid extends StatelessWidget {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: destinations.length,
+      itemCount: filteredDestinations.length,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         mainAxisSpacing: 12,
@@ -503,18 +596,13 @@ class _DestinationGrid extends StatelessWidget {
         childAspectRatio: 0.85,
       ),
       itemBuilder: (context, index) {
-        final item = destinations[index];
+        final item = filteredDestinations[index];
+
         return ClipRRect(
           borderRadius: BorderRadius.circular(16),
           child: Stack(
             fit: StackFit.expand,
             children: [
-              Image.asset(
-                item['imageUrl']!.startsWith('http')
-                    ? item['imageUrl']!
-                    : 'assets/images/recommend_image1.png', // fallback
-                fit: BoxFit.cover,
-              ),
               // Gradient overlay
               Container(
                 decoration: BoxDecoration(
@@ -539,7 +627,7 @@ class _DestinationGrid extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      item['name']!,
+                      item.name ?? '',
                       style: textTheme.titleSmall?.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -549,8 +637,8 @@ class _DestinationGrid extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      // Since destination model doesn't have price, we'll show a placeholder
-                      'From \$0',
+                      // Using the priceLabel getter from the model
+                      item.priceLabel ?? '',
                       style: textTheme.bodySmall?.copyWith(
                         color: Colors.white.withOpacity(0.9),
                         fontWeight: FontWeight.w500,
@@ -570,48 +658,33 @@ class _DestinationGrid extends StatelessWidget {
 // ─── Top Deals List ───────────────────────────────────────────────────────────
 
 class _TopDealsList extends StatelessWidget {
-  const _TopDealsList();
+  final List<BxGetTopDeal> topDeals;
+
+  const _TopDealsList({required this.topDeals});
 
   @override
   Widget build(BuildContext context) {
-    const deals = [
-      {
-        'image': BxAppConstant.topDealsImage1,
-        'name': 'Paris Escape 4D/3N',
-        'price': '\$950 - \$1,050',
-        'discount': 'Save 8%',
-        'views': '18',
-      },
-      {
-        'image': BxAppConstant.topDealsImage2,
-        'name': 'Rome Discovery 5D/4N',
-        'price': '\$1,100 - \$1,250',
-        'discount': 'Save 12%',
-        'views': '24',
-      },
-      {
-        'image': BxAppConstant.topDealsImage1,
-        'name': 'Dubai Luxury 3D/2N',
-        'price': '\$600 - \$800',
-        'discount': 'Save 5%',
-        'views': '31',
-      },
-    ];
+    if (topDeals.isEmpty) {
+      return const SizedBox(
+        height: 100,
+        child: Center(child: Text('No top deals available')),
+      );
+    }
 
     return SizedBox(
       height: 320,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        itemCount: deals.length,
+        itemCount: topDeals.length,
         separatorBuilder: (_, _) => const SizedBox(width: 12),
-        itemBuilder: (context, index) => _TopDealCard(deal: deals[index]),
+        itemBuilder: (context, index) => _TopDealCard(deal: topDeals[index]),
       ),
     );
   }
 }
 
 class _TopDealCard extends StatelessWidget {
-  final Map<String, String> deal;
+  final BxGetTopDeal deal;
 
   const _TopDealCard({required this.deal});
 
@@ -619,6 +692,25 @@ class _TopDealCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+
+    // Calculate discount percent if we have original and display price
+    String? discountText;
+    if (deal.originalPrice != null &&
+        deal.displayPrice != null &&
+        deal.originalPrice! > deal.displayPrice!) {
+      final discount =
+          ((deal.originalPrice! - deal.displayPrice!) /
+                  deal.originalPrice! *
+                  100)
+              .round();
+      discountText = 'Save $discount%';
+    }
+
+    // Format price from minor units (fils)
+    String formatPrice(num? price) {
+      if (price == null) return '';
+      return '\$${(price / 100).toStringAsFixed(0)}';
+    }
 
     return Container(
       width: 280,
@@ -637,37 +729,56 @@ class _TopDealCard extends StatelessWidget {
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(16),
                 ),
-                child: Image.asset(
-                  deal['image']!,
-                  width: 280,
-                  height: 160,
-                  fit: BoxFit.cover,
-                ),
+                child:
+                    ((deal.coverImageUrl ?? '').isNotEmpty &&
+                        (deal.coverImageUrl ?? '').startsWith('http'))
+                    ? Image.network(
+                        deal.coverImageUrl!,
+                        width: 280,
+                        height: 160,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Image.asset(
+                          BxAppConstant.topDealsImage1,
+                          width: 280,
+                          height: 160,
+                          fit: BoxFit.cover,
+                        ),
+                      )
+                    : Image.asset(
+                        (deal.coverImageUrl != null &&
+                                deal.coverImageUrl!.isNotEmpty)
+                            ? deal.coverImageUrl!
+                            : BxAppConstant.topDealsImage1,
+                        width: 280,
+                        height: 160,
+                        fit: BoxFit.cover,
+                      ),
               ),
               // Discount badge
-              Positioned(
-                top: 10,
-                left: 10,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: BxAppColors.error,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    deal['discount']!,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Poppins',
+              if (discountText != null)
+                Positioned(
+                  top: 10,
+                  left: 10,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: BxAppColors.error,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      discountText,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Poppins',
+                      ),
                     ),
                   ),
                 ),
-              ),
               // Wishlist heart
               Positioned(
                 top: 10,
@@ -700,7 +811,7 @@ class _TopDealCard extends StatelessWidget {
                 children: [
                   // Title
                   Text(
-                    deal['name']!,
+                    deal.name ?? '',
                     style: textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                       fontFamily: 'Poppins',
@@ -711,7 +822,7 @@ class _TopDealCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   // Price
                   Text(
-                    deal['price']!,
+                    formatPrice(deal.displayPrice),
                     style: textTheme.bodyMedium?.copyWith(
                       color: BxAppColors.primary,
                       fontWeight: FontWeight.bold,
@@ -729,7 +840,7 @@ class _TopDealCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        '${deal['views']} people are viewing this trip',
+                        '${deal.viewCount ?? 0} people are viewing this trip',
                         style: textTheme.bodySmall?.copyWith(
                           color: colorScheme.onSurface.withOpacity(0.6),
                           fontFamily: 'Poppins',
@@ -865,26 +976,31 @@ class _InsightCard extends StatelessWidget {
 // ─── Agencies List ────────────────────────────────────────────────────────────
 
 class _AgenciesList extends StatelessWidget {
-  const _AgenciesList();
+  final List<BxGetTopAgent> topAgents;
+
+  const _AgenciesList({required this.topAgents});
 
   @override
   Widget build(BuildContext context) {
-    const agencies = [
-      {'name': 'Nile Voyages', 'rating': '4.9'},
-      {'name': 'Tayara Travel', 'rating': '4.8'},
-      {'name': 'Skyline Tours', 'rating': '4.7'},
-      {'name': 'Oceanic', 'rating': '4.9'},
-    ];
+    if (topAgents.isEmpty) {
+      return const SizedBox(
+        height: 100,
+        child: Center(child: Text('No agencies available')),
+      );
+    }
 
     return SizedBox(
       height: 170,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        itemCount: agencies.length,
+        itemCount: topAgents.length,
         separatorBuilder: (_, _) => const SizedBox(width: 12),
         itemBuilder: (context, index) => _AgencyCard(
-          name: agencies[index]['name']!,
-          rating: agencies[index]['rating']!,
+          agent: topAgents[index],
+          onTap: () {
+            debugPrint("we are here now");
+            BxAppRouter.push(context, BxRouteNames.bxAgenciesScreen);
+          },
         ),
       ),
     );
@@ -892,10 +1008,10 @@ class _AgenciesList extends StatelessWidget {
 }
 
 class _AgencyCard extends StatelessWidget {
-  final String name;
-  final String rating;
+  final BxGetTopAgent agent;
+  final VoidCallback onTap;
 
-  const _AgencyCard({required this.name, required this.rating});
+  const _AgencyCard({required this.agent, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -903,84 +1019,123 @@ class _AgencyCard extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return Container(
-      width: 140,
+      width: 170,
       decoration: BoxDecoration(
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Circular logo placeholder
-          Container(
-            width: 64,
-            height: 64,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: BxAppColors.primary.withOpacity(0.12),
-            ),
-            child: const Center(
-              child: Text(
-                'logo',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: BxAppColors.primary,
-                  fontFamily: 'Poppins',
-                ),
+          Center(
+            child: Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: BxAppColors.primary.withOpacity(0.12),
               ),
+              child: (agent.headerImg ?? '').isNotEmpty
+                  ? ClipOval(
+                      child: (agent.headerImg ?? '').startsWith('http')
+                          ? Image.network(
+                              agent.headerImg!,
+                              width: 64,
+                              height: 64,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => const Center(
+                                child: Text(
+                                  'logo',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: BxAppColors.primary,
+                                    fontFamily: 'Poppins',
+                                  ),
+                                ),
+                              ),
+                            )
+                          : Image.asset(
+                              agent.headerImg!,
+                              width: 64,
+                              height: 64,
+                              fit: BoxFit.cover,
+                            ),
+                    )
+                  : const Center(
+                      child: Text(
+                        'logo',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: BxAppColors.primary,
+                          fontFamily: 'Poppins',
+                        ),
+                      ),
+                    ),
             ),
           ),
           const SizedBox(height: 8),
           // Name
-          Text(
-            name,
-            style: textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              fontFamily: 'Poppins',
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Text(
+              agent.companyName ?? '',
+              style: textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Poppins',
+                fontSize: 11,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.start,
             ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
           ),
           const SizedBox(height: 4),
           // Rating
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.star, size: 14, color: Colors.amber),
-              const SizedBox(width: 2),
-              Text(
-                rating,
-                style: textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurface,
-                  fontFamily: 'Poppins',
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.star, size: 14, color: Colors.amber),
+                const SizedBox(width: 2),
+                Text(
+                  agent.averageRating?.toStringAsFixed(1) ?? '0.0',
+                  style: textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurface,
+                    fontFamily: 'Poppins',
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           const SizedBox(height: 10),
           // View Trips button
-          SizedBox(
-            width: 80,
-            height: 28,
-            child: ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: BxAppColors.primary,
-                foregroundColor: Colors.white,
-                padding: EdgeInsets.zero,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6),
+          Center(
+            child: SizedBox(
+              width: 80,
+              height: 28,
+              child: ElevatedButton(
+                onPressed: onTap,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: BxAppColors.primary,
+                  foregroundColor: Colors.white,
+                  padding: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  textStyle: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Poppins',
+                  ),
                 ),
-                textStyle: const TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Poppins',
-                ),
+                child: const Text('View Trips'),
               ),
-              child: const Text('View Trips'),
             ),
           ),
         ],
@@ -992,7 +1147,7 @@ class _AgencyCard extends StatelessWidget {
 // ─── Recommended List ─────────────────────────────────────────────────────────
 
 class _RecommendedList extends StatelessWidget {
-  final List<Map<String, String>> recommended;
+  final List<BxRecommendedForCustomerPackage> recommended;
 
   const _RecommendedList({required this.recommended});
 
@@ -1017,7 +1172,7 @@ class _RecommendedList extends StatelessWidget {
 }
 
 class _RecommendedCard extends StatelessWidget {
-  final Map<String, String> trip;
+  final BxRecommendedForCustomerPackage trip;
 
   const _RecommendedCard({required this.trip});
 
@@ -1040,14 +1195,30 @@ class _RecommendedCard extends StatelessWidget {
             borderRadius: const BorderRadius.horizontal(
               left: Radius.circular(16),
             ),
-            child: Image.asset(
-              trip['imageUrl']!.startsWith('http')
-                  ? trip['imageUrl']!
-                  : 'assets/images/recommend_image1.png', // fallback
-              width: 100,
-              height: 90,
-              fit: BoxFit.cover,
-            ),
+            child:
+                ((trip.coverImageUrl ?? '').isNotEmpty &&
+                    (trip.coverImageUrl ?? '').startsWith('http'))
+                ? Image.network(
+                    trip.coverImageUrl!,
+                    width: 100,
+                    height: 90,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, _) => Image.asset(
+                      'assets/images/recommend_image1.png',
+                      width: 100,
+                      height: 90,
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                : Image.asset(
+                    (trip.coverImageUrl != null &&
+                            trip.coverImageUrl!.isNotEmpty)
+                        ? trip.coverImageUrl!
+                        : 'assets/images/recommend_image1.png',
+                    width: 100,
+                    height: 90,
+                    fit: BoxFit.cover,
+                  ),
           ),
           // Content
           Expanded(
@@ -1058,7 +1229,7 @@ class _RecommendedCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    trip['name']!,
+                    trip.name ?? '',
                     style: textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                       fontFamily: 'Poppins',
@@ -1071,10 +1242,13 @@ class _RecommendedCard extends StatelessWidget {
                     children: [
                       const Icon(Icons.star, size: 14, color: Colors.amber),
                       const SizedBox(width: 4),
-                      Text(trip['rating']!, style: textTheme.bodySmall),
+                      Text(
+                        trip.rating?.toString() ?? '0',
+                        style: textTheme.bodySmall,
+                      ),
                       const SizedBox(width: 4),
                       Text(
-                        trip['reviewCount']!,
+                        trip.reviewCount?.toString() ?? '0',
                         style: textTheme.bodySmall?.copyWith(
                           color: colorScheme.onSurface.withOpacity(0.5),
                         ),
@@ -1083,7 +1257,9 @@ class _RecommendedCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    trip['price']!,
+                    trip.displayPrice != null
+                        ? '\$${(trip.displayPrice! / 100).toStringAsFixed(0)}'
+                        : '',
                     style: textTheme.bodyMedium?.copyWith(
                       color: BxAppColors.primary,
                       fontWeight: FontWeight.bold,
