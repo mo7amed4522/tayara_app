@@ -7,6 +7,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tayara/core/theme/bx_app_colors.dart';
+import 'package:tayara/domain/usecase/bx_active_top_banner_ads_usecase.dart';
+import 'package:tayara/domain/usecase/bx_get_explore_topic_usecase.dart';
+import 'package:tayara/domain/usecase/bx_get_explore_trips_usecase.dart';
+import 'package:tayara/domain/usecase/bx_get_top_agent_usecase.dart';
 import 'package:tayara/presentation/bloc/bx_explore_bottom_screen_controller/bx_explore_bottom_screen_controller_bloc.dart';
 import 'package:tayara/presentation/bloc/bx_home_screen_controller/bx_home_screen_controller_bloc.dart';
 import 'package:tayara/presentation/views/bx_booking_bottom_screen/bx_booking_bottom_screen_tablet.dart';
@@ -95,9 +99,12 @@ class _BxHomeWidgetTabletState extends State<BxHomeWidgetTablet>
                   children: [
                     BxHomeBottomScreenTablet(),
                     BlocProvider(
-                      create: (_) =>
-                          BxExploreBottomScreenControllerBloc()
-                            ..add(const BxLoadExploreContent()),
+                      create: (_) => BxExploreBottomScreenControllerBloc(
+                        getExploreTopicUsecase: BxDependencyInjector.instance.get<BxGetExploreTopicUsecase>(),
+                        getTopAgentsUsecase: BxDependencyInjector.instance.get<BxGetTopAgentsUsecase>(),
+                        activeTopBannerAdsUsecase: BxDependencyInjector.instance.get<BxActiveTopBannerAdsUsecase>(),
+                        getExploreTripsUsecase: BxDependencyInjector.instance.get<BxGetExploreTripsUsecase>(),
+                      )..add(const BxLoadExploreContent()),
                       child: const BxExploreBottomScreenTablet(),
                     ),
                     BlocProvider(

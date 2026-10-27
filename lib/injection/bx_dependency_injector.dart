@@ -12,6 +12,7 @@ import 'package:tayara/data/repositories/bx_agent_profile_details_repositories_i
 import 'package:tayara/data/repositories/bx_custom_search_repositories_impl.dart';
 import 'package:tayara/data/repositories/bx_firebase_login_repositories_impl.dart';
 import 'package:tayara/data/repositories/bx_get_destinations_repositories_impl.dart';
+import 'package:tayara/data/repositories/bx_get_explore_topic_repositories_impl.dart';
 import 'package:tayara/data/repositories/bx_get_explore_trips_repositories_impl.dart';
 import 'package:tayara/data/repositories/bx_get_recommended_for_customer_repositories_impl.dart';
 import 'package:tayara/data/repositories/bx_get_search_repositories_impl.dart';
@@ -23,6 +24,7 @@ import 'package:tayara/domain/repositories/bx_agent_profile_details_repositories
 import 'package:tayara/domain/repositories/bx_custom_search_repositories.dart';
 import 'package:tayara/domain/repositories/bx_firebase_login_repositories.dart';
 import 'package:tayara/domain/repositories/bx_get_destinations_repositories.dart';
+import 'package:tayara/domain/repositories/bx_get_explore_topic_repositories.dart';
 import 'package:tayara/domain/repositories/bx_get_explore_trips_repositories.dart';
 import 'package:tayara/domain/repositories/bx_get_recommended_for_customer_repositories.dart';
 import 'package:tayara/domain/repositories/bx_get_search_repositories.dart';
@@ -34,6 +36,7 @@ import 'package:tayara/domain/usecase/bx_agent_profile_details_usecase.dart';
 import 'package:tayara/domain/usecase/bx_custom_search_usecase.dart';
 import 'package:tayara/domain/usecase/bx_firebase_login_usecase.dart';
 import 'package:tayara/domain/usecase/bx_get_destinations_usecase.dart';
+import 'package:tayara/domain/usecase/bx_get_explore_topic_usecase.dart';
 import 'package:tayara/domain/usecase/bx_get_explore_trips_usecase.dart';
 import 'package:tayara/domain/usecase/bx_get_recommended_for_customer_usecase.dart';
 import 'package:tayara/domain/usecase/bx_get_search_usecase.dart';
@@ -140,6 +143,10 @@ class BxDependencyInjector {
         bxsystemRemoteDataSource: _getIt(),
       ),
     );
+    _getIt.registerLazySingleton<BxGetExploreTopicRepositories>(
+      () =>
+          BxGetExploreTopicRepositoriesImpl(bxsystemRemoteDataSource: _getIt()),
+    );
     // UseCases
     _getIt.registerLazySingleton<BxFirebaseLoginUsecase>(
       () => BxFirebaseLoginUsecase(_getIt()),
@@ -173,6 +180,9 @@ class BxDependencyInjector {
     );
     _getIt.registerLazySingleton<BxAgentProfileDetailsUsecase>(
       () => BxAgentProfileDetailsUsecase(_getIt()),
+    );
+    _getIt.registerLazySingleton<BxGetExploreTopicUsecase>(
+      () => BxGetExploreTopicUsecase(_getIt()),
     );
     // Tab Blocs — singleton so data stays cached and is NOT re-fetched on tab switch/swipe.
     // They live as long as the app lives; RefreshIndicator / retry explicitly reloads them.

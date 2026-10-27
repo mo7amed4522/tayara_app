@@ -14,6 +14,7 @@ import 'package:tayara/core/constant/bx_app_constant.dart';
 import 'package:tayara/core/theme/bx_app_colors.dart';
 import 'package:tayara/domain/usecase/bx_active_top_banner_ads_usecase.dart';
 import 'package:tayara/domain/usecase/bx_get_destinations_usecase.dart';
+import 'package:tayara/domain/usecase/bx_get_explore_topic_usecase.dart';
 import 'package:tayara/domain/usecase/bx_get_explore_trips_usecase.dart';
 import 'package:tayara/domain/usecase/bx_get_recommended_for_customer_usecase.dart';
 import 'package:tayara/domain/usecase/bx_get_search_usecase.dart';
@@ -119,9 +120,12 @@ class _BxHomeWidgetMobileState extends State<BxHomeWidgetMobile>
                 child: const BxHomeBottomScreenMobile(),
               ),
               BlocProvider(
-                create: (_) =>
-                    BxExploreBottomScreenControllerBloc()
-                      ..add(const BxLoadExploreContent()),
+                create: (_) => BxExploreBottomScreenControllerBloc(
+                  getExploreTopicUsecase: BxDependencyInjector.instance.get<BxGetExploreTopicUsecase>(),
+                  getTopAgentsUsecase: BxDependencyInjector.instance.get<BxGetTopAgentsUsecase>(),
+                  activeTopBannerAdsUsecase: BxDependencyInjector.instance.get<BxActiveTopBannerAdsUsecase>(),
+                  getExploreTripsUsecase: BxDependencyInjector.instance.get<BxGetExploreTripsUsecase>(),
+                )..add(const BxLoadExploreContent()),
                 child: const BxExploreBottomScreenMobile(),
               ),
               BlocProvider(

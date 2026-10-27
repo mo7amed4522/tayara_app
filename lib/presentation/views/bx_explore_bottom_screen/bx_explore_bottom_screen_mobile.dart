@@ -11,6 +11,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tayara/core/constant/bx_app_constant.dart';
 import 'package:tayara/core/theme/bx_app_colors.dart';
+import 'package:tayara/domain/model/response/bx_active_top_banner_ads_response.dart';
+import 'package:tayara/domain/model/response/bx_get_explore_trips_response.dart';
+import 'package:tayara/domain/usecase/bx_active_top_banner_ads_usecase.dart';
+import 'package:tayara/domain/usecase/bx_get_explore_topic_usecase.dart';
+import 'package:tayara/domain/usecase/bx_get_explore_trips_usecase.dart';
+import 'package:tayara/domain/usecase/bx_get_top_agent_usecase.dart';
+import 'package:tayara/injection/bx_dependency_injector.dart';
 import 'package:tayara/presentation/bloc/bx_explore_bottom_screen_controller/bx_explore_bottom_screen_controller_bloc.dart';
 
 class BxExploreBottomScreenMobile extends StatelessWidget {
@@ -19,9 +26,16 @@ class BxExploreBottomScreenMobile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) =>
-          BxExploreBottomScreenControllerBloc()
-            ..add(const BxLoadExploreContent()),
+      create: (_) => BxExploreBottomScreenControllerBloc(
+        getExploreTopicUsecase: BxDependencyInjector.instance
+            .get<BxGetExploreTopicUsecase>(),
+        getTopAgentsUsecase: BxDependencyInjector.instance
+            .get<BxGetTopAgentsUsecase>(),
+        activeTopBannerAdsUsecase: BxDependencyInjector.instance
+            .get<BxActiveTopBannerAdsUsecase>(),
+        getExploreTripsUsecase: BxDependencyInjector.instance
+            .get<BxGetExploreTripsUsecase>(),
+      )..add(const BxLoadExploreContent()),
       child: const _ExploreBody(),
     );
   }
@@ -202,7 +216,7 @@ class _HeroCarouselState extends State<_HeroCarousel> {
 }
 
 class _HeroPageView extends StatelessWidget {
-  final List<Map<String, String>> ads;
+  final List<BxActiveTopBannerAd> ads;
   final PageController pageController;
   final Function(int) onPageChanged;
 
@@ -250,7 +264,7 @@ class _HeroPageView extends StatelessWidget {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    _buildImage(ad['imageUrl']!, fit: BoxFit.cover),
+                    _buildImage(ad.bannerImageUrl ?? '', fit: BoxFit.cover),
                     // Gradient overlay
                     Container(
                       decoration: BoxDecoration(
@@ -275,7 +289,7 @@ class _HeroPageView extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            ad['title']!,
+                            ad.overlayTitle ?? '',
                             style: textTheme.titleMedium?.copyWith(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -284,7 +298,7 @@ class _HeroPageView extends StatelessWidget {
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            ad['subtitle']!,
+                            ad.overlaySubtitle ?? '',
                             style: textTheme.bodySmall?.copyWith(
                               color: Colors.white.withOpacity(0.9),
                               fontSize: 13,
@@ -363,24 +377,30 @@ class _ExploreByThemeSliver extends StatelessWidget {
                   child: Center(child: CircularProgressIndicator()),
                 );
               }
-              final themes = state.themes;
+              final topics = state.exploreTopics;
+              if (topics.isEmpty) {
+                return const SizedBox(
+                  height: 200,
+                  child: Center(child: Text('No themes available')),
+                );
+              }
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: GridView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: themes.length,
+                  itemCount: topics.length,
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    mainAxisSpacing: 10,
-                    crossAxisSpacing: 10,
-                    childAspectRatio: 0.75,
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 15,
+                    crossAxisSpacing: 12,
+                    childAspectRatio: 1.2,
                   ),
                   itemBuilder: (context, index) {
-                    final theme = themes[index];
+                    final topic = topics[index];
                     return _ThemeCard(
-                      image: theme['image']!,
-                      name: theme['name']!,
+                      imageUrl: topic.imageUrl ?? '',
+                      name: topic.name ?? topic.nameAr ?? '',
                     );
                   },
                 ),
@@ -394,10 +414,10 @@ class _ExploreByThemeSliver extends StatelessWidget {
 }
 
 class _ThemeCard extends StatelessWidget {
-  final String image;
+  final String imageUrl;
   final String name;
 
-  const _ThemeCard({required this.image, required this.name});
+  const _ThemeCard({required this.imageUrl, required this.name});
 
   @override
   Widget build(BuildContext context) {
@@ -408,7 +428,32 @@ class _ThemeCard extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset(image, fit: BoxFit.cover),
+          // Load image from network or asset
+          imageUrl.startsWith('http')
+              ? Image.network(
+                  imageUrl,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      color: Colors.grey[300],
+                      child: const Center(
+                        child: Icon(Icons.image_not_supported),
+                      ),
+                    );
+                  },
+                )
+              : Image.asset(
+                  imageUrl,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      color: Colors.grey[300],
+                      child: const Center(
+                        child: Icon(Icons.image_not_supported),
+                      ),
+                    );
+                  },
+                ),
           // Dark gradient overlay
           Container(
             decoration: BoxDecoration(
@@ -423,15 +468,15 @@ class _ThemeCard extends StatelessWidget {
           // Theme name
           Positioned(
             left: 0,
-            right: 0,
-            bottom: 8,
+            right: 17,
+            bottom: 17,
             child: Text(
               name,
               textAlign: TextAlign.center,
               style: textTheme.labelSmall?.copyWith(
                 color: Colors.white,
                 fontWeight: FontWeight.w600,
-                fontSize: 11,
+                fontSize: 17,
               ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
@@ -479,6 +524,12 @@ class _PopularRightNowSliver extends StatelessWidget {
                 );
               }
               final trips = state.trendingTrips;
+              if (trips.isEmpty) {
+                return const SizedBox(
+                  height: 180,
+                  child: Center(child: Text('No trips available')),
+                );
+              }
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: SizedBox(
@@ -489,12 +540,7 @@ class _PopularRightNowSliver extends StatelessWidget {
                     separatorBuilder: (_, _) => const SizedBox(width: 12),
                     itemBuilder: (context, index) {
                       final trip = trips[index];
-                      return _PopularTripCard(
-                        image: trip['image']!,
-                        name: trip['name']!,
-                        price: trip['price']!,
-                        rating: trip['rating']!,
-                      );
+                      return _PopularTripCard(trip: trip);
                     },
                   ),
                 ),
@@ -508,17 +554,9 @@ class _PopularRightNowSliver extends StatelessWidget {
 }
 
 class _PopularTripCard extends StatelessWidget {
-  final String image;
-  final String name;
-  final String price;
-  final String rating;
+  final BxGetExploreTrip trip;
 
-  const _PopularTripCard({
-    required this.image,
-    required this.name,
-    required this.price,
-    required this.rating,
-  });
+  const _PopularTripCard({required this.trip});
 
   @override
   Widget build(BuildContext context) {
@@ -544,12 +582,29 @@ class _PopularTripCard extends StatelessWidget {
           // Image
           ClipRRect(
             borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-            child: Image.asset(
-              image,
-              width: 200,
-              height: 100,
-              fit: BoxFit.cover,
-            ),
+            child: trip.coverImageUrl != null && trip.coverImageUrl!.isNotEmpty
+                ? Image.network(
+                    trip.coverImageUrl!,
+                    width: 200,
+                    height: 100,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        width: 200,
+                        height: 100,
+                        color: Colors.grey[300],
+                        child: const Center(
+                          child: Icon(Icons.image_not_supported),
+                        ),
+                      );
+                    },
+                  )
+                : Container(
+                    width: 200,
+                    height: 100,
+                    color: Colors.grey[300],
+                    child: const Center(child: Icon(Icons.image_not_supported)),
+                  ),
           ),
           Padding(
             padding: const EdgeInsets.all(10),
@@ -557,7 +612,7 @@ class _PopularTripCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  name,
+                  trip.name ?? '',
                   style: textTheme.bodySmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -566,7 +621,7 @@ class _PopularTripCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  price,
+                  trip.displayPrice != null ? '\$${trip.displayPrice}' : '\$0',
                   style: textTheme.bodyMedium?.copyWith(
                     color: BxAppColors.primary,
                     fontWeight: FontWeight.w600,
@@ -578,7 +633,9 @@ class _PopularTripCard extends StatelessWidget {
                     const Icon(Icons.star, size: 12, color: Colors.amber),
                     const SizedBox(width: 4),
                     Text(
-                      rating,
+                      trip.rating != null
+                          ? trip.rating!.toStringAsFixed(1)
+                          : '0.0',
                       style: textTheme.bodySmall?.copyWith(
                         color: colorScheme.onSurface.withOpacity(0.6),
                       ),
@@ -629,27 +686,44 @@ class _TrustedAgenciesList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const agencies = [
-      {'name': 'Nile Voyages', 'rating': '4.9'},
-      {'name': 'Tayara Travel', 'rating': '4.8'},
-      {'name': 'Skyline Tours', 'rating': '4.7'},
-      {'name': 'Oceanic', 'rating': '4.9'},
-    ];
-
-    return SizedBox(
-      height: 200,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        child: ListView.separated(
-          scrollDirection: Axis.horizontal,
-          itemCount: agencies.length,
-          separatorBuilder: (_, _) => const SizedBox(width: 12),
-          itemBuilder: (context, index) => _AgencyCard(
-            name: agencies[index]['name']!,
-            rating: agencies[index]['rating']!,
+    return BlocBuilder<
+      BxExploreBottomScreenControllerBloc,
+      BxExploreBottomScreenControllerState
+    >(
+      builder: (context, state) {
+        if (state.status == BxExploreBottomScreenControllerStatus.loading) {
+          return const SizedBox(
+            height: 200,
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+        final agents = state.topAgents;
+        if (agents.isEmpty) {
+          return const SizedBox(
+            height: 200,
+            child: Center(child: Text('No agencies available')),
+          );
+        }
+        return SizedBox(
+          height: 200,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: agents.length,
+              separatorBuilder: (_, _) => const SizedBox(width: 12),
+              itemBuilder: (context, index) {
+                final agent = agents[index];
+                return _AgencyCard(
+                  name: agent.companyName ?? 'Unknown',
+                  rating: agent.averageRating?.toStringAsFixed(1) ?? '0.0',
+                  imageUrl: agent.headerImg ?? agent.backgroundImage ?? '',
+                );
+              },
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
@@ -657,8 +731,13 @@ class _TrustedAgenciesList extends StatelessWidget {
 class _AgencyCard extends StatelessWidget {
   final String name;
   final String rating;
+  final String imageUrl;
 
-  const _AgencyCard({required this.name, required this.rating});
+  const _AgencyCard({
+    required this.name,
+    required this.rating,
+    required this.imageUrl,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -674,7 +753,7 @@ class _AgencyCard extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Circular logo placeholder
+          // Circular logo from image URL
           Container(
             width: 56,
             height: 56,
@@ -682,16 +761,38 @@ class _AgencyCard extends StatelessWidget {
               shape: BoxShape.circle,
               color: BxAppColors.primary.withOpacity(0.12),
             ),
-            child: const Center(
-              child: Text(
-                'logo',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: BxAppColors.primary,
-                  fontFamily: 'Poppins',
-                ),
-              ),
+            child: ClipOval(
+              child: imageUrl.isNotEmpty
+                  ? Image.network(
+                      imageUrl,
+                      width: 56,
+                      height: 56,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return const Center(
+                          child: Text(
+                            'logo',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: BxAppColors.primary,
+                              fontFamily: 'Poppins',
+                            ),
+                          ),
+                        );
+                      },
+                    )
+                  : const Center(
+                      child: Text(
+                        'logo',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: BxAppColors.primary,
+                          fontFamily: 'Poppins',
+                        ),
+                      ),
+                    ),
             ),
           ),
           const SizedBox(height: 8),

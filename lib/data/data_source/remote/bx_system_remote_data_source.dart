@@ -15,6 +15,7 @@ import 'package:tayara/domain/model/request/bx_active_top_banner_ads_request.dar
 import 'package:tayara/domain/model/request/bx_agent_profile_details_request.dart';
 import 'package:tayara/domain/model/request/bx_custom_search_request.dart';
 import 'package:tayara/domain/model/request/bx_get_destinations_request.dart';
+import 'package:tayara/domain/model/request/bx_get_explore_topic_request.dart';
 import 'package:tayara/domain/model/request/bx_get_explore_trips_request.dart';
 import 'package:tayara/domain/model/request/bx_get_recommended_for_customer_request.dart';
 import 'package:tayara/domain/model/request/bx_get_search_request.dart';
@@ -25,6 +26,7 @@ import 'package:tayara/domain/model/response/bx_active_top_banner_ads_response.d
 import 'package:tayara/domain/model/response/bx_agent_profile_details_response.dart';
 import 'package:tayara/domain/model/response/bx_custom_search_response.dart';
 import 'package:tayara/domain/model/response/bx_get_destinations_response.dart';
+import 'package:tayara/domain/model/response/bx_get_explore_topic_response.dart';
 import 'package:tayara/domain/model/response/bx_get_explore_trips_response.dart';
 import 'package:tayara/domain/model/response/bx_get_recommended_for_customer_response.dart';
 import 'package:tayara/domain/model/response/bx_get_search_response.dart';
@@ -103,6 +105,13 @@ abstract class BxSystemRemoteDataSource {
   /// Returns a [BxAgentProfileDetailsResponse] indicating success or failure.
   Future<BxAgentProfileDetailsResponse> fetchAgentDetailsData(
     BxAgentProfileDetailsRequest request,
+  );
+
+  /// Fetches the explore topic with the provided request.
+  ///
+  /// Returns a [BxGetExploreTopicResponse] indicating success or failure.
+  Future<BxGetExploreTopicResponse> fetchExploreTopic(
+    BxGetExploreTopicRequest request,
   );
 }
 
@@ -622,6 +631,51 @@ class BxSystemRemoteDataSourceImpl implements BxSystemRemoteDataSource {
         code: 2,
         data: null,
         msg: 'Unknown error occurred while fetching agent detail data .',
+      );
+    }
+  }
+
+  @override
+  Future<BxGetExploreTopicResponse> fetchExploreTopic(
+    BxGetExploreTopicRequest request,
+  ) async {
+    try {
+      final options = Options(headers: {'Content-Type': 'application/json'});
+      final queryPramter = {'page': request.page, 'pageSize': request.pageSize};
+      final response = await _dioClient.get(
+        BxApiEndpoints.exploreTopic,
+        options: options,
+        queryParameters: queryPramter,
+      );
+      if (response['code'] == 0) {
+        return BxGetExploreTopicResponse.fromJson(response);
+      }
+
+      if (response is String) {
+        try {
+          final decoded = jsonDecode(response);
+          if (decoded is Map<String, dynamic>) {
+            return BxGetExploreTopicResponse.fromJson(decoded);
+          }
+        } catch (_) {
+          // Fall through to return failure below.
+        }
+      }
+
+      return BxGetExploreTopicResponse(
+        code: 1,
+        data: null,
+        msg:
+            response['msg'] ??
+            'Unknown error occurred while fetching explore topic data .',
+      );
+    } on BxNetworkException catch (e) {
+      return BxGetExploreTopicResponse(code: 1, data: null, msg: e.message);
+    } catch (e) {
+      return BxGetExploreTopicResponse(
+        code: 2,
+        data: null,
+        msg: 'Unknown error occurred while fetching explore topic data .',
       );
     }
   }
