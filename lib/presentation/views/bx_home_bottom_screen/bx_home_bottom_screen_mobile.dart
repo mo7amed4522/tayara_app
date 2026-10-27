@@ -999,7 +999,11 @@ class _AgenciesList extends StatelessWidget {
           agent: topAgents[index],
           onTap: () {
             debugPrint("we are here now");
-            BxAppRouter.push(context, BxRouteNames.bxAgenciesScreen);
+            BxAppRouter.push(
+              context,
+              BxRouteNames.bxAgenciesScreen,
+              arguments: {'agentId': topAgents[index].id},
+            );
           },
         ),
       ),

@@ -7,7 +7,11 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tayara/core/theme/bx_app_colors.dart';
+import 'package:tayara/core/widgets/bx_safe_network_image.dart';
+import 'package:tayara/domain/model/response/bx_agent_profile_details_response.dart';
+import 'package:tayara/presentation/bloc/bx_agencies_detail_screen_controller/bx_agencies_detail_screen_controller_bloc.dart';
 
 class BxAgenciesWidgetMobile extends StatelessWidget {
   const BxAgenciesWidgetMobile({super.key});
@@ -18,66 +22,105 @@ class BxAgenciesWidgetMobile extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: cs.background,
-      body: CustomScrollView(
-        slivers: [
-          // ── Section 1: Hero image with back & share ──
-          SliverAppBar(
-            expandedHeight: 220,
-            floating: false,
-            pinned: true,
-            backgroundColor: cs.background,
-            elevation: 0,
-            leading: Container(
-              margin: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.35),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.arrow_back,
-                color: Colors.white,
-                size: 22,
-              ),
-            ),
-            actions: [
-              Container(
-                margin: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.35),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.share, color: Colors.white, size: 20),
-              ),
-            ],
-            flexibleSpace: FlexibleSpaceBar(
-              background: Image.asset(
-                'assets/images/top_deals_image1.png',
-                fit: BoxFit.cover,
-                width: double.infinity,
-              ),
-            ),
+      body:
+          BlocBuilder<
+            BxAgenciesDetailScreenControllerBloc,
+            BxAgenciesDetailScreenControllerState
+          >(
+            builder: (context, state) {
+              switch (state.status) {
+                case BxAgenciesDetailScreenControllerStatus.initial:
+                case BxAgenciesDetailScreenControllerStatus.loading:
+                  return const Center(child: CircularProgressIndicator());
+                case BxAgenciesDetailScreenControllerStatus.failure:
+                  return _ErrorView(
+                    message: state.errorMessage ?? 'Something went wrong',
+                    onRetry: () => context
+                        .read<BxAgenciesDetailScreenControllerBloc>()
+                        .add(BxLoadAgentProfileDetails(agentId: state.agentId)),
+                  );
+                case BxAgenciesDetailScreenControllerStatus.success:
+                  final agent = state.agent;
+                  if (agent == null) {
+                    return const Center(child: Text('No agent data available'));
+                  }
+                  return CustomScrollView(
+                    slivers: [
+                      _HeroSliver(backgroundUrl: agent.backgroundImage),
+                      SliverToBoxAdapter(child: _AgencyHeader(agent: agent)),
+                      SliverToBoxAdapter(
+                        child: _AboutAgencySection(agent: agent),
+                      ),
+                      const SliverToBoxAdapter(child: _CustomPlanPromoCard()),
+                      SliverToBoxAdapter(
+                        child: _TripPackagesSection(
+                          packages: state.filteredPackages,
+                          selectedCategory: state.selectedCategory,
+                          onCategoryChanged: (category) => context
+                              .read<BxAgenciesDetailScreenControllerBloc>()
+                              .add(BxChangePackageFilter(category: category)),
+                        ),
+                      ),
+                      const SliverToBoxAdapter(child: _TayaraInsightBanner()),
+                      SliverToBoxAdapter(
+                        child: _ReviewsSection(
+                          reviews: state.reviews,
+                          averageRating: state.reviewAvgRating ?? 0.0,
+                          reviewTotal: state.reviewTotal,
+                        ),
+                      ),
+                      const SliverToBoxAdapter(child: SizedBox(height: 100)),
+                    ],
+                  );
+              }
+            },
           ),
+    );
+  }
+}
 
-          // ── Section 2: Agency header (name, verified, rating) ──
-          const SliverToBoxAdapter(child: _AgencyHeader()),
+class _HeroSliver extends StatelessWidget {
+  const _HeroSliver({this.backgroundUrl});
+  final String? backgroundUrl;
 
-          // ── Section 3: About Agency ──
-          const SliverToBoxAdapter(child: _AboutAgencySection()),
-
-          // ── Section 4: Custom Plan promo card ──
-          const SliverToBoxAdapter(child: _CustomPlanPromoCard()),
-
-          // ── Section 5: Trip Packages with filter tabs ──
-          const SliverToBoxAdapter(child: _TripPackagesSection()),
-
-          // ── Section 6: Tayara Insight banner ──
-          const SliverToBoxAdapter(child: _TayaraInsightBanner()),
-
-          // ── Section 7: Reviews & Ratings ──
-          const SliverToBoxAdapter(child: _ReviewsSection()),
-
-          const SliverToBoxAdapter(child: SizedBox(height: 100)),
-        ],
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return SliverAppBar(
+      expandedHeight: 220,
+      pinned: true,
+      backgroundColor: cs.background,
+      elevation: 0,
+      leading: Container(
+        margin: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.35),
+          shape: BoxShape.circle,
+        ),
+        child: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white, size: 22),
+          onPressed: () => Navigator.of(context).maybePop(),
+        ),
+      ),
+      actions: [
+        Container(
+          margin: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.black.withOpacity(0.35),
+            shape: BoxShape.circle,
+          ),
+          child: IconButton(
+            icon: const Icon(Icons.share, color: Colors.white, size: 20),
+            onPressed: () {},
+          ),
+        ),
+      ],
+      flexibleSpace: FlexibleSpaceBar(
+        background: BxSafeNetworkImage(
+          url: backgroundUrl,
+          fallbackAsset: 'assets/images/top_deals_image1.png',
+          fit: BoxFit.cover,
+        ),
       ),
     );
   }
@@ -88,22 +131,30 @@ class BxAgenciesWidgetMobile extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _AgencyHeader extends StatelessWidget {
-  const _AgencyHeader();
+  const _AgencyHeader({required this.agent});
+  final BxAgentProfileAgent agent;
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
 
+    final name = agent.companyName ?? '';
+    final location = [
+      agent.city,
+      agent.country,
+    ].where((e) => e != null && e.isNotEmpty).join(', ');
+    final rating = agent.averageRating ?? 0;
+    final reviewCount = agent.reviewCount ?? 0;
+    final tripCount = agent.trustedTravelersCount ?? 0;
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Avatar + name + verified badge in a row
           Row(
             children: [
-              // Agency avatar
               Container(
                 width: 52,
                 height: 52,
@@ -112,11 +163,23 @@ class _AgencyHeader extends StatelessWidget {
                   shape: BoxShape.circle,
                   border: Border.all(color: BxAppColors.primary, width: 1.5),
                 ),
-                child: const Icon(
-                  Icons.business,
-                  color: BxAppColors.primary,
-                  size: 28,
-                ),
+                child: (agent.headerImg ?? '').startsWith('http')
+                    ? ClipOval(
+                        child: Image.network(
+                          agent.headerImg!,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, _, _) => const Icon(
+                            Icons.business,
+                            color: BxAppColors.primary,
+                            size: 28,
+                          ),
+                        ),
+                      )
+                    : const Icon(
+                        Icons.business,
+                        color: BxAppColors.primary,
+                        size: 28,
+                      ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -125,90 +188,89 @@ class _AgencyHeader extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Text(
-                          'Nile Voyages',
-                          style: tt.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'lao-mn',
+                        Flexible(
+                          child: Text(
+                            name,
+                            style: tt.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'lao-mn',
+                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         const SizedBox(width: 6),
-                        // Verified badge
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 5,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: BxAppColors.success,
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(
-                                Icons.verified,
-                                color: Colors.white,
-                                size: 12,
-                              ),
-                              const SizedBox(width: 3),
-                              Text(
-                                'Verified',
-                                style: tt.labelSmall?.copyWith(
+                        if (agent.status == 'active')
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 5,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: BxAppColors.success,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.verified,
                                   color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 9,
+                                  size: 12,
                                 ),
-                              ),
-                            ],
+                                const SizedBox(width: 3),
+                                Text(
+                                  'Verified',
+                                  style: tt.labelSmall?.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 9,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
                       ],
                     ),
                     const SizedBox(height: 4),
-                    // Location
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.location_on,
-                          size: 14,
-                          color: BxAppColors.muted,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          'Cairo, Egypt',
-                          style: tt.bodySmall?.copyWith(
-                            color: cs.onSurface.withOpacity(0.55),
+                    if (location.isNotEmpty)
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.location_on,
+                            size: 14,
+                            color: BxAppColors.muted,
                           ),
-                        ),
-                      ],
-                    ),
+                          const SizedBox(width: 4),
+                          Text(
+                            location,
+                            style: tt.bodySmall?.copyWith(
+                              color: cs.onSurface.withOpacity(0.55),
+                            ),
+                          ),
+                        ],
+                      ),
                   ],
                 ),
               ),
             ],
           ),
           const SizedBox(height: 14),
-
-          // Rating row
           Row(
             children: [
-              // Stars
-              Row(children: List.generate(5, (i) => _starIcon(i, 4.8))),
+              Row(children: List.generate(5, (i) => _starIcon(i, rating))),
               const SizedBox(width: 8),
               Text(
-                '4.8',
+                rating.toStringAsFixed(1),
                 style: tt.titleSmall?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(width: 4),
               Text(
-                '(124 reviews)',
+                '($reviewCount reviews)',
                 style: tt.bodySmall?.copyWith(
                   color: cs.onSurface.withOpacity(0.5),
                 ),
               ),
               const Spacer(),
-              // Trip count badge
               Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 10,
@@ -219,7 +281,7 @@ class _AgencyHeader extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  '124 trips',
+                  '$tripCount travellers',
                   style: tt.bodySmall?.copyWith(
                     color: BxAppColors.primary,
                     fontWeight: FontWeight.w600,
@@ -245,13 +307,13 @@ class _AgencyHeader extends StatelessWidget {
     );
   }
 }
-
 // ─────────────────────────────────────────────────────────────────────────────
 // Section 3: About Agency
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _AboutAgencySection extends StatelessWidget {
-  const _AboutAgencySection();
+  const _AboutAgencySection({required this.agent});
+  final BxAgentProfileAgent agent;
 
   @override
   Widget build(BuildContext context) {
@@ -272,21 +334,38 @@ class _AboutAgencySection extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            'Nile Voyages is a premium travel agency based in Cairo, specializing in luxury Nile cruises, desert expeditions, and cultural tours across Egypt. With over 10 years of experience, we craft unforgettable journeys tailored to your dreams.',
+            agent.longDescription ?? agent.shortDescription ?? '',
             style: tt.bodyMedium?.copyWith(
               color: cs.onSurface.withOpacity(0.7),
               height: 1.6,
             ),
           ),
           const SizedBox(height: 14),
-          // Stats row
           Row(
             children: [
-              _statItem(context, '10+', 'Years', tt, cs),
+              _statItem(
+                context,
+                '${agent.trustedCount ?? 0}+',
+                'Trusted',
+                tt,
+                cs,
+              ),
               const SizedBox(width: 24),
-              _statItem(context, '500+', 'Happy Clients', tt, cs),
+              _statItem(
+                context,
+                '${agent.trustedTravelersCount ?? 0}+',
+                'Happy Clients',
+                tt,
+                cs,
+              ),
               const SizedBox(width: 24),
-              _statItem(context, '124', 'Trips', tt, cs),
+              _statItem(
+                context,
+                '${agent.reviewCount ?? 0}',
+                'Reviews',
+                tt,
+                cs,
+              ),
             ],
           ),
         ],
@@ -319,7 +398,6 @@ class _AboutAgencySection extends StatelessWidget {
     );
   }
 }
-
 // ─────────────────────────────────────────────────────────────────────────────
 // Section 4: Custom Plan Promo Card
 // ─────────────────────────────────────────────────────────────────────────────
@@ -422,37 +500,28 @@ class _CustomPlanPromoCard extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section 5: Trip Packages with Filter Tabs
 // ─────────────────────────────────────────────────────────────────────────────
+class _TripPackagesSection extends StatelessWidget {
+  const _TripPackagesSection({
+    required this.packages,
+    required this.selectedCategory,
+    required this.onCategoryChanged,
+  });
 
-class _TripPackagesSection extends StatefulWidget {
-  const _TripPackagesSection();
+  final List<BxAgentProfilePackage> packages;
+  final String selectedCategory;
+  final ValueChanged<String> onCategoryChanged;
 
-  @override
-  State<_TripPackagesSection> createState() => _TripPackagesSectionState();
-}
-
-class _TripPackagesSectionState extends State<_TripPackagesSection>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-
-  final List<String> _tabs = [
+  static const _tabs = [
     'All',
-    'Cruises',
-    'Desert',
-    'City Tours',
-    'Adventure',
+    'cultural',
+    'adventure',
+    'beach',
+    'family',
+    'luxury',
+    'safari',
+    'city_break',
+    'religious',
   ];
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: _tabs.length, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -489,69 +558,83 @@ class _TripPackagesSectionState extends State<_TripPackagesSection>
             ],
           ),
           const SizedBox(height: 12),
-          // Filter tabs
           SizedBox(
             height: 36,
-            child: TabBar(
-              controller: _tabController,
-              isScrollable: true,
-              tabAlignment: TabAlignment.start,
-              labelPadding: const EdgeInsets.only(right: 4),
-              labelStyle: tt.labelMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                fontFamily: 'lao-mn',
-              ),
-              labelColor: cs.primary,
-              unselectedLabelStyle: tt.labelMedium,
-              unselectedLabelColor: cs.onSurface.withOpacity(0.5),
-              indicatorColor: BxAppColors.primary,
-              indicatorSize: TabBarIndicatorSize.label,
-              tabs: _tabs.map((tab) => Tab(text: tab)).toList(),
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: _tabs.length,
+              separatorBuilder: (_, _) => const SizedBox(width: 8),
+              itemBuilder: (context, index) {
+                final tab = _tabs[index];
+                final isSelected =
+                    tab.toLowerCase() == selectedCategory.toLowerCase();
+                return GestureDetector(
+                  onTap: () => onCategoryChanged(tab),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isSelected ? BxAppColors.primary : cs.surface,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: isSelected
+                            ? BxAppColors.primary
+                            : cs.onSurface.withOpacity(0.15),
+                      ),
+                    ),
+                    child: Text(
+                      _prettyLabel(tab),
+                      style: tt.labelMedium?.copyWith(
+                        color: isSelected ? Colors.white : cs.onSurface,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
           ),
           const SizedBox(height: 16),
-          // Trip cards
-          ...List.generate(3, (index) => _tripCard(context, index)),
+          if (packages.isEmpty)
+            const SizedBox(
+              height: 120,
+              child: Center(child: Text('No packages in this category')),
+            )
+          else
+            ...packages.map((p) => _TripCard(trip: p)),
         ],
       ),
     );
   }
 
-  Widget _tripCard(BuildContext context, int index) {
+  String _prettyLabel(String raw) {
+    if (raw == 'All') return raw;
+    return raw
+        .split('_')
+        .map((w) => w.isEmpty ? w : '${w[0].toUpperCase()}${w.substring(1)}')
+        .join(' ');
+  }
+}
+
+class _TripCard extends StatelessWidget {
+  const _TripCard({required this.trip});
+  final BxAgentProfilePackage trip;
+
+  @override
+  Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
 
-    final trips = [
-      {
-        'title': 'Luxury Nile Cruise – 5 Days',
-        'route': 'Cairo → Luxor → Aswan',
-        'price': '\$1,250',
-        'duration': '5D/4N',
-        'rating': '4.9',
-        'reviews': '(86)',
-        'image': 'assets/images/top_deals_image1.png',
-      },
-      {
-        'title': 'Egyptian Wonders – 7 Days',
-        'route': 'Cairo → Giza → Abu Simbel',
-        'price': '\$1,890',
-        'duration': '7D/6N',
-        'rating': '4.8',
-        'reviews': '(124)',
-        'image': 'assets/images/top_deals_image2.png',
-      },
-      {
-        'title': 'Desert Safari & Camp – 3 Days',
-        'route': 'Cairo → White Desert',
-        'price': '\$680',
-        'duration': '3D/2N',
-        'rating': '4.7',
-        'reviews': '(52)',
-        'image': 'assets/images/recommend_image1.png',
-      },
-    ];
-
-    final trip = trips[index];
+    final imageUrl = trip.coverImageUrl ?? '';
+    final title = trip.name ?? '';
+    final route = trip.destination ?? trip.location ?? '';
+    final duration = trip.timeDisplay ?? '';
+    final rating = trip.rating ?? 0;
+    final reviews = trip.reviewCount ?? 0;
+    final price = trip.displayPrice ?? trip.salePrice ?? 0;
+    final priceText = '\$${(price / 100).toStringAsFixed(0)}';
 
     return InkWell(
       onTap: () {},
@@ -571,48 +654,59 @@ class _TripPackagesSectionState extends State<_TripPackagesSection>
         ),
         child: Row(
           children: [
-            // Image
             ClipRRect(
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(16),
                 bottomLeft: Radius.circular(16),
               ),
-              child: Image.asset(
-                trip['image'] as String,
-                width: 110,
-                height: 110,
-                fit: BoxFit.cover,
-              ),
+              child: imageUrl.startsWith('http')
+                  ? Image.network(
+                      imageUrl,
+                      width: 110,
+                      height: 110,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, _, _) => Container(
+                        width: 110,
+                        height: 110,
+                        color: cs.surface,
+                        child: const Icon(Icons.image_not_supported),
+                      ),
+                    )
+                  : Image.asset(
+                      'assets/images/top_deals_image1.png',
+                      width: 110,
+                      height: 110,
+                      fit: BoxFit.cover,
+                    ),
             ),
             const SizedBox(width: 12),
-            // Info
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Duration badge + rating
                     Row(
                       children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 3,
-                          ),
-                          decoration: BoxDecoration(
-                            color: BxAppColors.warning.withOpacity(0.12),
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text(
-                            trip['duration'] as String,
-                            style: tt.labelSmall?.copyWith(
-                              color: BxAppColors.warning,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 10,
+                        if (duration.isNotEmpty)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 3,
+                            ),
+                            decoration: BoxDecoration(
+                              color: BxAppColors.warning.withOpacity(0.12),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              duration,
+                              style: tt.labelSmall?.copyWith(
+                                color: BxAppColors.warning,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 10,
+                              ),
                             ),
                           ),
-                        ),
                         const Spacer(),
                         const Icon(
                           Icons.star,
@@ -621,14 +715,14 @@ class _TripPackagesSectionState extends State<_TripPackagesSection>
                         ),
                         const SizedBox(width: 3),
                         Text(
-                          trip['rating'] as String,
+                          rating.toStringAsFixed(1),
                           style: tt.labelSmall?.copyWith(
                             fontWeight: FontWeight.w600,
                           ),
                         ),
                         const SizedBox(width: 2),
                         Text(
-                          trip['reviews'] as String,
+                          '($reviews)',
                           style: tt.labelSmall?.copyWith(
                             color: cs.onSurface.withOpacity(0.45),
                           ),
@@ -636,9 +730,8 @@ class _TripPackagesSectionState extends State<_TripPackagesSection>
                       ],
                     ),
                     const SizedBox(height: 6),
-                    // Title
                     Text(
-                      trip['title'] as String,
+                      title,
                       style: tt.titleSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                         fontFamily: 'lao-mn',
@@ -647,31 +740,30 @@ class _TripPackagesSectionState extends State<_TripPackagesSection>
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 4),
-                    // Route
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.navigation,
-                          size: 13,
-                          color: BxAppColors.muted,
-                        ),
-                        const SizedBox(width: 4),
-                        Expanded(
-                          child: Text(
-                            trip['route'] as String,
-                            style: tt.bodySmall?.copyWith(
-                              color: cs.onSurface.withOpacity(0.55),
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                    if (route.isNotEmpty)
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.navigation,
+                            size: 13,
+                            color: BxAppColors.muted,
                           ),
-                        ),
-                      ],
-                    ),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              route,
+                              style: tt.bodySmall?.copyWith(
+                                color: cs.onSurface.withOpacity(0.55),
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
                     const SizedBox(height: 8),
-                    // Price
                     Text(
-                      'From ${trip['price']}',
+                      'From $priceText',
                       style: tt.titleSmall?.copyWith(
                         color: BxAppColors.primary,
                         fontWeight: FontWeight.bold,
@@ -687,7 +779,6 @@ class _TripPackagesSectionState extends State<_TripPackagesSection>
     );
   }
 }
-
 // ─────────────────────────────────────────────────────────────────────────────
 // Section 6: Tayara Insight Banner
 // ─────────────────────────────────────────────────────────────────────────────
@@ -766,9 +857,16 @@ class _TayaraInsightBanner extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────────────────
 // Section 7: Reviews & Ratings
 // ─────────────────────────────────────────────────────────────────────────────
-
 class _ReviewsSection extends StatelessWidget {
-  const _ReviewsSection();
+  const _ReviewsSection({
+    required this.reviews,
+    required this.averageRating,
+    required this.reviewTotal,
+  });
+
+  final List<BxAgentProfileReview> reviews;
+  final double averageRating;
+  final int reviewTotal;
 
   @override
   Widget build(BuildContext context) {
@@ -780,7 +878,6 @@ class _ReviewsSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Section title + overall score
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -806,8 +903,6 @@ class _ReviewsSection extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 14),
-
-          // Overall rating card
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -823,21 +918,25 @@ class _ReviewsSection extends StatelessWidget {
             ),
             child: Row(
               children: [
-                // Big score
                 Column(
                   children: [
                     Text(
-                      '4.8',
+                      averageRating.toStringAsFixed(1),
                       style: tt.displaySmall?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: BxAppColors.primary,
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Row(children: List.generate(5, (i) => _starIcon(i, 4.8))),
+                    Row(
+                      children: List.generate(
+                        5,
+                        (i) => _starIcon(i, averageRating),
+                      ),
+                    ),
                     const SizedBox(height: 4),
                     Text(
-                      '124 reviews',
+                      '$reviewTotal reviews',
                       style: tt.labelSmall?.copyWith(
                         color: cs.onSurface.withOpacity(0.5),
                       ),
@@ -845,7 +944,6 @@ class _ReviewsSection extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(width: 20),
-                // Rating breakdown
                 Expanded(
                   child: Column(
                     children: [
@@ -861,25 +959,21 @@ class _ReviewsSection extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-
-          // Individual review cards
-          ...List.generate(2, (index) => _reviewCard(context, index)),
+          ...reviews.map((r) => _ReviewCard(review: r)),
         ],
       ),
     );
   }
 
-  Widget _starIcon(int index, double rating) {
-    return Icon(
-      index < rating
-          ? Icons.star
-          : (index < rating.floor() + 1 && index > rating.floor()
-                ? Icons.star_half
-                : Icons.star_border),
-      size: 14,
-      color: BxAppColors.amber,
-    );
-  }
+  Widget _starIcon(int index, double rating) => Icon(
+    index < rating
+        ? Icons.star
+        : (index < rating.floor() + 1 && index > rating.floor()
+              ? Icons.star_half
+              : Icons.star_border),
+    size: 14,
+    color: BxAppColors.amber,
+  );
 
   Widget _ratingBar(
     BuildContext context,
@@ -926,31 +1020,20 @@ class _ReviewsSection extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _reviewCard(BuildContext context, int index) {
+class _ReviewCard extends StatelessWidget {
+  const _ReviewCard({required this.review});
+  final BxAgentProfileReview review;
+
+  @override
+  Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
-
-    final reviews = [
-      {
-        'name': 'Ahmed M.',
-        'avatar': 'A',
-        'date': '2 weeks ago',
-        'rating': 5,
-        'text':
-            'Amazing experience! The Nile cruise was breathtaking and the guide was incredibly knowledgeable. Highly recommend Nile Voyages for anyone visiting Egypt.',
-      },
-      {
-        'name': 'Sara K.',
-        'avatar': 'S',
-        'date': '1 month ago',
-        'rating': 5,
-        'text':
-            'Best travel agency we\'ve ever used. Everything was perfectly organized from start to finish. The desert camping trip was a highlight of our vacation!',
-      },
-    ];
-
-    final review = reviews[index];
+    final name = review.userName ?? 'Anonymous';
+    final avatar = name.isNotEmpty ? name[0].toUpperCase() : '?';
+    final rating = review.rating ?? 0;
+    final dateText = _formatDate(review.createdAt);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
@@ -971,7 +1054,6 @@ class _ReviewsSection extends StatelessWidget {
         children: [
           Row(
             children: [
-              // Avatar
               Container(
                 width: 36,
                 height: 36,
@@ -981,7 +1063,7 @@ class _ReviewsSection extends StatelessWidget {
                 ),
                 alignment: Alignment.center,
                 child: Text(
-                  review['avatar'] as String,
+                  avatar,
                   style: tt.labelMedium?.copyWith(
                     color: BxAppColors.primary,
                     fontWeight: FontWeight.bold,
@@ -996,7 +1078,7 @@ class _ReviewsSection extends StatelessWidget {
                     Row(
                       children: [
                         Text(
-                          review['name'] as String,
+                          name,
                           style: tt.titleSmall?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -1024,7 +1106,7 @@ class _ReviewsSection extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      review['date'] as String,
+                      dateText,
                       style: tt.bodySmall?.copyWith(
                         color: cs.onSurface.withOpacity(0.45),
                       ),
@@ -1032,14 +1114,13 @@ class _ReviewsSection extends StatelessWidget {
                   ],
                 ),
               ),
-              // Stars
               Row(
                 children: List.generate(
                   5,
                   (i) => Icon(
                     Icons.star,
                     size: 14,
-                    color: i < (review['rating'] as int)
+                    color: i < rating
                         ? BxAppColors.amber
                         : cs.onSurface.withOpacity(0.2),
                   ),
@@ -1049,13 +1130,79 @@ class _ReviewsSection extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            review['text'] as String,
+            review.reviewText ?? '',
             style: tt.bodyMedium?.copyWith(
               color: cs.onSurface.withOpacity(0.75),
               height: 1.55,
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  String _formatDate(String? iso) {
+    if (iso == null) return '';
+    try {
+      final d = DateTime.parse(iso).toLocal();
+      final diff = DateTime.now().difference(d);
+      if (diff.inDays >= 30) {
+        final months = (diff.inDays / 30).floor();
+        return '$months month${months == 1 ? '' : 's'} ago';
+      }
+      if (diff.inDays >= 7) {
+        final weeks = (diff.inDays / 7).floor();
+        return '$weeks week${weeks == 1 ? '' : 's'} ago';
+      }
+      if (diff.inDays >= 1) {
+        return '${diff.inDays} day${diff.inDays == 1 ? '' : 's'} ago';
+      }
+      if (diff.inHours >= 1) {
+        return '${diff.inHours} hour${diff.inHours == 1 ? '' : 's'} ago';
+      }
+      return 'just now';
+    } catch (_) {
+      return '';
+    }
+  }
+}
+
+class _ErrorView extends StatelessWidget {
+  const _ErrorView({required this.message, required this.onRetry});
+  final String message;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.error_outline,
+              size: 48,
+              color: cs.onSurface.withOpacity(0.4),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: cs.onSurface.withOpacity(0.7)),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: onRetry,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: BxAppColors.primary,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
       ),
     );
   }

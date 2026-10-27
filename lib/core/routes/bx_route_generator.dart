@@ -75,7 +75,11 @@ class BxRouteGenerator {
       case BxRouteNames.bxFilterTripsScreen:
         return _buildRoute(settings, const BxFilterTripsScreen());
       case BxRouteNames.bxAgenciesScreen:
-        return _buildRoute(settings, const BxAgenciesScreen());
+        final args = settings.arguments;
+        final id = (args is Map && args['agentId'] is int)
+            ? args['agentId'] as int
+            : null;
+        return _buildRoute(settings, BxAgenciesScreen(agentId: id));
       case BxRouteNames.bxSimilarTripsScreen:
         return _buildRoute(settings, const BxSimilarTripsScreen());
       case BxRouteNames.bxCustomTripScreen:

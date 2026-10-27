@@ -77,7 +77,12 @@ class BxApiEndpoints {
       '/api/${BxAppData.appVersion}/customer/home/recommended';
 
   /// home custom search url endpoint
-  /// [GET] endpoint for fetching home recommendation results.
+  /// [GET] endpoint for fetching custom search results.
   static String get customSearchUrl =>
       '/api/${BxAppData.appVersion}/customer/search';
+
+  /// agent profile detail url endpoint
+  /// [GET] endpoint for fetching agent profile detail results.
+  static String get agentProfileUrl =>
+      '/api/${BxAppData.appVersion}/customer/agent/detail';
 }
