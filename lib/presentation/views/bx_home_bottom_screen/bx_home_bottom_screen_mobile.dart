@@ -854,7 +854,10 @@ class _TopDealCard extends StatelessWidget {
                     width: double.infinity,
                     height: 36,
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () => BxAppRouter.push(
+                        context,
+                        BxRouteNames.bxPackageDetailScreen,
+                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: BxAppColors.primary,
                         foregroundColor: Colors.white,
@@ -1030,56 +1033,54 @@ class _AgencyCard extends StatelessWidget {
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
+
         children: [
           // Circular logo placeholder
-          Center(
-            child: Container(
-              width: 64,
-              height: 64,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: BxAppColors.primary.withOpacity(0.12),
-              ),
-              child: (agent.headerImg ?? '').isNotEmpty
-                  ? ClipOval(
-                      child: (agent.headerImg ?? '').startsWith('http')
-                          ? Image.network(
-                              agent.headerImg!,
-                              width: 64,
-                              height: 64,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => const Center(
-                                child: Text(
-                                  'logo',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    color: BxAppColors.primary,
-                                    fontFamily: 'Poppins',
-                                  ),
+          Container(
+            width: 64,
+            height: 64,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: BxAppColors.primary.withOpacity(0.12),
+            ),
+            child: (agent.headerImg ?? '').isNotEmpty
+                ? ClipOval(
+                    child: (agent.headerImg ?? '').startsWith('http')
+                        ? Image.network(
+                            agent.headerImg!,
+                            width: 64,
+                            height: 64,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => const Center(
+                              child: Text(
+                                'logo',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: BxAppColors.primary,
+                                  fontFamily: 'Poppins',
                                 ),
                               ),
-                            )
-                          : Image.asset(
-                              agent.headerImg!,
-                              width: 64,
-                              height: 64,
-                              fit: BoxFit.cover,
                             ),
-                    )
-                  : const Center(
-                      child: Text(
-                        'logo',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: BxAppColors.primary,
-                          fontFamily: 'Poppins',
-                        ),
+                          )
+                        : Image.asset(
+                            agent.headerImg!,
+                            width: 64,
+                            height: 64,
+                            fit: BoxFit.cover,
+                          ),
+                  )
+                : const Center(
+                    child: Text(
+                      'logo',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: BxAppColors.primary,
+                        fontFamily: 'Poppins',
                       ),
                     ),
-            ),
+                  ),
           ),
           const SizedBox(height: 8),
           // Name
@@ -1119,27 +1120,25 @@ class _AgencyCard extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           // View Trips button
-          Center(
-            child: SizedBox(
-              width: 80,
-              height: 28,
-              child: ElevatedButton(
-                onPressed: onTap,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: BxAppColors.primary,
-                  foregroundColor: Colors.white,
-                  padding: EdgeInsets.zero,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  textStyle: const TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Poppins',
-                  ),
+          SizedBox(
+            width: 100,
+            height: 28,
+            child: ElevatedButton(
+              onPressed: onTap,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: BxAppColors.primary,
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.zero,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(6),
                 ),
-                child: const Text('View Trips'),
+                textStyle: const TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Poppins',
+                ),
               ),
+              child: const Text('View Agencie'),
             ),
           ),
         ],

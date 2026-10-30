@@ -9,6 +9,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:tayara/core/constant/bx_app_constant.dart';
 import 'package:tayara/core/theme/bx_app_colors.dart';
 import 'package:tayara/domain/model/response/bx_active_top_banner_ads_response.dart';
@@ -745,18 +746,19 @@ class _AgencyCard extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return Container(
-      width: 130,
+      width: 180,
       decoration: BoxDecoration(
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+
         children: [
           // Circular logo from image URL
           Container(
-            width: 56,
-            height: 56,
+            width: 80,
+            height: 80,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: BxAppColors.primary.withOpacity(0.12),
@@ -801,6 +803,7 @@ class _AgencyCard extends StatelessWidget {
             style: textTheme.bodySmall?.copyWith(
               fontWeight: FontWeight.bold,
               fontFamily: 'Poppins',
+              fontSize: 10.sp,
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -827,7 +830,7 @@ class _AgencyCard extends StatelessWidget {
             child: TextButton(
               onPressed: () {},
               child: Text(
-                "View Trips",
+                "View Agencies",
                 style: Theme.of(context).textTheme.bodySmall!.copyWith(
                   color: Theme.of(context).colorScheme.primary,
                 ),

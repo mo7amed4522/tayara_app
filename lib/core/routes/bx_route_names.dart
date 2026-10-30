@@ -19,48 +19,54 @@ class BxRouteNames {
   static const String bxSplashScreen = '/';
 
   /// Route for the onboarding flow.
-  static const String bxOnBoardingScreen = '/on-boarding-screen';
+  static const String bxOnBoardingScreen = '/bx-on-boarding-screen';
 
   /// Login screen route.
-  static const String bxLoginScreen = '/login-screen';
+  static const String bxLoginScreen = '/bx-login-screen';
 
   /// Home screen route.
-  static const String bxHomeScreen = '/home-screen';
+  static const String bxHomeScreen = '/bx-home-screen';
 
   // Auth flow routes
   /// Sign up screen route.
-  static const String bxSignUpScreen = '/sign-up-screen';
+  static const String bxSignUpScreen = '/bx-sign-up-screen';
 
   /// Enter phone number screen route.
-  static const String bxEnterPhoneScreen = '/enter-phone-screen';
+  static const String bxEnterPhoneScreen = '/bx-enter-phone-screen';
 
   // Trip routes
   /// Trip detail screen route.
-  static const String bxTripDetailScreen = '/trip-detail-screen';
+  static const String bxTripDetailScreen = '/bx-trip-detail-screen';
 
   /// Booking detail screen route.
-  static const String bxBookingDetailScreen = '/booking-detail-screen';
+  static const String bxBookingDetailScreen = '/bx-booking-detail-screen';
 
   /// Payment screen route.
-  static const String bxPaymentScreen = '/payment-screen';
+  static const String bxPaymentScreen = '/bx-payment-screen';
 
   /// Filter trips screen route.
-  static const String bxFilterTripsScreen = '/filter-trips-screen';
+  static const String bxFilterTripsScreen = '/bx-filter-trips-screen';
 
   /// Agencies screen route.
-  static const String bxAgenciesScreen = '/agencies-screen';
+  static const String bxAgenciesScreen = '/bx-agencies-screen';
 
   /// Similar trips screen route.
-  static const String bxSimilarTripsScreen = '/similar-trips-screen';
+  static const String bxSimilarTripsScreen = '/bx-similar-trips-screen';
 
   /// Custom trip screen route.
-  static const String bxCustomTripScreen = '/custom-trip-screen';
+  static const String bxCustomTripScreen = '/bx-custom-trip-screen';
 
   /// Review travelers screen route.
-  static const String bxReviewTravelersScreen = '/review-travelers-screen';
+  static const String bxReviewTravelersScreen = '/bx-review-travelers-screen';
 
   /// Search screen route.
-  static const String bxSearchScreen = '/search-screen';
+  static const String bxSearchScreen = '/bx-search-screen';
+
+  /// Package detail screen route.
+  static const String bxPackageDetailScreen = '/bx-package-detail-screen';
+
+  /// Error screen route.
+  static const String bxErrorScreen = '/bx-error-screen';
 
   // Route groups
   /// All publicly accessible routes in the application.
@@ -70,8 +76,18 @@ class BxRouteNames {
     bxLoginScreen,
     bxSignUpScreen,
     bxEnterPhoneScreen,
+    bxHomeScreen,
+    bxBookingDetailScreen,
+    bxPaymentScreen,
+    bxFilterTripsScreen,
+    bxAgenciesScreen,
+    bxSimilarTripsScreen,
+    bxCustomTripScreen,
+    bxReviewTravelersScreen,
     bxTripDetailScreen,
     bxSearchScreen,
+    bxPackageDetailScreen,
+    bxErrorScreen,
   ];
 
   /// All authenticated (protected) routes in the application.
@@ -180,14 +196,36 @@ class BxRouteNames {
         return 'Bx-Splash-screen';
       case bxOnBoardingScreen:
         return 'Bx-On-boarding-screen';
+      case bxSignUpScreen:
+        return 'Bx-Sign-Up-Screen';
+      case bxEnterPhoneScreen:
+        return 'Bx-Enter-Phone-Number-Screen';
       case bxLoginScreen:
         return 'Bx-Login-screen';
       case bxHomeScreen:
         return 'Bx-Home-screen';
+      case bxBookingDetailScreen:
+        return 'Bx-Booking-Detial-Screen';
+      case bxPaymentScreen:
+        return 'Bx-Payment-Screen';
+      case bxFilterTripsScreen:
+        return 'Bx-Filter-Trip-Screen';
+      case bxAgenciesScreen:
+        return 'Bx-Agencies-Screen';
+      case bxSimilarTripsScreen:
+        return 'Bx-Similar-Trip-Screen';
+      case bxCustomTripScreen:
+        return 'Bx-Custom-Trip-Screen';
+      case bxReviewTravelersScreen:
+        return 'Bx-Review-Travel-Screen';
+      case bxTripDetailScreen:
+        return 'Bx-Trip-Detail-Screen';
       case bxSearchScreen:
         return 'Bx-Search-Screen';
+      case bxPackageDetailScreen:
+        return 'Bx-Package-Detail-Screen';
       default:
-        return 'Bx-Unknown-screen';
+        return 'Bx-Error-screen';
     }
   }
 }

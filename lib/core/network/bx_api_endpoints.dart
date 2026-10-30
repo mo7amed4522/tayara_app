@@ -90,4 +90,9 @@ class BxApiEndpoints {
   /// [GET] endpoint for fetching explore topic results.
   static String get exploreTopic =>
       '/api/${BxAppData.appVersion}/customer/explore/topics';
+
+  /// package details url endpoint
+  /// [GET] endpoint for fetching package details results.
+  static String get packageDetail =>
+      '/api/${BxAppData.appVersion}/catalog/public/packages/detail';
 }

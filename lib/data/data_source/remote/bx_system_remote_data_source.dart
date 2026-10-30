@@ -17,6 +17,7 @@ import 'package:tayara/domain/model/request/bx_custom_search_request.dart';
 import 'package:tayara/domain/model/request/bx_get_destinations_request.dart';
 import 'package:tayara/domain/model/request/bx_get_explore_topic_request.dart';
 import 'package:tayara/domain/model/request/bx_get_explore_trips_request.dart';
+import 'package:tayara/domain/model/request/bx_get_package_detail_request.dart';
 import 'package:tayara/domain/model/request/bx_get_recommended_for_customer_request.dart';
 import 'package:tayara/domain/model/request/bx_get_search_request.dart';
 import 'package:tayara/domain/model/request/bx_get_top_agent_request.dart';
@@ -28,6 +29,7 @@ import 'package:tayara/domain/model/response/bx_custom_search_response.dart';
 import 'package:tayara/domain/model/response/bx_get_destinations_response.dart';
 import 'package:tayara/domain/model/response/bx_get_explore_topic_response.dart';
 import 'package:tayara/domain/model/response/bx_get_explore_trips_response.dart';
+import 'package:tayara/domain/model/response/bx_get_package_detail_response.dart';
 import 'package:tayara/domain/model/response/bx_get_recommended_for_customer_response.dart';
 import 'package:tayara/domain/model/response/bx_get_search_response.dart';
 import 'package:tayara/domain/model/response/bx_get_top_agent_response.dart';
@@ -112,6 +114,13 @@ abstract class BxSystemRemoteDataSource {
   /// Returns a [BxGetExploreTopicResponse] indicating success or failure.
   Future<BxGetExploreTopicResponse> fetchExploreTopic(
     BxGetExploreTopicRequest request,
+  );
+
+  /// Fetches the get package detail with the provided request.
+  ///
+  /// Returns a [BxGetPackageDetailResponse] indicating success or failure.
+  Future<BxGetPackageDetailResponse> fetchPackageDetails(
+    BxGetPackageDetailRequest request,
   );
 }
 
@@ -676,6 +685,52 @@ class BxSystemRemoteDataSourceImpl implements BxSystemRemoteDataSource {
         code: 2,
         data: null,
         msg: 'Unknown error occurred while fetching explore topic data .',
+      );
+    }
+  }
+
+  @override
+  Future<BxGetPackageDetailResponse> fetchPackageDetails(
+    BxGetPackageDetailRequest request,
+  ) async {
+    try {
+      final options = Options(headers: {'Content-Type': 'application/json'});
+      final queryPramter = {'id': request.id};
+      final response = await _dioClient.get(
+        BxApiEndpoints.packageDetail,
+        options: options,
+        queryParameters: queryPramter,
+      );
+      if (response['code'] == 0) {
+        return BxGetPackageDetailResponse.fromJson(response);
+      }
+
+      if (response is String) {
+        try {
+          final decoded = jsonDecode(response);
+          if (decoded is Map<String, dynamic>) {
+            return BxGetPackageDetailResponse.fromJson(decoded);
+          }
+        } catch (_) {
+          // Fall through to return failure below.
+        }
+      }
+
+      return BxGetPackageDetailResponse(
+        code: 1,
+        data: null,
+        msg:
+            response['msg'] ??
+            'Unknown error occurred while fetching package detail data .',
+      );
+    } on BxNetworkException catch (e) {
+      return BxGetPackageDetailResponse(code: 1, data: null, msg: e.message);
+    } catch (e) {
+      return BxGetPackageDetailResponse(
+        code: 2,
+        data: null,
+        msg:
+            'Unknown error occurred while fetching explore package detail data .',
       );
     }
   }
