@@ -16,9 +16,11 @@
 library;
 
 import 'package:tayara/core/routes/bx_route_names.dart';
+import 'package:tayara/presentation/views/bx_error_screen/bx_error_screen.dart';
 import 'package:tayara/presentation/views/bx_home_screen/bx_home_screen.dart';
 import 'package:tayara/presentation/views/bx_login_screen/bx_login_screen.dart';
 import 'package:tayara/presentation/views/bx_on_boarding_screen/bx_on_boarding_screen.dart';
+import 'package:tayara/presentation/views/bx_package_detail_screen/bx_package_detail_screen.dart';
 import 'package:tayara/presentation/views/bx_search_screen/bx_search_screen.dart';
 import 'package:tayara/presentation/views/bx_splash_screen/bx_splash_screen.dart';
 import 'package:tayara/presentation/views/bx_trip_detail_screen/bx_trip_detail_screen.dart';
@@ -88,9 +90,11 @@ class BxRouteGenerator {
         return _buildRoute(settings, const BxReviewTravelersScreen());
       case BxRouteNames.bxSearchScreen:
         return _buildRoute(settings, const BxSearchScreen());
-      // Default route (404)
+      case BxRouteNames.bxPackageDetailScreen:
+        return _buildRoute(settings, const BxPackageDetailScreen());
+      // Default route
       default:
-        return _buildRoute(settings, const BxLoginScreen());
+        return _buildRoute(settings, const BxErrorScreen());
     }
   }
 
@@ -326,7 +330,19 @@ class BxRouteGenerator {
       BxRouteNames.bxOnBoardingScreen,
       BxRouteNames.bxLoginScreen,
       BxRouteNames.bxHomeScreen,
+      BxRouteNames.bxSignUpScreen,
+      BxRouteNames.bxEnterPhoneScreen,
+      BxRouteNames.bxTripDetailScreen,
+      BxRouteNames.bxBookingDetailScreen,
+      BxRouteNames.bxPaymentScreen,
+      BxRouteNames.bxFilterTripsScreen,
+      BxRouteNames.bxAgenciesScreen,
+      BxRouteNames.bxSimilarTripsScreen,
+      BxRouteNames.bxCustomTripScreen,
+      BxRouteNames.bxReviewTravelersScreen,
       BxRouteNames.bxSearchScreen,
+      BxRouteNames.bxPackageDetailScreen,
+      BxRouteNames.bxErrorScreen,
     ];
 
     return validRoutes.contains(routeName) ||
@@ -348,10 +364,32 @@ class BxRouteGenerator {
         return 'Bx-Login-screen';
       case BxRouteNames.bxHomeScreen:
         return 'Bx-Home-screen';
+      case BxRouteNames.bxSignUpScreen:
+        return 'Bx-Sign-Up-Screen';
+      case BxRouteNames.bxEnterPhoneScreen:
+        return 'Bx-Enter-Phone-Number-Screen';
+      case BxRouteNames.bxTripDetailScreen:
+        return 'Bx-Trip-Detail-Screen';
+      case BxRouteNames.bxBookingDetailScreen:
+        return 'Bx-Booking-Detail-Screen';
+      case BxRouteNames.bxPaymentScreen:
+        return 'Bx-Payment-Screen';
+      case BxRouteNames.bxFilterTripsScreen:
+        return 'Bx-Filter-Trip-Screen';
+      case BxRouteNames.bxAgenciesScreen:
+        return 'Bx-Agencies-Screen';
+      case BxRouteNames.bxSimilarTripsScreen:
+        return 'Bx-Similar-Trip-Screen';
+      case BxRouteNames.bxCustomTripScreen:
+        return 'Bx-Custom-Trip-Screen';
+      case BxRouteNames.bxReviewTravelersScreen:
+        return 'Bx-Review-Travelers-Screen';
       case BxRouteNames.bxSearchScreen:
         return 'Bx-Search-Screen';
+      case BxRouteNames.bxPackageDetailScreen:
+        return 'Bx-Package-Detail-Screen';
       default:
-        return 'App';
+        return 'Bx-Error-Screen';
     }
   }
 
@@ -363,12 +401,36 @@ class BxRouteGenerator {
         return Icons.splitscreen;
       case BxRouteNames.bxOnBoardingScreen:
         return Icons.app_registration;
+      case BxRouteNames.bxHomeScreen:
+        return Icons.home;
       case BxRouteNames.bxLoginScreen:
         return Icons.login;
+      case BxRouteNames.bxSignUpScreen:
+        return Icons.sign_language_outlined;
+      case BxRouteNames.bxEnterPhoneScreen:
+        return Icons.phone;
+      case BxRouteNames.bxTripDetailScreen:
+        return Icons.track_changes;
+      case BxRouteNames.bxBookingDetailScreen:
+        return Icons.book_online;
+      case BxRouteNames.bxPaymentScreen:
+        return Icons.payment;
+      case BxRouteNames.bxFilterTripsScreen:
+        return Icons.search_off_outlined;
+      case BxRouteNames.bxAgenciesScreen:
+        return Icons.portable_wifi_off_outlined;
+      case BxRouteNames.bxSimilarTripsScreen:
+        return Icons.traffic_outlined;
+      case BxRouteNames.bxCustomTripScreen:
+        return Icons.create_outlined;
+      case BxRouteNames.bxReviewTravelersScreen:
+        return Icons.reviews;
       case BxRouteNames.bxSearchScreen:
         return Icons.search;
+      case BxRouteNames.bxPackageDetailScreen:
+        return Icons.pause_circle_outline_rounded;
       default:
-        return null;
+        return Icons.error;
     }
   }
 }
