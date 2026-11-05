@@ -2,48 +2,81 @@
 //
 // File: lib/presentation/widgets/bx_package_detail_widget/bx_package_detail_widget_mobile.dart
 // Architecture: Presentation Layer - Bx package detail mobile Widget
-// Purpose: Professional Bx package detail mobile widget for mobile devices
+// Purpose: Professional Bx package detail mobile widget (stateless, BLoC-driven)
 
 // ignore_for_file: unnecessary_underscores, unused_field, deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:tayara/domain/model/response/bx_get_package_detail_response.dart';
+import 'package:tayara/presentation/bloc/bx_package_detail_screen_controller/bx_package_detail_screen_controller_bloc.dart';
 
-class BxPackageDetailWidgetMobile extends StatefulWidget {
+class BxPackageDetailWidgetMobile extends StatelessWidget {
   const BxPackageDetailWidgetMobile({super.key});
 
   @override
-  State<BxPackageDetailWidgetMobile> createState() =>
-      _BxPackageDetailWidgetMobileState();
+  Widget build(BuildContext context) {
+    final p = _PackagePalette.of(context);
+
+    return BlocBuilder<
+      BxPackageDetailScreenControllerBloc,
+      BxPackageDetailScreenControllerState
+    >(
+      builder: (context, state) {
+        switch (state.status) {
+          case BxPackageDetailScreenControllerStatus.initial:
+          case BxPackageDetailScreenControllerStatus.loading:
+            return Scaffold(
+              backgroundColor: p.background,
+              body: const Center(child: CircularProgressIndicator()),
+            );
+          case BxPackageDetailScreenControllerStatus.failure:
+            return Scaffold(
+              backgroundColor: p.background,
+              body: _ErrorView(p: p, packageId: state.packageId),
+            );
+          case BxPackageDetailScreenControllerStatus.success:
+            final data = state.packageDetail?.data;
+            if (data == null) {
+              return Scaffold(
+                backgroundColor: p.background,
+                body: _ErrorView(p: p, packageId: state.packageId),
+              );
+            }
+            return _MobileBody(p: p, data: data, state: state);
+        }
+      },
+    );
+  }
 }
 
-class _BxPackageDetailWidgetMobileState
-    extends State<BxPackageDetailWidgetMobile> {
-  final PageController _imageController = PageController();
-  int _currentImage = 0;
-  int _selectedDateIndex = 0;
-  int _userRating = 0;
-  final List<int> _selectedAddOns = [];
-  final TextEditingController _reviewController = TextEditingController();
+// ═══════════════════════════════════════════════════════════
+// BODY
+// ═══════════════════════════════════════════════════════════
+class _MobileBody extends StatelessWidget {
+  final _PackagePalette p;
+  final BxGetPackageDetailData data;
+  final BxPackageDetailScreenControllerState state;
 
-  // Sample image list — replace with API data
-  final List<String> _images = List.generate(
-    5,
-    (i) =>
-        'https://images.unsplash.com/photo-1568322445389-f64ac2515020?w=800&q=80',
-  );
+  const _MobileBody({required this.p, required this.data, required this.state});
 
-  @override
-  void dispose() {
-    _imageController.dispose();
-    _reviewController.dispose();
-    super.dispose();
+  static List<String> _imagesFor(BxGetPackageDetailData d) {
+    final list = <String>[];
+    final cover = d.coverImageUrl;
+    if (cover != null && cover.trim().isNotEmpty) list.add(cover);
+    final gallery = d.galleryImages?.images ?? const <String>[];
+    for (final url in gallery) {
+      if (url.trim().isNotEmpty && !list.contains(url)) list.add(url);
+    }
+    return list;
   }
 
   @override
   Widget build(BuildContext context) {
-    Theme.of(context);
-    final p = _PackagePalette.of(context);
+    final bloc = context.read<BxPackageDetailScreenControllerBloc>();
+    final images = _imagesFor(data);
+    final nights = (data.daysDuration ?? 1) - 1;
 
     return Scaffold(
       backgroundColor: p.background,
@@ -59,18 +92,18 @@ class _BxPackageDetailWidgetMobileState
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _ImageCarousel(
-                      images: _images,
-                      controller: _imageController,
-                      currentIndex: _currentImage,
-                      onPageChanged: (i) => setState(() => _currentImage = i),
+                      images: images,
+                      currentIndex: state.currentImageIndex,
+                      onPageChanged: (i) => bloc.add(BxChangeImage(i)),
                       p: p,
+                      badge: data.promoTag,
                     ),
                     SizedBox(height: 12.h),
-                    _TagChipsRow(p: p),
+                    _TagChipsRow(p: p, data: data),
                     SizedBox(height: 14.h),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16.w),
-                      child: _TitleAndDescription(p: p),
+                      child: _TitleAndDescription(p: p, data: data),
                     ),
                     SizedBox(height: 10.h),
                     Padding(
@@ -80,67 +113,87 @@ class _BxPackageDetailWidgetMobileState
                     SizedBox(height: 12.h),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16.w),
-                      child: _MetaRow(p: p),
+                      child: _MetaRow(
+                        p: p,
+                        days: data.daysDuration,
+                        location: data.location,
+                      ),
                     ),
                     SizedBox(height: 16.h),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16.w),
-                      child: _FeatureChips(p: p),
+                      child: _FeatureChips(p: p, highlights: data.highlights),
                     ),
                     SizedBox(height: 16.h),
                     _Divider(p: p),
                     SizedBox(height: 16.h),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16.w),
-                      child: _PriceBlock(p: p),
+                      child: _PriceBlock(p: p, data: data),
                     ),
-                    SizedBox(height: 20.h),
-                    _SectionHeader(title: 'Image Gallery', p: p),
-                    SizedBox(height: 10.h),
-                    _GalleryGrid(p: p),
-                    SizedBox(height: 22.h),
-                    _SectionHeader(title: 'Daily Itinerary', p: p),
-                    SizedBox(height: 10.h),
-                    _ItineraryList(p: p),
-                    SizedBox(height: 22.h),
-                    _SectionHeader(title: "What's Included", p: p),
-                    SizedBox(height: 10.h),
-                    _IncludedSection(p: p),
-                    SizedBox(height: 20.h),
-                    _SectionHeader(title: 'Not Included', p: p),
-                    SizedBox(height: 10.h),
-                    _NotIncludedSection(p: p),
-                    SizedBox(height: 22.h),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16.w),
-                      child: _DocumentsCard(p: p),
-                    ),
-                    SizedBox(height: 22.h),
-                    _SectionHeader(title: 'Optional Add-ons', p: p),
-                    SizedBox(height: 10.h),
-                    _AddOnsList(
-                      p: p,
-                      selected: _selectedAddOns,
-                      onToggle: (i) => setState(() {
-                        if (_selectedAddOns.contains(i)) {
-                          _selectedAddOns.remove(i);
-                        } else {
-                          _selectedAddOns.add(i);
-                        }
-                      }),
-                    ),
-                    SizedBox(height: 22.h),
-                    _SectionHeader(title: 'Ship Amenities', p: p),
-                    SizedBox(height: 12.h),
-                    _AmenitiesGrid(p: p),
-                    SizedBox(height: 22.h),
-                    _SectionHeader(title: 'Available Dates & Pricing', p: p),
-                    SizedBox(height: 12.h),
-                    _CalendarSection(
-                      p: p,
-                      selectedIndex: _selectedDateIndex,
-                      onSelect: (i) => setState(() => _selectedDateIndex = i),
-                    ),
+                    if (images.length > 1) ...[
+                      SizedBox(height: 20.h),
+                      _SectionHeader(title: 'Image Gallery', p: p),
+                      SizedBox(height: 10.h),
+                      _GalleryGrid(p: p, images: images),
+                    ],
+                    if (data.itineraryDays.isNotEmpty) ...[
+                      SizedBox(height: 22.h),
+                      _SectionHeader(title: 'Daily Itinerary', p: p),
+                      SizedBox(height: 10.h),
+                      _ItineraryList(p: p, days: data.itineraryDays),
+                    ],
+                    if (data.includes.isNotEmpty) ...[
+                      SizedBox(height: 22.h),
+                      _SectionHeader(title: "What's Included", p: p),
+                      SizedBox(height: 10.h),
+                      _IncludedSection(p: p, includes: data.includes),
+                    ],
+                    if (data.excludes.isNotEmpty) ...[
+                      SizedBox(height: 20.h),
+                      _SectionHeader(title: 'Not Included', p: p),
+                      SizedBox(height: 10.h),
+                      _NotIncludedSection(p: p, excludes: data.excludes),
+                    ],
+                    if (data.documentRequirements.isNotEmpty) ...[
+                      SizedBox(height: 22.h),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16.w),
+                        child: _DocumentsCard(
+                          p: p,
+                          requirements: data.documentRequirements,
+                        ),
+                      ),
+                    ],
+                    if (data.addons.isNotEmpty) ...[
+                      SizedBox(height: 22.h),
+                      _SectionHeader(title: 'Optional Add-ons', p: p),
+                      SizedBox(height: 10.h),
+                      _AddOnsList(
+                        p: p,
+                        addons: data.addons,
+                        selected: state.selectedAddOns,
+                        onToggle: (i) => bloc.add(BxToggleAddOn(i)),
+                      ),
+                    ],
+                    if (data.highlights.isNotEmpty) ...[
+                      SizedBox(height: 22.h),
+                      _SectionHeader(title: 'Highlights', p: p),
+                      SizedBox(height: 12.h),
+                      _AmenitiesGrid(p: p, highlights: data.highlights),
+                    ],
+                    if (data.availability.isNotEmpty) ...[
+                      SizedBox(height: 22.h),
+                      _SectionHeader(title: 'Available Dates & Pricing', p: p),
+                      SizedBox(height: 12.h),
+                      _CalendarSection(
+                        p: p,
+                        availability: data.availability,
+                        basePrice: data.displayPrice,
+                        selectedIndex: state.selectedDateIndex,
+                        onSelect: (i) => bloc.add(BxSelectDate(i)),
+                      ),
+                    ],
                     SizedBox(height: 22.h),
                     _SectionHeader(title: 'Write a Review', p: p),
                     SizedBox(height: 10.h),
@@ -148,19 +201,22 @@ class _BxPackageDetailWidgetMobileState
                       padding: EdgeInsets.symmetric(horizontal: 16.w),
                       child: _ReviewForm(
                         p: p,
-                        rating: _userRating,
-                        controller: _reviewController,
-                        onRating: (r) => setState(() => _userRating = r),
+                        rating: state.userRating,
+                        onRating: (r) => bloc.add(BxSetUserRating(r)),
                       ),
                     ),
-                    SizedBox(height: 18.h),
-                    _ReviewsList(p: p),
                     SizedBox(height: 22.h),
                     _SectionHeader(title: 'Book Your Cruise', p: p),
                     SizedBox(height: 12.h),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16.w),
-                      child: _BookingForm(p: p),
+                      child: _BookingForm(
+                        p: p,
+                        hotels: data.hotels,
+                        selectedCabinIndex: state.selectedCabinIndex,
+                        onCabinSelected: (i) => bloc.add(BxSelectCabin(i)),
+                        nights: nights,
+                      ),
                     ),
                     SizedBox(height: 22.h),
                     Padding(
@@ -175,9 +231,23 @@ class _BxPackageDetailWidgetMobileState
           ],
         ),
       ),
-      bottomSheet: _BottomPayBar(p: p),
+      bottomSheet: _BottomPayBar(p: p, data: data),
     );
   }
+}
+
+// ═══════════════════════════════════════════════════════════
+// SHARED FORMATTING
+// ═══════════════════════════════════════════════════════════
+String _fmtPrice(num? value) {
+  if (value == null) return '—';
+  final s = value.toString();
+  final buf = StringBuffer();
+  for (int i = 0; i < s.length; i++) {
+    if (i > 0 && (s.length - i) % 3 == 0) buf.write(',');
+    buf.write(s[i]);
+  }
+  return '\$${buf.toString()}';
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -241,6 +311,59 @@ class _PackagePalette {
 }
 
 // ═══════════════════════════════════════════════════════════
+// ERROR VIEW
+// ═══════════════════════════════════════════════════════════
+class _ErrorView extends StatelessWidget {
+  final _PackagePalette p;
+  final int packageId;
+  const _ErrorView({required this.p, required this.packageId});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.all(24.w),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.error_outline, size: 48, color: p.error),
+            SizedBox(height: 12.h),
+            Text(
+              'Unable to load package details',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 15.sp,
+                fontWeight: FontWeight.w600,
+                color: p.textPrimary,
+                fontFamily: 'lao-mn',
+              ),
+            ),
+            SizedBox(height: 16.h),
+            SizedBox(
+              height: 42,
+              child: ElevatedButton(
+                onPressed: () => context
+                    .read<BxPackageDetailScreenControllerBloc>()
+                    .add(BxLoadPackageDetail(packageId: packageId)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: p.primary,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text('Retry'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
 // APP BAR
 // ═══════════════════════════════════════════════════════════
 class _AppBar extends StatelessWidget {
@@ -286,31 +409,43 @@ class _AppBar extends StatelessWidget {
 }
 
 // ═══════════════════════════════════════════════════════════
-// IMAGE CAROUSEL (Step 2)
+// IMAGE CAROUSEL (stateless, index from BLoC)
 // ═══════════════════════════════════════════════════════════
 class _ImageCarousel extends StatelessWidget {
   final List<String> images;
-  final PageController controller;
   final int currentIndex;
   final ValueChanged<int> onPageChanged;
   final _PackagePalette p;
+  final String? badge;
 
   const _ImageCarousel({
     required this.images,
-    required this.controller,
     required this.currentIndex,
     required this.onPageChanged,
     required this.p,
+    this.badge,
   });
 
   @override
   Widget build(BuildContext context) {
+    if (images.isEmpty) {
+      return Container(
+        height: 256,
+        width: double.infinity,
+        color: p.surface,
+        alignment: Alignment.center,
+        child: Icon(Icons.image, size: 48, color: p.textMuted),
+      );
+    }
+
+    final safeIndex = currentIndex.clamp(0, images.length - 1);
+
     return SizedBox(
       height: 256,
       child: Stack(
         children: [
           PageView.builder(
-            controller: controller,
+            controller: PageController(initialPage: safeIndex),
             onPageChanged: onPageChanged,
             itemCount: images.length,
             itemBuilder: (_, i) => Image.network(
@@ -324,31 +459,31 @@ class _ImageCarousel extends StatelessWidget {
               ),
             ),
           ),
-          // Top-left Popular badge + top-right heart (Step 2)
           Positioned(
             top: 12,
             left: 12,
             right: 12,
             child: Row(
               children: [
-                Container(
-                  width: 72.56,
-                  height: 28,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: p.warning,
-                    borderRadius: BorderRadius.circular(9999),
-                  ),
-                  child: Text(
-                    'Popular',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 11.sp,
-                      fontWeight: FontWeight.w600,
-                      fontFamily: 'lao-mn',
+                if (badge != null && badge!.isNotEmpty)
+                  Container(
+                    height: 28,
+                    padding: EdgeInsets.symmetric(horizontal: 12.w),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: p.warning,
+                      borderRadius: BorderRadius.circular(9999),
+                    ),
+                    child: Text(
+                      badge!,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 11.sp,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'lao-mn',
+                      ),
                     ),
                   ),
-                ),
                 const Spacer(),
                 Container(
                   width: 32,
@@ -362,13 +497,12 @@ class _ImageCarousel extends StatelessWidget {
               ],
             ),
           ),
-          // Bottom-left dots (Step 2)
           Positioned(
             left: 16,
             bottom: 12,
             child: Row(
               children: List.generate(images.length, (i) {
-                final active = i == currentIndex;
+                final active = i == safeIndex;
                 return AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
                   margin: EdgeInsets.only(right: 6.w),
@@ -389,23 +523,28 @@ class _ImageCarousel extends StatelessWidget {
 }
 
 // ═══════════════════════════════════════════════════════════
-// TAG CHIPS (Step 3)
+// TAG CHIPS
 // ═══════════════════════════════════════════════════════════
 class _TagChipsRow extends StatelessWidget {
   final _PackagePalette p;
-  const _TagChipsRow({required this.p});
+  final BxGetPackageDetailData data;
+  const _TagChipsRow({required this.p, required this.data});
 
   @override
   Widget build(BuildContext context) {
+    final chips = <Widget>[];
+    final discount = data.discountPercent ?? 0;
+    if (discount > 0) {
+      chips.add(_chip('Save $discount%', p.success));
+    }
+    if ((data.promoTag ?? '').isNotEmpty) {
+      if (chips.isNotEmpty) chips.add(SizedBox(width: 8.w));
+      chips.add(_chip(data.promoTag!, p.warning));
+    }
+    if (chips.isEmpty) return const SizedBox.shrink();
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w),
-      child: Row(
-        children: [
-          _chip('Save 8%', p.success),
-          SizedBox(width: 8.w),
-          _chip('Limited Time', p.warning),
-        ],
-      ),
+      child: Row(children: chips),
     );
   }
 
@@ -430,11 +569,12 @@ class _TagChipsRow extends StatelessWidget {
 }
 
 // ═══════════════════════════════════════════════════════════
-// TITLE + DESC (Steps 4-5)
+// TITLE + DESC
 // ═══════════════════════════════════════════════════════════
 class _TitleAndDescription extends StatelessWidget {
   final _PackagePalette p;
-  const _TitleAndDescription({required this.p});
+  final BxGetPackageDetailData data;
+  const _TitleAndDescription({required this.p, required this.data});
 
   @override
   Widget build(BuildContext context) {
@@ -442,7 +582,7 @@ class _TitleAndDescription extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Luxury Nile Cruise 5D/4N',
+          data.name ?? '',
           style: TextStyle(
             fontSize: 20.sp,
             fontWeight: FontWeight.w700,
@@ -451,26 +591,25 @@ class _TitleAndDescription extends StatelessWidget {
             height: 1.3,
           ),
         ),
-        SizedBox(height: 8.h),
-        Text(
-          'Experience the ultimate luxury along the legendary Nile River. '
-          'This premium 5-day cruise combines world-class amenities with '
-          "expertly guided tours of Egypt's most magnificent temples and "
-          'archaeological sites.',
-          style: TextStyle(
-            fontSize: 13.sp,
-            color: p.textSecondary,
-            fontFamily: 'lao-mn',
-            height: 1.55,
+        if ((data.description ?? '').isNotEmpty) ...[
+          SizedBox(height: 8.h),
+          Text(
+            data.description!,
+            style: TextStyle(
+              fontSize: 13.sp,
+              color: p.textSecondary,
+              fontFamily: 'lao-mn',
+              height: 1.55,
+            ),
           ),
-        ),
+        ],
       ],
     );
   }
 }
 
 // ═══════════════════════════════════════════════════════════
-// RATING (Step 6)
+// RATING ROW
 // ═══════════════════════════════════════════════════════════
 class _RatingRow extends StatelessWidget {
   final _PackagePalette p;
@@ -509,88 +648,97 @@ class _RatingRow extends StatelessWidget {
 }
 
 // ═══════════════════════════════════════════════════════════
-// META ROW (Step 7)
+// META ROW
 // ═══════════════════════════════════════════════════════════
 class _MetaRow extends StatelessWidget {
   final _PackagePalette p;
-  const _MetaRow({required this.p});
+  final int? days;
+  final String? location;
+  const _MetaRow({required this.p, this.days, this.location});
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    final parts = <Widget>[];
+    if (days != null && days! > 0) {
+      parts.add(Icon(Icons.access_time, size: 16, color: p.primary));
+      parts.add(SizedBox(width: 6.w));
+      parts.add(
+        Text(
+          '$days Days / ${days! - 1} Nights',
+          style: TextStyle(
+            fontSize: 12.sp,
+            color: p.textSecondary,
+            fontFamily: 'lao-mn',
+          ),
+        ),
+      );
+    }
+    if ((location ?? '').isNotEmpty) {
+      if (parts.isNotEmpty) parts.add(SizedBox(width: 16.w));
+      parts.add(Icon(Icons.location_on_outlined, size: 16, color: p.primary));
+      parts.add(SizedBox(width: 6.w));
+      parts.add(
+        Text(
+          location!,
+          style: TextStyle(
+            fontSize: 12.sp,
+            color: p.textSecondary,
+            fontFamily: 'lao-mn',
+          ),
+        ),
+      );
+    }
+    return Row(children: parts);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// FEATURE CHIPS (from highlights)
+// ═══════════════════════════════════════════════════════════
+class _FeatureChips extends StatelessWidget {
+  final _PackagePalette p;
+  final List<BxPackageHighlight> highlights;
+  const _FeatureChips({required this.p, required this.highlights});
+
+  @override
+  Widget build(BuildContext context) {
+    final names = highlights
+        .map((h) => h.name ?? '')
+        .where((s) => s.isNotEmpty)
+        .take(6)
+        .toList();
+    if (names.isEmpty) return const SizedBox.shrink();
+    return Wrap(
+      spacing: 8.w,
+      runSpacing: 8.h,
       children: [
-        Icon(Icons.access_time, size: 16, color: p.primary),
-        SizedBox(width: 6.w),
-        Text(
-          '5 Days / 4 Nights',
-          style: TextStyle(
-            fontSize: 12.sp,
-            color: p.textSecondary,
-            fontFamily: 'lao-mn',
+        for (final n in names)
+          Container(
+            height: 28,
+            padding: EdgeInsets.symmetric(horizontal: 12.w),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: p.primary.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(9999),
+              border: Border.all(color: p.primary.withOpacity(0.4)),
+            ),
+            child: Text(
+              n,
+              style: TextStyle(
+                color: p.primary,
+                fontSize: 11.sp,
+                fontWeight: FontWeight.w500,
+                fontFamily: 'lao-mn',
+              ),
+            ),
           ),
-        ),
-        SizedBox(width: 16.w),
-        Icon(Icons.location_on_outlined, size: 16, color: p.primary),
-        SizedBox(width: 6.w),
-        Text(
-          'Luxor to Aswan',
-          style: TextStyle(
-            fontSize: 12.sp,
-            color: p.textSecondary,
-            fontFamily: 'lao-mn',
-          ),
-        ),
       ],
     );
   }
 }
 
 // ═══════════════════════════════════════════════════════════
-// FEATURE CHIPS (Step 8)
-// ═══════════════════════════════════════════════════════════
-class _FeatureChips extends StatelessWidget {
-  final _PackagePalette p;
-  const _FeatureChips({required this.p});
-
-  @override
-  Widget build(BuildContext context) {
-    final items = <String, Color>{
-      'Full Board': p.primary,
-      'Temple Tours': p.primary,
-      'Expert Guide': p.primary,
-      '5 Star Ship': p.success,
-    };
-    return Wrap(
-      spacing: 8.w,
-      runSpacing: 8.h,
-      children: items.entries.map((e) {
-        return Container(
-          height: 28,
-          width: 120,
-          padding: EdgeInsets.symmetric(horizontal: 12.w),
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: e.value.withOpacity(0.12),
-            borderRadius: BorderRadius.circular(9999),
-            border: Border.all(color: e.value.withOpacity(0.4)),
-          ),
-          child: Text(
-            e.key,
-            style: TextStyle(
-              color: e.value,
-              fontSize: 11.sp,
-              fontWeight: FontWeight.w500,
-              fontFamily: 'lao-mn',
-            ),
-          ),
-        );
-      }).toList(),
-    );
-  }
-}
-
-// ═══════════════════════════════════════════════════════════
-// DIVIDER (Step 9)
+// DIVIDER
 // ═══════════════════════════════════════════════════════════
 class _Divider extends StatelessWidget {
   final _PackagePalette p;
@@ -607,29 +755,37 @@ class _Divider extends StatelessWidget {
 }
 
 // ═══════════════════════════════════════════════════════════
-// PRICE BLOCK (Step 10)
+// PRICE BLOCK
 // ═══════════════════════════════════════════════════════════
 class _PriceBlock extends StatelessWidget {
   final _PackagePalette p;
-  const _PriceBlock({required this.p});
+  final BxGetPackageDetailData data;
+  const _PriceBlock({required this.p, required this.data});
 
   @override
   Widget build(BuildContext context) {
+    final display = data.displayPrice;
+    final original = data.originalPrice;
+    final showStrike =
+        original != null && display != null && original > display;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          '\$1,200',
-          style: TextStyle(
-            fontSize: 13.sp,
-            color: p.textMuted,
-            fontFamily: 'lao-mn',
-            decoration: TextDecoration.lineThrough,
+        if (showStrike) ...[
+          Text(
+            _fmtPrice(original),
+            style: TextStyle(
+              fontSize: 13.sp,
+              color: p.textMuted,
+              fontFamily: 'lao-mn',
+              decoration: TextDecoration.lineThrough,
+            ),
           ),
-        ),
-        SizedBox(height: 2.h),
+          SizedBox(height: 2.h),
+        ],
         Text(
-          '\$1,104',
+          _fmtPrice(display),
           style: TextStyle(
             fontSize: 22.sp,
             fontWeight: FontWeight.w700,
@@ -677,149 +833,128 @@ class _SectionHeader extends StatelessWidget {
 }
 
 // ═══════════════════════════════════════════════════════════
-// GALLERY GRID (Step 12)
+// GALLERY GRID
 // ═══════════════════════════════════════════════════════════
 class _GalleryGrid extends StatelessWidget {
   final _PackagePalette p;
-  const _GalleryGrid({required this.p});
+  final List<String> images;
+  const _GalleryGrid({required this.p, required this.images});
+
+  static const int _maxVisible = 6;
 
   @override
   Widget build(BuildContext context) {
-    // 3 columns x 2 rows, last one "+15 images"
-    const size = 127.00;
+    final gallery = images.length > 1 ? images.sublist(1) : images;
+    final shown = gallery.take(_maxVisible).toList();
+    final extra = gallery.length - shown.length;
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w),
-      child: Wrap(
-        spacing: 8.w,
-        runSpacing: 8.h,
-        children: List.generate(6, (i) {
-          final isLast = i == 5;
-          return ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: Container(
-              width: size,
-              height: size,
-              color: p.surface,
-              child: isLast
-                  ? Center(
-                      child: Container(
-                        padding: EdgeInsets.all(8.w),
-                        height: 55,
-                        width: 90,
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.55),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Column(
-                          children: [
-                            Text(
-                              '+15',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 11.sp,
-                                fontWeight: FontWeight.w600,
-                                fontFamily: 'lao-mn',
-                              ),
-                            ),
-                            Text(
-                              'images',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 11.sp,
-                                fontWeight: FontWeight.w600,
-                                fontFamily: 'lao-mn',
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
-                  : Icon(Icons.image, size: 32, color: p.textMuted),
-            ),
+      child: LayoutBuilder(
+        builder: (context, c) {
+          const spacing = 8.0;
+          final cols = 3;
+          final size = (c.maxWidth - spacing * (cols - 1)) / cols;
+          return Wrap(
+            spacing: spacing,
+            runSpacing: spacing,
+            children: [
+              for (final url in shown)
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.network(
+                    url,
+                    width: size,
+                    height: size,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Container(
+                      width: size,
+                      height: size,
+                      color: p.surface,
+                      child: Icon(Icons.image, size: 32, color: p.textMuted),
+                    ),
+                  ),
+                ),
+              if (extra > 0)
+                Container(
+                  width: size,
+                  height: size,
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.55),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    '+$extra\nimages',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 11.sp,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: 'lao-mn',
+                    ),
+                  ),
+                ),
+            ],
           );
-        }),
+        },
       ),
     );
   }
 }
 
 // ═══════════════════════════════════════════════════════════
-// ITINERARY (Step 14)
+// ITINERARY
 // ═══════════════════════════════════════════════════════════
 class _ItineraryList extends StatelessWidget {
   final _PackagePalette p;
-  const _ItineraryList({required this.p});
-
-  static const _days = <_DayData>[
-    _DayData(
-      title: 'Day 1: Luxor Embarkation',
-      subtitle: 'Temple visits & welcome dinner',
-      items: [
-        '12:00 : Check-in and welcome aboard luxury cruise ship',
-        '14:00 : Guided tour of Karnak Temple Complex',
-        '17:00 : Luxor Temple visit at sunset',
-        '19:30 : Welcome dinner and evening entertainment',
-      ],
-    ),
-    _DayData(
-      title: 'Day 2: Valley of the Kings',
-      subtitle: 'Royal tombs & Hatshepsut Temple',
-    ),
-    _DayData(
-      title: 'Day 3: Edfu & Kom Ombo',
-      subtitle: 'Temple of Horus & Crocodile Temple',
-    ),
-    _DayData(title: 'Day 4: Abu Simbel', subtitle: 'Ramses II masterpiece'),
-    _DayData(
-      title: 'Day 5: Aswan Departure',
-      subtitle: 'Philae Temple & farewell',
-    ),
-  ];
+  final List<BxPackageItineraryDay> days;
+  const _ItineraryList({required this.p, required this.days});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: Column(
-        children: List.generate(_days.length, (i) {
-          return _DayTile(data: _days[i], p: p);
-        }),
+        children: [
+          for (final d in days)
+            _DayTile(
+              title: d.title ?? 'Day ${d.dayNumber ?? ''}',
+              subtitle: d.description ?? '',
+              items: [
+                for (final it in d.items)
+                  if ((it.time ?? '').isNotEmpty)
+                    '${it.time} : ${it.title ?? it.description ?? ''}'
+                  else
+                    (it.title ?? it.description ?? ''),
+              ],
+              p: p,
+            ),
+        ],
       ),
     );
   }
 }
 
-class _DayData {
+class _DayTile extends StatelessWidget {
   final String title;
   final String subtitle;
   final List<String> items;
-  const _DayData({
+  final _PackagePalette p;
+  const _DayTile({
     required this.title,
     required this.subtitle,
-    this.items = const [],
+    required this.items,
+    required this.p,
   });
-}
-
-class _DayTile extends StatefulWidget {
-  final _DayData data;
-  final _PackagePalette p;
-  const _DayTile({required this.data, required this.p});
-
-  @override
-  State<_DayTile> createState() => _DayTileState();
-}
-
-class _DayTileState extends State<_DayTile> {
-  bool _expanded = false;
 
   @override
   Widget build(BuildContext context) {
-    final p = widget.p;
     return Padding(
       padding: EdgeInsets.only(bottom: 10.h),
       child: Material(
-        color: p.cardSurface, // background now lives on Material, not Container
-        clipBehavior: Clip.antiAlias, // keeps the rounded corners clipped
+        color: p.cardSurface,
+        clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(14),
           side: BorderSide(color: p.border),
@@ -829,11 +964,10 @@ class _DayTileState extends State<_DayTile> {
           child: ExpansionTile(
             tilePadding: EdgeInsets.symmetric(horizontal: 14.w),
             childrenPadding: EdgeInsets.fromLTRB(14.w, 0, 14.w, 14.h),
-            onExpansionChanged: (v) => setState(() => _expanded = v),
             iconColor: p.primary,
             collapsedIconColor: p.textMuted,
             title: Text(
-              widget.data.title,
+              title,
               style: TextStyle(
                 fontSize: 13.sp,
                 fontWeight: FontWeight.w600,
@@ -841,18 +975,20 @@ class _DayTileState extends State<_DayTile> {
                 fontFamily: 'lao-mn',
               ),
             ),
-            subtitle: Padding(
-              padding: EdgeInsets.only(top: 4.h),
-              child: Text(
-                widget.data.subtitle,
-                style: TextStyle(
-                  fontSize: 11.sp,
-                  color: p.textSecondary,
-                  fontFamily: 'lao-mn',
-                ),
-              ),
-            ),
-            children: widget.data.items.map((t) {
+            subtitle: subtitle.isEmpty
+                ? null
+                : Padding(
+                    padding: EdgeInsets.only(top: 4.h),
+                    child: Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 11.sp,
+                        color: p.textSecondary,
+                        fontFamily: 'lao-mn',
+                      ),
+                    ),
+                  ),
+            children: items.map((t) {
               return Padding(
                 padding: EdgeInsets.symmetric(vertical: 6.h),
                 child: Row(
@@ -891,53 +1027,56 @@ class _DayTileState extends State<_DayTile> {
 }
 
 // ═══════════════════════════════════════════════════════════
-// INCLUDED (Step 16)
+// INCLUDED (grouped by category)
 // ═══════════════════════════════════════════════════════════
 class _IncludedSection extends StatelessWidget {
   final _PackagePalette p;
-  const _IncludedSection({required this.p});
+  final List<BxPackageInclude> includes;
+  const _IncludedSection({required this.p, required this.includes});
+
+  static IconData _iconForCategory(String c) {
+    final s = c.toLowerCase();
+    if (s.contains('meal') || s.contains('dining') || s.contains('food')) {
+      return Icons.restaurant_outlined;
+    }
+    if (s.contains('tour') || s.contains('activity')) {
+      return Icons.place_outlined;
+    }
+    if (s.contains('hotel') ||
+        s.contains('accommodation') ||
+        s.contains('stay')) {
+      return Icons.home_work_outlined;
+    }
+    return Icons.check_circle_outline;
+  }
 
   @override
   Widget build(BuildContext context) {
+    final groups = <String, List<String>>{};
+    for (final inc in includes) {
+      final cat = (inc.category ?? '').trim();
+      final key = cat.isEmpty ? 'Included' : cat;
+      final text = inc.itemText ?? '';
+      if (text.isEmpty) continue;
+      groups.putIfAbsent(key, () => []).add(text);
+    }
+    final entries = groups.entries.toList()
+      ..sort((a, b) => a.key.compareTo(b.key));
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: Column(
         children: [
-          _IncludedCard(
-            p: p,
-            icon: Icons.home_work_outlined,
-            title: 'Accommodation',
-            color: p.success,
-            items: const [
-              '4 nights luxury cruise ship cabin',
-              'Private bathroom with river view',
-              'Daily housekeeping service',
-            ],
-          ),
-          SizedBox(height: 10.h),
-          _IncludedCard(
-            p: p,
-            icon: Icons.restaurant_outlined,
-            title: 'Meals & Dining',
-            color: p.success,
-            items: const [
-              'All meals: 4 breakfasts, 5 lunches, 4 dinners',
-              'Welcome and farewell dinners',
-              'Afternoon tea and snacks',
-            ],
-          ),
-          SizedBox(height: 10.h),
-          _IncludedCard(
-            p: p,
-            icon: Icons.place_outlined,
-            title: 'Tours & Activities',
-            color: p.success,
-            items: const [
-              'All temple visits with expert Egyptologist',
-              'Abu Simbel excursion by air-conditioned coach',
-              'All entrance fees and permits',
-            ],
-          ),
+          for (int i = 0; i < entries.length; i++) ...[
+            if (i > 0) SizedBox(height: 10.h),
+            _IncludedCard(
+              p: p,
+              icon: _iconForCategory(entries[i].key),
+              title: entries[i].key,
+              color: p.success,
+              items: entries[i].value,
+            ),
+          ],
         ],
       ),
     );
@@ -950,7 +1089,7 @@ class _IncludedCard extends StatelessWidget {
   final String title;
   final Color color;
   final List<String> items;
-  final bool isCross; // for not-included
+  final bool isCross;
 
   const _IncludedCard({
     required this.p,
@@ -1031,14 +1170,20 @@ class _IncludedCard extends StatelessWidget {
 }
 
 // ═══════════════════════════════════════════════════════════
-// NOT INCLUDED (Step 18)
+// NOT INCLUDED
 // ═══════════════════════════════════════════════════════════
 class _NotIncludedSection extends StatelessWidget {
   final _PackagePalette p;
-  const _NotIncludedSection({required this.p});
+  final List<BxPackageExclude> excludes;
+  const _NotIncludedSection({required this.p, required this.excludes});
 
   @override
   Widget build(BuildContext context) {
+    final items = excludes
+        .map((e) => e.itemText ?? '')
+        .where((s) => s.isNotEmpty)
+        .toList();
+    if (items.isEmpty) return const SizedBox.shrink();
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: _IncludedCard(
@@ -1047,26 +1192,42 @@ class _NotIncludedSection extends StatelessWidget {
         title: 'Not Included',
         color: p.error,
         isCross: true,
-        items: const [
-          'International flights to/from Egypt',
-          'Alcoholic beverages',
-          'Personal expenses and tips',
-          'Travel insurance',
-        ],
+        items: items,
       ),
     );
   }
 }
 
 // ═══════════════════════════════════════════════════════════
-// DOCUMENTS (Step 19)
+// DOCUMENTS
 // ═══════════════════════════════════════════════════════════
 class _DocumentsCard extends StatelessWidget {
   final _PackagePalette p;
-  const _DocumentsCard({required this.p});
+  final List<BxPackageDocumentRequirement> requirements;
+  const _DocumentsCard({required this.p, required this.requirements});
+
+  static String _labelForType(int? id) {
+    switch (id) {
+      case 1:
+        return 'Passport copy';
+      case 2:
+        return 'National ID';
+      case 3:
+        return 'Personal photo';
+      case 4:
+        return 'Visa documents';
+      default:
+        return 'Document #${id ?? '—'}';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final docs = requirements
+        .where((r) => r.isRequired == true || r.isOptional == true)
+        .toList();
+    if (docs.isEmpty) return const SizedBox.shrink();
+
     return Container(
       padding: EdgeInsets.all(14.w),
       decoration: BoxDecoration(
@@ -1105,57 +1266,25 @@ class _DocumentsCard extends StatelessWidget {
           Wrap(
             spacing: 40.w,
             runSpacing: 8.h,
-            children:
-                const [
-                      'Passport copy',
-                      'National ID',
-                      'Personal photo',
-                      'Visa documents',
-                    ]
-                    .map(
-                      (t) => Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.check, size: 14, color: p.success),
-                          SizedBox(width: 4.w),
-                          Text(
-                            t,
-                            style: TextStyle(
-                              fontSize: 11.sp,
-                              color: p.textSecondary,
-                              fontFamily: 'lao-mn',
-                            ),
-                          ),
-                        ],
+            children: docs
+                .map(
+                  (r) => Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.check, size: 14, color: p.success),
+                      SizedBox(width: 4.w),
+                      Text(
+                        _labelForType(r.documentTypeId),
+                        style: TextStyle(
+                          fontSize: 11.sp,
+                          color: p.textSecondary,
+                          fontFamily: 'lao-mn',
+                        ),
                       ),
-                    )
-                    .toList(),
-          ),
-          SizedBox(height: 12.h),
-          Container(
-            padding: EdgeInsets.all(10.w),
-            decoration: BoxDecoration(
-              color: p.primary.withOpacity(0.08),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(Icons.info_outline, size: 14, color: p.primary),
-                SizedBox(width: 8.w),
-                Expanded(
-                  child: Text(
-                    'Traveler details will be requested after payment to issue your tickets.',
-                    style: TextStyle(
-                      fontSize: 11.sp,
-                      color: p.textSecondary,
-                      fontFamily: 'lao-mn',
-                      height: 1.4,
-                    ),
+                    ],
                   ),
-                ),
-              ],
-            ),
+                )
+                .toList(),
           ),
         ],
       ),
@@ -1164,94 +1293,79 @@ class _DocumentsCard extends StatelessWidget {
 }
 
 // ═══════════════════════════════════════════════════════════
-// ADD-ONS (Steps 20-21)
+// ADD-ONS
 // ═══════════════════════════════════════════════════════════
 class _AddOnsList extends StatelessWidget {
   final _PackagePalette p;
+  final List<BxPackageAddon> addons;
   final List<int> selected;
   final ValueChanged<int> onToggle;
 
   const _AddOnsList({
     required this.p,
+    required this.addons,
     required this.selected,
     required this.onToggle,
   });
 
   @override
   Widget build(BuildContext context) {
-    final items = <_AddOnData>[
-      _AddOnData(
-        'Airport VIP Service',
-        'Fast-track & lounge access',
-        '+\$85',
-        'per person',
-      ),
-      _AddOnData(
-        'Romantic Dinner',
-        'Private sunset dinner for two',
-        '+\$180',
-        'per couple',
-      ),
-      _AddOnData(
-        'Professional Photoshoot',
-        '2-hour session with 50+ photos',
-        '+\$220',
-        'per session',
-      ),
-    ];
+    final visible = addons.where((a) => a.active != false).toList();
+    if (visible.isEmpty) return const SizedBox.shrink();
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: Column(
         children: [
-          ...List.generate(items.length, (i) {
-            final item = items[i];
-            final isSelected = selected.contains(i);
-            return Padding(
+          for (var i = 0; i < visible.length; i++)
+            Padding(
               padding: EdgeInsets.only(bottom: 10.h),
               child: GestureDetector(
                 onTap: () => onToggle(i),
                 child: Container(
-                  width: 311,
-                  height: 66,
-                  padding: EdgeInsets.symmetric(horizontal: 14.w),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 14.w,
+                    vertical: 12.h,
+                  ),
                   decoration: BoxDecoration(
-                    color: isSelected
+                    color: selected.contains(i)
                         ? p.primary.withOpacity(0.08)
                         : p.cardSurface,
                     borderRadius: BorderRadius.circular(66),
                     border: Border.all(
-                      color: isSelected ? p.primary : p.border,
-                      width: isSelected ? 1.5 : 1,
+                      color: selected.contains(i) ? p.primary : p.border,
+                      width: selected.contains(i) ? 1.5 : 1,
                     ),
                   ),
                   child: Row(
                     children: [
-                      // Checkbox
                       Container(
                         width: 22,
                         height: 22,
                         decoration: BoxDecoration(
-                          color: isSelected ? p.primary : Colors.transparent,
+                          color: selected.contains(i)
+                              ? p.primary
+                              : Colors.transparent,
                           borderRadius: BorderRadius.circular(6),
                           border: Border.all(
-                            color: isSelected ? p.primary : p.textMuted,
+                            color: selected.contains(i)
+                                ? p.primary
+                                : p.textMuted,
                             width: 1.5,
                           ),
                         ),
-                        child: isSelected
+                        child: selected.contains(i)
                             ? Icon(Icons.check, size: 14, color: Colors.white)
                             : null,
                       ),
                       SizedBox(width: 12.w),
-                      // Texts
                       Expanded(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              item.title,
+                              visible[i].addonType ?? 'Add-on',
                               style: TextStyle(
                                 fontSize: 12.sp,
                                 fontWeight: FontWeight.w600,
@@ -1259,142 +1373,77 @@ class _AddOnsList extends StatelessWidget {
                                 fontFamily: 'lao-mn',
                               ),
                             ),
-                            SizedBox(height: 2.h),
-                            Text(
-                              item.subtitle,
-                              style: TextStyle(
-                                fontSize: 10.sp,
-                                color: p.textMuted,
-                                fontFamily: 'lao-mn',
+                            if ((visible[i].priceModel ?? '').isNotEmpty) ...[
+                              SizedBox(height: 2.h),
+                              Text(
+                                visible[i].priceModel!,
+                                style: TextStyle(
+                                  fontSize: 10.sp,
+                                  color: p.textMuted,
+                                  fontFamily: 'lao-mn',
+                                ),
                               ),
-                            ),
+                            ],
                           ],
                         ),
                       ),
                       SizedBox(width: 8.w),
-                      // Price
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            item.price,
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                              fontWeight: FontWeight.w700,
-                              color: p.primary,
-                              fontFamily: 'lao-mn',
-                            ),
+                      if (visible[i].estimatedPrice != null)
+                        Text(
+                          '+${_fmtPrice(visible[i].estimatedPrice)}',
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.w700,
+                            color: p.primary,
+                            fontFamily: 'lao-mn',
                           ),
-                          SizedBox(height: 2.h),
-                          Text(
-                            item.unit,
-                            style: TextStyle(
-                              fontSize: 9.sp,
-                              color: p.textMuted,
-                              fontFamily: 'lao-mn',
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
                     ],
                   ),
                 ),
               ),
-            );
-          }),
-          // Custom Plan card
-          GestureDetector(
-            onTap: () {},
-            child: Container(
-              width: 311,
-              height: 66,
-              padding: EdgeInsets.symmetric(horizontal: 14.w),
-              decoration: BoxDecoration(
-                color: p.cardSurface,
-                borderRadius: BorderRadius.circular(66),
-                border: Border.all(color: p.border),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 22,
-                    height: 22,
-                    decoration: BoxDecoration(
-                      color: p.primary.withOpacity(0.12),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Icon(
-                      Icons.edit_outlined,
-                      size: 14,
-                      color: p.primary,
-                    ),
-                  ),
-                  SizedBox(width: 12.w),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Build Custom Plan',
-                          style: TextStyle(
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w600,
-                            color: p.textPrimary,
-                            fontFamily: 'lao-mn',
-                          ),
-                        ),
-                        SizedBox(height: 2.h),
-                        Text(
-                          'Personalize your entire itinerary',
-                          style: TextStyle(
-                            fontSize: 10.sp,
-                            color: p.textMuted,
-                            fontFamily: 'lao-mn',
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Icon(Icons.arrow_forward_ios, size: 14, color: p.textMuted),
-                ],
-              ),
             ),
-          ),
         ],
       ),
     );
   }
 }
 
-class _AddOnData {
-  final String title;
-  final String subtitle;
-  final String price;
-  final String unit;
-  const _AddOnData(this.title, this.subtitle, this.price, this.unit);
-}
-
 // ═══════════════════════════════════════════════════════════
-// AMENITIES (Steps 22-23)
+// AMENITIES (from highlights)
 // ═══════════════════════════════════════════════════════════
 class _AmenitiesGrid extends StatelessWidget {
   final _PackagePalette p;
-  const _AmenitiesGrid({required this.p});
+  final List<BxPackageHighlight> highlights;
+  const _AmenitiesGrid({required this.p, required this.highlights});
+
+  static IconData _iconFor(String? name) {
+    final s = (name ?? '').toLowerCase();
+    if (s.contains('wifi') || s.contains('internet')) return Icons.wifi;
+    if (s.contains('dining') || s.contains('restaurant')) {
+      return Icons.restaurant;
+    }
+    if (s.contains('pool') || s.contains('sun')) {
+      return Icons.wb_sunny_outlined;
+    }
+    if (s.contains('spa')) return Icons.spa_outlined;
+    if (s.contains('entertain') || s.contains('music')) {
+      return Icons.music_note_outlined;
+    }
+    if (s.contains('library') || s.contains('book')) {
+      return Icons.menu_book_outlined;
+    }
+    if (s.contains('gift') || s.contains('shop')) return Icons.card_giftcard;
+    return Icons.star_outline;
+  }
 
   @override
   Widget build(BuildContext context) {
-    final items = <MapEntry<IconData, String>>[
-      const MapEntry(Icons.wifi, 'Free WiFi'),
-      const MapEntry(Icons.restaurant, 'Fine Dining'),
-      const MapEntry(Icons.wb_sunny_outlined, 'Sun Deck Pool'),
-      const MapEntry(Icons.spa_outlined, 'Spa Services'),
-      const MapEntry(Icons.music_note_outlined, 'Live Entertainment'),
-      const MapEntry(Icons.menu_book_outlined, 'Library Lounge'),
-      const MapEntry(Icons.card_giftcard, 'Gift Shop'),
-      const MapEntry(Icons.favorite_border, '24/7 Service'),
-    ];
+    final items = highlights
+        .map((h) => MapEntry(_iconFor(h.name), h.name ?? ''))
+        .where((e) => e.value.isNotEmpty)
+        .toList();
+    if (items.isEmpty) return const SizedBox.shrink();
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -1428,15 +1477,19 @@ class _AmenitiesGrid extends StatelessWidget {
 }
 
 // ═══════════════════════════════════════════════════════════
-// CALENDAR (Steps 24-25)
+// CALENDAR (stateless — selection via BLoC)
 // ═══════════════════════════════════════════════════════════
 class _CalendarSection extends StatelessWidget {
   final _PackagePalette p;
+  final List<BxPackageAvailability> availability;
+  final int? basePrice;
   final int selectedIndex;
   final ValueChanged<int> onSelect;
 
   const _CalendarSection({
     required this.p,
+    required this.availability,
+    required this.basePrice,
     required this.selectedIndex,
     required this.onSelect,
   });
@@ -1445,12 +1498,19 @@ class _CalendarSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (availability.isEmpty) return const SizedBox.shrink();
+
+    final departureDays = <int>{
+      for (final a in availability)
+        if (DateTime.tryParse(a.startDate ?? '') != null)
+          DateTime.parse(a.startDate!).day,
+    };
+
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Weekday row
           Row(
             children: _weekdays
                 .map(
@@ -1471,7 +1531,6 @@ class _CalendarSection extends StatelessWidget {
                 .toList(),
           ),
           SizedBox(height: 8.h),
-          // Dates 1-30 (start on Sunday = no offset for simplicity)
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -1485,15 +1544,12 @@ class _CalendarSection extends StatelessWidget {
             itemBuilder: (_, i) {
               final day = i + 1;
               final isSelected = i == selectedIndex;
-              // Simulate some peak-season days with orange
-              final isPeak = day == 12 || day == 18 || day == 24;
-              final highlightColor = isPeak ? p.warning : p.primary;
+              final hasStart = departureDays.contains(day);
+              final highlightColor = hasStart ? p.warning : p.primary;
 
               return GestureDetector(
                 onTap: () => onSelect(i),
                 child: Container(
-                  width: 38.7,
-                  height: 36,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     color: isSelected ? highlightColor : Colors.transparent,
@@ -1518,38 +1574,13 @@ class _CalendarSection extends StatelessWidget {
             },
           ),
           SizedBox(height: 14.h),
-          // Legend
           Wrap(
+            spacing: 16.w,
+            runSpacing: 8.h,
             children: [
-              Row(
-                children: [
-                  _legendDot(p.primary),
-                  SizedBox(width: 6.w),
-                  Text(
-                    'Standard Rate: \$1,200',
-                    style: TextStyle(
-                      fontSize: 11.sp,
-                      color: p.textSecondary,
-                      fontFamily: 'lao-mn',
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(width: 16.w),
-              Row(
-                children: [
-                  _legendDot(p.warning),
-                  SizedBox(width: 6.w),
-                  Text(
-                    'Peak Season: \$1,500',
-                    style: TextStyle(
-                      fontSize: 11.sp,
-                      color: p.textSecondary,
-                      fontFamily: 'lao-mn',
-                    ),
-                  ),
-                ],
-              ),
+              _legend(p.primary, 'Standard Rate: ${_fmtPrice(basePrice)}'),
+              if (departureDays.isNotEmpty)
+                _legend(p.warning, 'Departures marked in orange'),
             ],
           ),
         ],
@@ -1557,31 +1588,57 @@ class _CalendarSection extends StatelessWidget {
     );
   }
 
-  Widget _legendDot(Color c) => Container(
-    width: 10,
-    height: 10,
-    decoration: BoxDecoration(color: c, shape: BoxShape.circle),
+  Widget _legend(Color c, String text) => Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Container(
+        width: 10,
+        height: 10,
+        decoration: BoxDecoration(color: c, shape: BoxShape.circle),
+      ),
+      SizedBox(width: 6.w),
+      Text(
+        text,
+        style: TextStyle(
+          fontSize: 11.sp,
+          color: p.textSecondary,
+          fontFamily: 'lao-mn',
+        ),
+      ),
+    ],
   );
 }
 
 // ═══════════════════════════════════════════════════════════
-// REVIEW FORM (Steps 26-27)
+// REVIEW FORM (stateful ONLY for its TextEditingController)
 // ═══════════════════════════════════════════════════════════
-class _ReviewForm extends StatelessWidget {
+class _ReviewForm extends StatefulWidget {
   final _PackagePalette p;
   final int rating;
-  final TextEditingController controller;
   final ValueChanged<int> onRating;
 
   const _ReviewForm({
     required this.p,
     required this.rating,
-    required this.controller,
     required this.onRating,
   });
 
   @override
+  State<_ReviewForm> createState() => _ReviewFormState();
+}
+
+class _ReviewFormState extends State<_ReviewForm> {
+  final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final p = widget.p;
     return Container(
       padding: EdgeInsets.all(14.w),
       decoration: BoxDecoration(
@@ -1605,11 +1662,11 @@ class _ReviewForm extends StatelessWidget {
           Row(
             children: List.generate(5, (i) {
               return GestureDetector(
-                onTap: () => onRating(i + 1),
+                onTap: () => widget.onRating(i + 1),
                 child: Padding(
                   padding: EdgeInsets.only(right: 4.w),
                   child: Icon(
-                    i < rating ? Icons.star : Icons.star_border,
+                    i < widget.rating ? Icons.star : Icons.star_border,
                     size: 26,
                     color: p.starFilled,
                   ),
@@ -1619,7 +1676,7 @@ class _ReviewForm extends StatelessWidget {
           ),
           SizedBox(height: 12.h),
           TextField(
-            controller: controller,
+            controller: _controller,
             maxLines: 4,
             maxLength: 500,
             style: TextStyle(
@@ -1687,131 +1744,22 @@ class _ReviewForm extends StatelessWidget {
 }
 
 // ═══════════════════════════════════════════════════════════
-// REVIEWS LIST (Step 28)
-// ═══════════════════════════════════════════════════════════
-class _ReviewsList extends StatelessWidget {
-  final _PackagePalette p;
-  const _ReviewsList({required this.p});
-
-  @override
-  Widget build(BuildContext context) {
-    final reviews = [
-      _ReviewData(
-        name: 'Sarah Mitchell',
-        rating: 5,
-        date: 'March 2024',
-        text:
-            'Absolutely magical experience! The cruise ship was luxurious and '
-            'the temple tours were incredibly informative. Our Egyptologist '
-            'guide brought ancient history to life. The Abu Simbel excursion '
-            'was the highlight of our trip.',
-      ),
-    ];
-
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
-      child: Column(
-        children: reviews.map((r) {
-          return Container(
-            padding: EdgeInsets.all(14.w),
-            decoration: BoxDecoration(
-              color: p.cardSurface,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: p.border),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 18,
-                      backgroundColor: p.primary.withOpacity(0.15),
-                      child: Text(
-                        r.name.isNotEmpty ? r.name[0] : '?',
-                        style: TextStyle(
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w700,
-                          color: p.primary,
-                          fontFamily: 'lao-mn',
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 10.w),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            r.name,
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                              fontWeight: FontWeight.w600,
-                              color: p.textPrimary,
-                              fontFamily: 'lao-mn',
-                            ),
-                          ),
-                          SizedBox(height: 2.h),
-                          Row(
-                            children: List.generate(5, (i) {
-                              return Icon(
-                                i < r.rating ? Icons.star : Icons.star_border,
-                                size: 12,
-                                color: p.starFilled,
-                              );
-                            }),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Text(
-                      r.date,
-                      style: TextStyle(
-                        fontSize: 10.sp,
-                        color: p.textMuted,
-                        fontFamily: 'lao-mn',
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 10.h),
-                Text(
-                  r.text,
-                  style: TextStyle(
-                    fontSize: 12.sp,
-                    color: p.textSecondary,
-                    fontFamily: 'lao-mn',
-                    height: 1.5,
-                  ),
-                ),
-              ],
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
-}
-
-class _ReviewData {
-  final String name;
-  final int rating;
-  final String date;
-  final String text;
-  const _ReviewData({
-    required this.name,
-    required this.rating,
-    required this.date,
-    required this.text,
-  });
-}
-
-// ═══════════════════════════════════════════════════════════
-// BOOKING FORM (Steps 29-30)
+// BOOKING FORM (stateful ONLY for its TextEditingControllers)
 // ═══════════════════════════════════════════════════════════
 class _BookingForm extends StatefulWidget {
   final _PackagePalette p;
-  const _BookingForm({required this.p});
+  final List<BxPackageHotel> hotels;
+  final int selectedCabinIndex;
+  final ValueChanged<int> onCabinSelected;
+  final int nights;
+
+  const _BookingForm({
+    required this.p,
+    required this.hotels,
+    required this.selectedCabinIndex,
+    required this.onCabinSelected,
+    required this.nights,
+  });
 
   @override
   State<_BookingForm> createState() => _BookingFormState();
@@ -1825,7 +1773,6 @@ class _BookingFormState extends State<_BookingForm> {
   final _requestsCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
   final _phoneCtrl = TextEditingController();
-  int _selectedCabin = 0;
 
   @override
   void dispose() {
@@ -1842,10 +1789,7 @@ class _BookingFormState extends State<_BookingForm> {
   @override
   Widget build(BuildContext context) {
     final p = widget.p;
-    final cabins = const [
-      ('Single room', '\$1,200'),
-      ('Deluxe room', '\$1,400'),
-    ];
+    final cabins = widget.hotels;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1894,62 +1838,68 @@ class _BookingFormState extends State<_BookingForm> {
             ),
           ],
         ),
-        SizedBox(height: 14.h),
-        _label('Cabin Type', p),
-        SizedBox(height: 8.h),
-        Row(
-          children: List.generate(cabins.length, (i) {
-            final isSel = i == _selectedCabin;
-            return Expanded(
-              child: Padding(
-                padding: EdgeInsets.only(right: i == 0 ? 8.w : 0),
-                child: GestureDetector(
-                  onTap: () => setState(() => _selectedCabin = i),
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                      vertical: 12.h,
-                      horizontal: 12.w,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isSel
-                          ? p.primary.withOpacity(0.08)
-                          : p.cardSurface,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: isSel ? p.primary : p.border,
-                        width: isSel ? 1.5 : 1,
+        if (cabins.isNotEmpty) ...[
+          SizedBox(height: 14.h),
+          _label('Cabin Type', p),
+          SizedBox(height: 8.h),
+          Row(
+            children: List.generate(cabins.length, (i) {
+              final isSel = i == widget.selectedCabinIndex;
+              return Expanded(
+                child: Padding(
+                  padding: EdgeInsets.only(right: i == 0 ? 8.w : 0),
+                  child: GestureDetector(
+                    onTap: () => widget.onCabinSelected(i),
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                        vertical: 12.h,
+                        horizontal: 12.w,
                       ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          cabins[i].$1,
-                          style: TextStyle(
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w600,
-                            color: p.textPrimary,
-                            fontFamily: 'lao-mn',
-                          ),
+                      decoration: BoxDecoration(
+                        color: isSel
+                            ? p.primary.withOpacity(0.08)
+                            : p.cardSurface,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: isSel ? p.primary : p.border,
+                          width: isSel ? 1.5 : 1,
                         ),
-                        SizedBox(height: 4.h),
-                        Text(
-                          cabins[i].$2,
-                          style: TextStyle(
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w700,
-                            color: p.primary,
-                            fontFamily: 'lao-mn',
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            cabins[i].optionName ??
+                                cabins[i].roomType ??
+                                'Room',
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.w600,
+                              color: p.textPrimary,
+                              fontFamily: 'lao-mn',
+                            ),
                           ),
-                        ),
-                      ],
+                          SizedBox(height: 4.h),
+                          Text(
+                            cabins[i].pricePerNightEst != null
+                                ? _fmtPrice(cabins[i].pricePerNightEst)
+                                : '—',
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.w700,
+                              color: p.primary,
+                              fontFamily: 'lao-mn',
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            );
-          }),
-        ),
+              );
+            }),
+          ),
+        ],
         SizedBox(height: 14.h),
         _label('Special Requests', p),
         _field(_requestsCtrl, 'Any special requests...', maxLines: 3, p: p),
@@ -2029,7 +1979,7 @@ class _BookingFormState extends State<_BookingForm> {
 }
 
 // ═══════════════════════════════════════════════════════════
-// NEED HELP TILE + BOTTOM SHEET (Step 30 end)
+// NEED HELP TILE
 // ═══════════════════════════════════════════════════════════
 class _NeedHelpTile extends StatelessWidget {
   final _PackagePalette p;
@@ -2133,71 +2083,6 @@ class _NeedHelpTile extends StatelessWidget {
                   fontFamily: 'lao-mn',
                 ),
               ),
-              SizedBox(height: 16.h),
-              // summary card
-              Container(
-                padding: EdgeInsets.all(12.w),
-                decoration: BoxDecoration(
-                  color: p.surface,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: p.border),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      '\$2,208',
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w700,
-                        color: p.textPrimary,
-                        fontFamily: 'lao-mn',
-                      ),
-                    ),
-                    Text(
-                      '2 persons',
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        color: p.textMuted,
-                        fontFamily: 'lao-mn',
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 14.h),
-              SizedBox(
-                width: 118.97,
-                height: 45,
-                child: ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: p.primary,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: Text(
-                    'Pay Now',
-                    style: TextStyle(
-                      fontSize: 13.sp,
-                      fontWeight: FontWeight.w600,
-                      fontFamily: 'lao-mn',
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(height: 8.h),
-              Text(
-                'Secure payment via Stripe',
-                style: TextStyle(
-                  fontSize: 10.sp,
-                  color: p.textMuted,
-                  fontFamily: 'lao-mn',
-                ),
-              ),
               SizedBox(height: 20.h),
             ],
           ),
@@ -2212,7 +2097,8 @@ class _NeedHelpTile extends StatelessWidget {
 // ═══════════════════════════════════════════════════════════
 class _BottomPayBar extends StatelessWidget {
   final _PackagePalette p;
-  const _BottomPayBar({required this.p});
+  final BxGetPackageDetailData data;
+  const _BottomPayBar({required this.p, required this.data});
 
   @override
   Widget build(BuildContext context) {
@@ -2238,7 +2124,7 @@ class _BottomPayBar extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '\$2,208',
+                  _fmtPrice(data.displayPrice),
                   style: TextStyle(
                     fontSize: 18.sp,
                     fontWeight: FontWeight.w700,
@@ -2247,7 +2133,7 @@ class _BottomPayBar extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  '2 persons',
+                  'per person',
                   style: TextStyle(
                     fontSize: 10.sp,
                     color: p.textMuted,

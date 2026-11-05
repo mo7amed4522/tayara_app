@@ -854,10 +854,14 @@ class _TopDealCard extends StatelessWidget {
                     width: double.infinity,
                     height: 36,
                     child: ElevatedButton(
-                      onPressed: () => BxAppRouter.push(
-                        context,
-                        BxRouteNames.bxPackageDetailScreen,
-                      ),
+                      onPressed: () {
+                        final packageId = deal.id;
+                        BxAppRouter.push(
+                          context,
+                          BxRouteNames.bxPackageDetailScreen,
+                          arguments: {'packageId': packageId},
+                        );
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: BxAppColors.primary,
                         foregroundColor: Colors.white,

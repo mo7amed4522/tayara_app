@@ -7,6 +7,9 @@
 // ignore_for_file: unnecessary_underscores, deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tayara/domain/model/response/bx_get_package_detail_response.dart';
+import 'package:tayara/presentation/bloc/bx_package_detail_screen_controller/bx_package_detail_screen_controller_bloc.dart';
 
 // ── Accent colors (shared with mobile) ───────────────────────
 const Color _green = Color(0xFF10B981);
@@ -16,90 +19,17 @@ const Color _peak = Color(0xFFF97316);
 const Color _red = Color(0xFFDC2626);
 const Color _amber = Color(0xFFF59E0B);
 
-// ── Static content ───────────────────────────────────────────
-const _description =
-    "Experience the ultimate luxury along the legendary Nile River. This "
-    "premium 5-day cruise combines world-class amenities with expertly guided "
-    "tours of Egypt's most magnificent temples and archaeological sites.";
-
-const _carouselImages = <String>[
-  'https://picsum.photos/seed/nile-cruise-1/1600/900',
-  'https://picsum.photos/seed/nile-cruise-2/1600/900',
-  'https://picsum.photos/seed/nile-cruise-3/1600/900',
-  'https://picsum.photos/seed/nile-cruise-4/1600/900',
-];
-
-const _galleryImages = <String>[
-  'https://picsum.photos/seed/gallery-1/400/400',
-  'https://picsum.photos/seed/gallery-2/400/400',
-  'https://picsum.photos/seed/gallery-3/400/400',
-  'https://picsum.photos/seed/gallery-4/400/400',
-  'https://picsum.photos/seed/gallery-5/400/400',
-  'https://picsum.photos/seed/gallery-6/400/400',
-];
-
-const _reviewerAvatar = 'https://i.pravatar.cc/150?img=47';
-
-const _reviewText =
-    'Absolutely magical experience! The cruise ship was luxurious and the '
-    'temple tours were incredibly informative. Our Egyptologist guide brought '
-    'ancient history to life. The Abu Simbel excursion was the highlight of '
-    'our trip.';
-
-class _ItineraryEntry {
-  final String title;
-  final String subtitle;
-  final List<(String, String)> items;
-  const _ItineraryEntry(this.title, this.subtitle, this.items);
+// ── Formatting helpers ───────────────────────────────────────
+String _fmtPrice(num? value) {
+  if (value == null) return '—';
+  final s = value.toString();
+  final buf = StringBuffer();
+  for (int i = 0; i < s.length; i++) {
+    if (i > 0 && (s.length - i) % 3 == 0) buf.write(',');
+    buf.write(s[i]);
+  }
+  return '\$${buf.toString()}';
 }
-
-final _itinerary = <_ItineraryEntry>[
-  _ItineraryEntry(
-    'Day 1: Luxor Embarkation',
-    'Temple visits & welcome dinner',
-    const [
-      ('12:00', 'Check-in and welcome aboard luxury cruise ship'),
-      ('14:00', 'Guided tour of Karnak Temple Complex'),
-      ('17:00', 'Luxor Temple visit at sunset'),
-      ('19:30', 'Welcome dinner and evening entertainment'),
-    ],
-  ),
-  _ItineraryEntry(
-    'Day 2: Valley of the Kings',
-    'Royal tombs & Hatshepsut Temple',
-    const [
-      ('08:00', 'Breakfast and early disembarkation'),
-      ('09:30', 'Guided tour of the Valley of the Kings'),
-      ('13:00', 'Lunch back on board'),
-      ('15:30', 'Hatshepsut Temple visit'),
-      ('19:00', 'Dinner and evening entertainment'),
-    ],
-  ),
-  _ItineraryEntry(
-    'Day 3: Edfu & Kom Ombo',
-    'Temple of Horus & Crocodile Temple',
-    const [
-      ('08:00', 'Breakfast on board'),
-      ('09:00', 'Edfu Temple (Temple of Horus) visit'),
-      ('13:00', 'Lunch and sail to Kom Ombo'),
-      ('16:00', 'Kom Ombo Temple visit'),
-      ('19:30', 'Dinner on board'),
-    ],
-  ),
-  _ItineraryEntry('Day 4: Abu Simbel', 'Ramses II masterpiece', const [
-    ('04:30', 'Early departure to Abu Simbel'),
-    ('07:00', 'Guided tour of Abu Simbel temples'),
-    ('12:00', 'Return to cruise ship and lunch'),
-    ('16:00', 'Afternoon tea and relaxation'),
-    ('19:30', 'Farewell dinner'),
-  ]),
-  _ItineraryEntry('Day 5: Aswan Departure', 'Philae Temple & farewell', const [
-    ('08:00', 'Breakfast and check-out'),
-    ('09:00', 'Philae Temple visit'),
-    ('12:00', 'Farewell lunch'),
-    ('14:00', 'Transfer to Aswan airport'),
-  ]),
-];
 
 // ── Main widget ──────────────────────────────────────────────
 class BxPackageDetailWidgetTablet extends StatelessWidget {
@@ -112,6 +42,41 @@ class BxPackageDetailWidgetTablet extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = _P.of(context);
 
+    return BlocBuilder<
+      BxPackageDetailScreenControllerBloc,
+      BxPackageDetailScreenControllerState
+    >(
+      builder: (context, state) {
+        if (state.status == BxPackageDetailScreenControllerStatus.loading ||
+            state.status == BxPackageDetailScreenControllerStatus.initial) {
+          return Scaffold(
+            backgroundColor: p.isDark
+                ? const Color(0xFF0E0E10)
+                : const Color(0xFFF7F8FA),
+            body: const Center(child: CircularProgressIndicator()),
+          );
+        }
+        final data = state.packageDetail?.data;
+        if (state.status == BxPackageDetailScreenControllerStatus.failure ||
+            data == null) {
+          return Scaffold(
+            backgroundColor: p.isDark
+                ? const Color(0xFF0E0E10)
+                : const Color(0xFFF7F8FA),
+            body: const _ErrorView(),
+          );
+        }
+        return _buildScaffold(context, p, data);
+      },
+    );
+  }
+
+  Widget _buildScaffold(
+    BuildContext context,
+    _P p,
+    BxGetPackageDetailData data,
+  ) {
+    final images = _imagesFor(data);
     return Scaffold(
       backgroundColor: p.isDark
           ? const Color(0xFF0E0E10)
@@ -154,7 +119,7 @@ class BxPackageDetailWidgetTablet extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ── Hero + summary (two column) ──────────────
+                // Hero + summary
                 Padding(
                   padding: const EdgeInsets.fromLTRB(_gutter, 16, _gutter, 0),
                   child: LayoutBuilder(
@@ -164,18 +129,30 @@ class BxPackageDetailWidgetTablet extends StatelessWidget {
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const _ImageCarousel(),
+                            _ImageCarousel(
+                              images: images,
+                              badge: data.promoTag,
+                            ),
                             const SizedBox(height: 16),
-                            _SummaryPanel(p: p),
+                            _SummaryPanel(p: p, data: data),
                           ],
                         );
                       }
                       return Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Expanded(flex: 3, child: _ImageCarousel()),
+                          Expanded(
+                            flex: 3,
+                            child: _ImageCarousel(
+                              images: images,
+                              badge: data.promoTag,
+                            ),
+                          ),
                           const SizedBox(width: 20),
-                          Expanded(flex: 2, child: _SummaryPanel(p: p)),
+                          Expanded(
+                            flex: 2,
+                            child: _SummaryPanel(p: p, data: data),
+                          ),
                         ],
                       );
                     },
@@ -184,11 +161,13 @@ class BxPackageDetailWidgetTablet extends StatelessWidget {
 
                 const SizedBox(height: 24),
 
-                // ── Gallery ──────────────────────────────────
-                _SectionTitle('Image Gallery'),
-                _GalleryGrid(),
+                // Gallery
+                if (images.length > 1) ...[
+                  const _SectionTitle('Image Gallery'),
+                  _GalleryGrid(images: images),
+                ],
 
-                // ── Itinerary + Included (two column) ────────
+                // Itinerary + Included
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: _gutter),
                   child: LayoutBuilder(
@@ -197,61 +176,36 @@ class BxPackageDetailWidgetTablet extends StatelessWidget {
                       final itinerary = Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const _SectionTitleInline('Daily Itinerary'),
-                          Column(
-                            children: _itinerary
-                                .map((e) => _ItineraryTile(entry: e))
-                                .toList(),
-                          ),
+                          if (data.itineraryDays.isNotEmpty) ...[
+                            const _SectionTitleInline('Daily Itinerary'),
+                            Column(
+                              children: data.itineraryDays
+                                  .map((d) => _ItineraryTile(day: d))
+                                  .toList(),
+                            ),
+                          ],
                         ],
                       );
                       final included = Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          _SectionTitleInline("What's Included"),
-                          _InfoCard(
-                            icon: Icons.home_outlined,
-                            color: _green,
-                            title: 'Accommodation',
-                            items: [
-                              '4 nights luxury cruise ship cabin',
-                              'Private bathroom with river view',
-                              'Daily housekeeping service',
-                            ],
-                          ),
-                          _InfoCard(
-                            icon: Icons.restaurant_outlined,
-                            color: _green,
-                            title: 'Meals & Dining',
-                            items: [
-                              'All meals: 4 breakfasts, 5 lunches, 4 dinners',
-                              'Welcome and farewell dinners',
-                              'Afternoon tea and snacks',
-                            ],
-                          ),
-                          _InfoCard(
-                            icon: Icons.location_on_outlined,
-                            color: _green,
-                            title: 'Tours & Activities',
-                            items: [
-                              'All temple visits with expert Egyptologist',
-                              'Abu Simbel excursion by air-conditioned coach',
-                              'All entrance fees and permits',
-                            ],
-                          ),
-                          _SectionTitleInline('Not Included'),
-                          _InfoCard(
-                            icon: Icons.cancel_outlined,
-                            color: _red,
-                            title: 'Not Included',
-                            bulletIcon: Icons.cancel,
-                            items: [
-                              'International flights to/from Egypt',
-                              'Alcoholic beverages',
-                              'Personal expenses and tips',
-                              'Travel insurance',
-                            ],
-                          ),
+                        children: [
+                          if (data.includes.isNotEmpty) ...[
+                            const _SectionTitleInline("What's Included"),
+                            ..._IncludedGroups.build(data.includes),
+                          ],
+                          if (data.excludes.isNotEmpty) ...[
+                            const _SectionTitleInline('Not Included'),
+                            _InfoCard(
+                              icon: Icons.cancel_outlined,
+                              color: _red,
+                              title: 'Not Included',
+                              bulletIcon: Icons.cancel,
+                              items: data.excludes
+                                  .map((e) => e.itemText ?? '')
+                                  .where((s) => s.isNotEmpty)
+                                  .toList(),
+                            ),
+                          ],
                         ],
                       );
 
@@ -279,10 +233,14 @@ class BxPackageDetailWidgetTablet extends StatelessWidget {
 
                 const SizedBox(height: 8),
 
-                // ── Documents ────────────────────────────────
-                const _DocumentsCard(gutter: _gutter),
+                // Documents
+                if (data.documentRequirements.isNotEmpty)
+                  _DocumentsCard(
+                    gutter: _gutter,
+                    requirements: data.documentRequirements,
+                  ),
 
-                // ── Add-ons + Amenities (two column) ─────────
+                // Add-ons + Amenities
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: _gutter),
                   child: LayoutBuilder(
@@ -290,16 +248,20 @@ class BxPackageDetailWidgetTablet extends StatelessWidget {
                       final isWide = c.maxWidth >= 760;
                       final addOns = Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          _SectionTitleInline('Optional Add-ons'),
-                          _OptionalAddOns(),
+                        children: [
+                          if (data.addons.isNotEmpty) ...[
+                            const _SectionTitleInline('Optional Add-ons'),
+                            _OptionalAddOns(addons: data.addons),
+                          ],
                         ],
                       );
                       final amenities = Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          _SectionTitleInline('Ship Amenities'),
-                          _AmenitiesGrid(),
+                        children: [
+                          if (data.highlights.isNotEmpty) ...[
+                            const _SectionTitleInline('Highlights'),
+                            _AmenitiesGrid(highlights: data.highlights),
+                          ],
                         ],
                       );
                       if (!isWide) {
@@ -320,7 +282,7 @@ class BxPackageDetailWidgetTablet extends StatelessWidget {
                   ),
                 ),
 
-                // ── Calendar + Review form (two column) ──────
+                // Calendar + Review form
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: _gutter),
                   child: LayoutBuilder(
@@ -328,9 +290,16 @@ class BxPackageDetailWidgetTablet extends StatelessWidget {
                       final isWide = c.maxWidth >= 760;
                       final calendar = Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          _SectionTitleInline('Available Dates & Pricing'),
-                          _CalendarSection(),
+                        children: [
+                          if (data.availability.isNotEmpty) ...[
+                            const _SectionTitleInline(
+                              'Available Dates & Pricing',
+                            ),
+                            _CalendarSection(
+                              availability: data.availability,
+                              basePrice: data.displayPrice,
+                            ),
+                          ],
                         ],
                       );
                       final review = Column(
@@ -360,7 +329,7 @@ class BxPackageDetailWidgetTablet extends StatelessWidget {
 
                 const SizedBox(height: 20),
 
-                // ── Review ──────────────────────────────────
+                // Review card (static sample — replace when reviews API exists)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: _gutter),
                   child: const _ReviewCard(),
@@ -368,7 +337,7 @@ class BxPackageDetailWidgetTablet extends StatelessWidget {
 
                 const SizedBox(height: 20),
 
-                // ── Booking (two column) ─────────────────────
+                // Booking
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: _gutter),
                   child: LayoutBuilder(
@@ -376,12 +345,15 @@ class BxPackageDetailWidgetTablet extends StatelessWidget {
                       final isWide = c.maxWidth >= 760;
                       final form = Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          _SectionTitleInline('Book Your Cruise'),
-                          _BookingForm(),
+                        children: [
+                          const _SectionTitleInline('Book Your Cruise'),
+                          _BookingForm(
+                            hotels: data.hotels,
+                            requiredFields: data.requiredFields,
+                          ),
                         ],
                       );
-                      final summary = _BookingSummaryCard(p: p);
+                      final summary = _BookingSummaryCard(p: p, data: data);
                       if (!isWide) {
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -408,33 +380,91 @@ class BxPackageDetailWidgetTablet extends StatelessWidget {
       ),
     );
   }
+
+  static List<String> _imagesFor(BxGetPackageDetailData data) {
+    final list = <String>[];
+    final cover = data.coverImageUrl;
+    if (cover != null && cover.trim().isNotEmpty) list.add(cover);
+    final gallery = data.galleryImages?.images ?? const <String>[];
+    for (final url in gallery) {
+      if (url.trim().isNotEmpty && !list.contains(url)) list.add(url);
+    }
+    return list;
+  }
 }
 
-// ── Summary panel (title + description + rating + chips + price) ──
-class _SummaryPanel extends StatelessWidget {
-  final _P p;
-  const _SummaryPanel({required this.p});
+// ═══════════════════════════════════════════════════════════
+// ERROR VIEW
+// ═══════════════════════════════════════════════════════════
+class _ErrorView extends StatelessWidget {
+  const _ErrorView();
 
   @override
   Widget build(BuildContext context) {
+    final p = _P.of(context);
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.error_outline, size: 48, color: _red),
+            const SizedBox(height: 12),
+            Text(
+              'Unable to load package details',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: p.textPrimary,
+                fontFamily: 'lao-mn',
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// SUMMARY PANEL
+// ═══════════════════════════════════════════════════════════
+class _SummaryPanel extends StatelessWidget {
+  final _P p;
+  final BxGetPackageDetailData data;
+  const _SummaryPanel({required this.p, required this.data});
+
+  @override
+  Widget build(BuildContext context) {
+    final discount = data.discountPercent ?? 0;
+    final display = data.displayPrice;
+    final original = data.originalPrice;
+    final showStrike =
+        original != null && display != null && original > display;
+    final nights = (data.daysDuration ?? 1) - 1;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Badges
-        SizedBox(
-          height: 28,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: const [
-              _Badge(text: 'Save 8%', color: _green),
-              SizedBox(width: 8),
-              _Badge(text: 'Limited Time', color: _orange),
-            ],
+        if (discount > 0 || (data.promoTag ?? '').isNotEmpty)
+          SizedBox(
+            height: 28,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: [
+                if (discount > 0)
+                  _Badge(text: 'Save $discount%', color: _green),
+                if (discount > 0 && (data.promoTag ?? '').isNotEmpty)
+                  const SizedBox(width: 8),
+                if ((data.promoTag ?? '').isNotEmpty)
+                  _Badge(text: data.promoTag!, color: _orange),
+              ],
+            ),
           ),
-        ),
         const SizedBox(height: 14),
         Text(
-          'Luxury Nile Cruise 5D/4N',
+          data.name ?? '',
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.w700,
@@ -442,16 +472,18 @@ class _SummaryPanel extends StatelessWidget {
             color: p.textPrimary,
           ),
         ),
-        const SizedBox(height: 10),
-        Text(
-          _description,
-          style: TextStyle(
-            fontSize: 14,
-            height: 1.5,
-            fontFamily: 'lao-mn',
-            color: p.textSecondary,
+        if ((data.description ?? '').isNotEmpty) ...[
+          const SizedBox(height: 10),
+          Text(
+            data.description!,
+            style: TextStyle(
+              fontSize: 14,
+              height: 1.5,
+              fontFamily: 'lao-mn',
+              color: p.textSecondary,
+            ),
           ),
-        ),
+        ],
         const SizedBox(height: 12),
         Row(
           children: [
@@ -478,61 +510,80 @@ class _SummaryPanel extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 10),
-        Row(
-          children: [
-            Icon(Icons.schedule, size: 16, color: p.textMuted),
-            const SizedBox(width: 4),
-            Text(
-              '5 Days / 4 Nights',
-              style: TextStyle(
-                fontSize: 13,
-                fontFamily: 'lao-mn',
-                color: p.textSecondary,
-              ),
-            ),
-            const SizedBox(width: 16),
-            Icon(Icons.location_on_outlined, size: 16, color: p.textMuted),
-            const SizedBox(width: 4),
-            Text(
-              'Luxor to Aswan',
-              style: TextStyle(
-                fontSize: 13,
-                fontFamily: 'lao-mn',
-                color: p.textSecondary,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 14),
-        // Feature chips wrap
         Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: const [
-            _Chip(text: 'Full Board', color: _blue),
-            _Chip(text: 'Temple Tours', color: _blue),
-            _Chip(text: 'Expert Guide', color: _blue),
-            _Chip(text: '5 Star Ship', color: _green),
+          spacing: 16,
+          runSpacing: 6,
+          children: [
+            if (data.daysDuration != null)
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.schedule, size: 16, color: p.textMuted),
+                  const SizedBox(width: 4),
+                  Text(
+                    '${data.daysDuration} Days / $nights Nights',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontFamily: 'lao-mn',
+                      color: p.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            if ((data.location ?? '').isNotEmpty)
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.location_on_outlined,
+                    size: 16,
+                    color: p.textMuted,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    data.location!,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontFamily: 'lao-mn',
+                      color: p.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
           ],
         ),
+        if (data.highlights.isNotEmpty) ...[
+          const SizedBox(height: 14),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final h in data.highlights.take(6))
+                if ((h.name ?? '').isNotEmpty)
+                  _Chip(text: h.name!, color: _blue),
+            ],
+          ),
+        ],
         const SizedBox(height: 16),
         Divider(height: 1, thickness: 1, color: p.divider),
         const SizedBox(height: 14),
         Row(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Text(
-              '\$1,200',
-              style: TextStyle(
-                fontSize: 16,
-                fontFamily: 'lao-mn',
-                decoration: TextDecoration.lineThrough,
-                color: const Color(0xFF9CA3AF),
+            if (showStrike) ...[
+              Text(
+                _fmtPrice(original),
+                style: TextStyle(
+                  fontSize: 16,
+                  fontFamily: 'lao-mn',
+                  decoration: TextDecoration.lineThrough,
+                  color: const Color(0xFF9CA3AF),
+                ),
               ),
-            ),
-            const SizedBox(width: 10),
+              const SizedBox(width: 10),
+            ],
             Text(
-              '\$1,104',
+              _fmtPrice(display),
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.w700,
@@ -580,7 +631,9 @@ class _SummaryPanel extends StatelessWidget {
   }
 }
 
-// ── Palette ──────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+// PALETTE
+// ═══════════════════════════════════════════════════════════
 class _P {
   final bool isDark;
   final Color card;
@@ -617,7 +670,9 @@ class _P {
   }
 }
 
-// ── Network image helper ─────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+// NETWORK IMAGE
+// ═══════════════════════════════════════════════════════════
 class _NetImage extends StatelessWidget {
   final String url;
   final double? width;
@@ -658,9 +713,13 @@ class _NetImage extends StatelessWidget {
   }
 }
 
-// ── Image carousel (taller on tablet) ────────────────────────
+// ═══════════════════════════════════════════════════════════
+// IMAGE CAROUSEL
+// ═══════════════════════════════════════════════════════════
 class _ImageCarousel extends StatefulWidget {
-  const _ImageCarousel();
+  final List<String> images;
+  final String? badge;
+  const _ImageCarousel({required this.images, this.badge});
 
   @override
   State<_ImageCarousel> createState() => _ImageCarouselState();
@@ -678,6 +737,21 @@ class _ImageCarouselState extends State<_ImageCarousel> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.images.isEmpty) {
+      return Container(
+        height: 360,
+        decoration: BoxDecoration(
+          color: _P.of(context).chipBg,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        alignment: Alignment.center,
+        child: Icon(
+          Icons.photo_library_outlined,
+          color: _P.of(context).textMuted,
+          size: 48,
+        ),
+      );
+    }
     return SizedBox(
       height: 360,
       child: ClipRRect(
@@ -686,10 +760,10 @@ class _ImageCarouselState extends State<_ImageCarousel> {
           children: [
             PageView.builder(
               controller: _controller,
-              itemCount: _carouselImages.length,
+              itemCount: widget.images.length,
               onPageChanged: (i) => setState(() => _index = i),
               itemBuilder: (context, i) => _NetImage(
-                url: _carouselImages[i],
+                url: widget.images[i],
                 width: double.infinity,
                 height: 360,
               ),
@@ -701,24 +775,27 @@ class _ImageCarouselState extends State<_ImageCarousel> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
-                    width: 72.56,
-                    height: 28,
-                    decoration: BoxDecoration(
-                      color: _blue,
-                      borderRadius: BorderRadius.circular(9999),
-                    ),
-                    alignment: Alignment.center,
-                    child: const Text(
-                      'Popular',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        fontFamily: 'lao-mn',
-                        color: Colors.white,
+                  if ((widget.badge ?? '').isNotEmpty)
+                    Container(
+                      height: 28,
+                      padding: const EdgeInsets.symmetric(horizontal: 14),
+                      decoration: BoxDecoration(
+                        color: _blue,
+                        borderRadius: BorderRadius.circular(9999),
                       ),
-                    ),
-                  ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        widget.badge!,
+                        style: const TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: 'lao-mn',
+                          color: Colors.white,
+                        ),
+                      ),
+                    )
+                  else
+                    const SizedBox.shrink(),
                   Container(
                     width: 36,
                     height: 36,
@@ -739,7 +816,7 @@ class _ImageCarouselState extends State<_ImageCarousel> {
               left: 14,
               bottom: 14,
               child: Row(
-                children: List.generate(_carouselImages.length, (i) {
+                children: List.generate(widget.images.length, (i) {
                   final active = i == _index;
                   return AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
@@ -763,7 +840,9 @@ class _ImageCarouselState extends State<_ImageCarousel> {
   }
 }
 
-// ── Badge / Chip ─────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+// BADGE / CHIP / STARS
+// ═══════════════════════════════════════════════════════════
 class _Badge extends StatelessWidget {
   final String text;
   final Color color;
@@ -803,17 +882,18 @@ class _Chip extends StatelessWidget {
       height: 28,
       padding: const EdgeInsets.symmetric(horizontal: 14),
       decoration: BoxDecoration(
-        color: color,
+        color: color.withOpacity(0.12),
         borderRadius: BorderRadius.circular(9999),
+        border: Border.all(color: color.withOpacity(0.4)),
       ),
       alignment: Alignment.center,
       child: Text(
         text,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 10,
           fontWeight: FontWeight.w600,
           fontFamily: 'lao-mn',
-          color: Colors.white,
+          color: color,
         ),
       ),
     );
@@ -842,7 +922,9 @@ class _Stars extends StatelessWidget {
   }
 }
 
-// ── Section titles ───────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+// SECTION TITLES
+// ═══════════════════════════════════════════════════════════
 class _SectionTitle extends StatelessWidget {
   final String title;
   const _SectionTitle(this.title);
@@ -887,16 +969,21 @@ class _SectionTitleInline extends StatelessWidget {
   }
 }
 
-// ── Gallery grid (responsive columns) ────────────────────────
+// ═══════════════════════════════════════════════════════════
+// GALLERY GRID
+// ═══════════════════════════════════════════════════════════
 class _GalleryGrid extends StatelessWidget {
-  static const int _visible = 6;
-  static const int _total = 21;
+  final List<String> images;
+  const _GalleryGrid({required this.images});
+
+  static const int _maxVisible = 6;
 
   @override
   Widget build(BuildContext context) {
     final p = _P.of(context);
-    final shown = _galleryImages.take(_visible).toList();
-    final more = _total - shown.length;
+    final gallery = images.length > 1 ? images.sublist(1) : images;
+    final shown = gallery.take(_maxVisible).toList();
+    final extra = gallery.length - shown.length;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -910,14 +997,14 @@ class _GalleryGrid extends StatelessWidget {
             spacing: spacing,
             runSpacing: spacing,
             children: [
-              for (var i = 0; i < shown.length; i++)
+              for (final url in shown)
                 _NetImage(
-                  url: shown[i],
+                  url: url,
                   width: size,
                   height: size,
                   borderRadius: BorderRadius.circular(16),
                 ),
-              if (more > 0)
+              if (extra > 0)
                 Container(
                   width: size,
                   height: size,
@@ -927,7 +1014,7 @@ class _GalleryGrid extends StatelessWidget {
                   ),
                   alignment: Alignment.center,
                   child: Text(
-                    '+$more\nimages',
+                    '+$extra\nimages',
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontSize: 13,
@@ -945,10 +1032,12 @@ class _GalleryGrid extends StatelessWidget {
   }
 }
 
-// ── Itinerary tile ───────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+// ITINERARY TILE
+// ═══════════════════════════════════════════════════════════
 class _ItineraryTile extends StatelessWidget {
-  final _ItineraryEntry entry;
-  const _ItineraryTile({required this.entry});
+  final BxPackageItineraryDay day;
+  const _ItineraryTile({required this.day});
 
   @override
   Widget build(BuildContext context) {
@@ -970,7 +1059,7 @@ class _ItineraryTile extends StatelessWidget {
             iconColor: _blue,
             collapsedIconColor: p.textMuted,
             title: Text(
-              entry.title,
+              day.title ?? 'Day ${day.dayNumber ?? ''}',
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
@@ -978,42 +1067,63 @@ class _ItineraryTile extends StatelessWidget {
                 color: p.textPrimary,
               ),
             ),
-            subtitle: Text(
-              entry.subtitle,
-              style: TextStyle(
-                fontSize: 12,
-                fontFamily: 'lao-mn',
-                color: p.textSecondary,
-              ),
-            ),
+            subtitle: (day.description ?? '').isEmpty
+                ? null
+                : Text(
+                    day.description!,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontFamily: 'lao-mn',
+                      color: p.textSecondary,
+                    ),
+                  ),
             children: [
-              for (final item in entry.items)
+              for (final it in day.items)
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(
-                        width: 52,
-                        child: Text(
-                          item.$1,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                            fontFamily: 'lao-mn',
-                            color: _blue,
+                      if ((it.time ?? '').isNotEmpty)
+                        SizedBox(
+                          width: 52,
+                          child: Text(
+                            it.time!,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              fontFamily: 'lao-mn',
+                              color: _blue,
+                            ),
                           ),
-                        ),
-                      ),
+                        )
+                      else
+                        const SizedBox(width: 52),
                       Expanded(
-                        child: Text(
-                          item.$2,
-                          style: TextStyle(
-                            fontSize: 12,
-                            height: 1.4,
-                            fontFamily: 'lao-mn',
-                            color: p.textSecondary,
-                          ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if ((it.title ?? '').isNotEmpty)
+                              Text(
+                                it.title!,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  fontFamily: 'lao-mn',
+                                  color: p.textPrimary,
+                                ),
+                              ),
+                            if ((it.description ?? '').isNotEmpty)
+                              Text(
+                                it.description!,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  height: 1.4,
+                                  fontFamily: 'lao-mn',
+                                  color: p.textSecondary,
+                                ),
+                              ),
+                          ],
                         ),
                       ),
                     ],
@@ -1027,7 +1137,49 @@ class _ItineraryTile extends StatelessWidget {
   }
 }
 
-// ── Info card ────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+// INCLUDED GROUPS + INFO CARD
+// ═══════════════════════════════════════════════════════════
+class _IncludedGroups {
+  static List<Widget> build(List<BxPackageInclude> includes) {
+    final groups = <String, List<String>>{};
+    for (final inc in includes) {
+      final cat = (inc.category ?? '').trim();
+      final key = cat.isEmpty ? 'Included' : cat;
+      final text = inc.itemText ?? '';
+      if (text.isEmpty) continue;
+      groups.putIfAbsent(key, () => []).add(text);
+    }
+    final entries = groups.entries.toList()
+      ..sort((a, b) => a.key.compareTo(b.key));
+    return [
+      for (final e in entries)
+        _InfoCard(
+          icon: _iconForCategory(e.key),
+          color: _green,
+          title: e.key,
+          items: e.value,
+        ),
+    ];
+  }
+
+  static IconData _iconForCategory(String c) {
+    final s = c.toLowerCase();
+    if (s.contains('meal') || s.contains('dining') || s.contains('food')) {
+      return Icons.restaurant_outlined;
+    }
+    if (s.contains('tour') || s.contains('activity')) {
+      return Icons.location_on_outlined;
+    }
+    if (s.contains('hotel') ||
+        s.contains('accommodation') ||
+        s.contains('stay')) {
+      return Icons.home_outlined;
+    }
+    return Icons.check_circle_outline;
+  }
+}
+
 class _InfoCard extends StatelessWidget {
   final IconData icon;
   final Color color;
@@ -1104,19 +1256,37 @@ class _InfoCard extends StatelessWidget {
   }
 }
 
-// ── Documents card ───────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+// DOCUMENTS CARD
+// ═══════════════════════════════════════════════════════════
 class _DocumentsCard extends StatelessWidget {
   final double gutter;
-  const _DocumentsCard({required this.gutter});
+  final List<BxPackageDocumentRequirement> requirements;
+  const _DocumentsCard({required this.gutter, required this.requirements});
 
-  static const _docs = [
-    ('Passport copy', 'National ID'),
-    ('Personal photo', 'Visa documents'),
-  ];
+  static String _labelForType(int? id) {
+    switch (id) {
+      case 1:
+        return 'Passport copy';
+      case 2:
+        return 'National ID';
+      case 3:
+        return 'Personal photo';
+      case 4:
+        return 'Visa documents';
+      default:
+        return 'Document #${id ?? '—'}';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final p = _P.of(context);
+    final docs = requirements
+        .map((r) => _labelForType(r.documentTypeId))
+        .toList();
+    if (docs.isEmpty) return const SizedBox.shrink();
+
     return Padding(
       padding: EdgeInsets.fromLTRB(gutter, 8, gutter, 8),
       child: Container(
@@ -1155,143 +1325,41 @@ class _DocumentsCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 14),
-            LayoutBuilder(
-              builder: (context, c) {
-                final isWide = c.maxWidth >= 600;
-                if (!isWide) {
-                  return Column(
+            Wrap(
+              spacing: 24,
+              runSpacing: 10,
+              children: [
+                for (final d in docs)
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      for (final row in _docs)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: Row(
-                            children: [
-                              Expanded(child: _docItem(p, row.$1)),
-                              const SizedBox(width: 12),
-                              Expanded(child: _docItem(p, row.$2)),
-                            ],
-                          ),
-                        ),
-                    ],
-                  );
-                }
-                return Row(
-                  children: [
-                    for (var i = 0; i < _docs.length; i++) ...[
-                      if (i > 0) const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          children: [
-                            _docItem(p, _docs[i].$1),
-                            const SizedBox(height: 8),
-                            _docItem(p, _docs[i].$2),
-                          ],
+                      const Icon(Icons.check_circle, size: 15, color: _green),
+                      const SizedBox(width: 6),
+                      Text(
+                        d,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontFamily: 'lao-mn',
+                          color: p.textSecondary,
                         ),
                       ),
                     ],
-                  ],
-                );
-              },
-            ),
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: _blue.withOpacity(0.08),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Icon(Icons.info_outline, size: 16, color: _blue),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      'Traveler details will be requested after payment to '
-                      'issue your tickets.',
-                      style: TextStyle(
-                        fontSize: 11,
-                        height: 1.4,
-                        fontFamily: 'lao-mn',
-                        color: p.textSecondary,
-                      ),
-                    ),
                   ),
-                ],
-              ),
+              ],
             ),
           ],
         ),
       ),
     );
   }
-
-  Widget _docItem(_P p, String text) {
-    return Row(
-      children: [
-        const Icon(Icons.check_circle, size: 15, color: _green),
-        const SizedBox(width: 6),
-        Expanded(
-          child: Text(
-            text,
-            style: TextStyle(
-              fontSize: 12,
-              fontFamily: 'lao-mn',
-              color: p.textSecondary,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
 }
 
-// ── Optional add-ons ─────────────────────────────────────────
-class _AddOn {
-  final String title;
-  final String subtitle;
-  final String price;
-  final String priceUnit;
-  final bool isCustom;
-  const _AddOn(
-    this.title,
-    this.subtitle,
-    this.price,
-    this.priceUnit, {
-    this.isCustom = false,
-  });
-}
-
-const _addOns = [
-  _AddOn(
-    'Airport VIP Service',
-    'Fast-track & lounge access',
-    '+\$85',
-    'per person',
-  ),
-  _AddOn(
-    'Romantic Dinner',
-    'Private sunset dinner for two',
-    '+\$180',
-    'per couple',
-  ),
-  _AddOn(
-    'Professional Photoshoot',
-    '2-hour session with 50+ photos',
-    '+\$220',
-    'per session',
-  ),
-  _AddOn(
-    'Build Custom Plan',
-    'Personalize your entire itinerary',
-    '',
-    '',
-    isCustom: true,
-  ),
-];
-
+// ═══════════════════════════════════════════════════════════
+// ADD-ONS
+// ═══════════════════════════════════════════════════════════
 class _OptionalAddOns extends StatefulWidget {
-  const _OptionalAddOns();
+  final List<BxPackageAddon> addons;
+  const _OptionalAddOns({required this.addons});
 
   @override
   State<_OptionalAddOns> createState() => _OptionalAddOnsState();
@@ -1303,24 +1371,25 @@ class _OptionalAddOnsState extends State<_OptionalAddOns> {
   @override
   Widget build(BuildContext context) {
     final p = _P.of(context);
+    final visible = widget.addons.where((a) => a.active != false).toList();
+    if (visible.isEmpty) return const SizedBox.shrink();
+
     return Column(
       children: [
-        for (var i = 0; i < _addOns.length; i++)
+        for (var i = 0; i < visible.length; i++)
           Padding(
             padding: const EdgeInsets.only(bottom: 10),
             child: InkWell(
               borderRadius: BorderRadius.circular(66),
-              onTap: _addOns[i].isCustom
-                  ? () {}
-                  : () => setState(() {
-                      _selected.contains(i)
-                          ? _selected.remove(i)
-                          : _selected.add(i);
-                    }),
+              onTap: () => setState(() {
+                _selected.contains(i) ? _selected.remove(i) : _selected.add(i);
+              }),
               child: Container(
                 width: double.infinity,
-                height: 66,
-                padding: const EdgeInsets.symmetric(horizontal: 18),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 18,
+                  vertical: 12,
+                ),
                 decoration: BoxDecoration(
                   color: p.card,
                   borderRadius: BorderRadius.circular(66),
@@ -1331,16 +1400,13 @@ class _OptionalAddOnsState extends State<_OptionalAddOns> {
                 ),
                 child: Row(
                   children: [
-                    if (_addOns[i].isCustom)
-                      const Icon(Icons.edit_outlined, size: 20, color: _blue)
-                    else
-                      Icon(
-                        _selected.contains(i)
-                            ? Icons.check_circle
-                            : Icons.radio_button_unchecked,
-                        size: 20,
-                        color: _selected.contains(i) ? _blue : p.textMuted,
-                      ),
+                    Icon(
+                      _selected.contains(i)
+                          ? Icons.check_circle
+                          : Icons.radio_button_unchecked,
+                      size: 20,
+                      color: _selected.contains(i) ? _blue : p.textMuted,
+                    ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
@@ -1348,7 +1414,7 @@ class _OptionalAddOnsState extends State<_OptionalAddOns> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            _addOns[i].title,
+                            visible[i].addonType ?? 'Add-on',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -1358,46 +1424,31 @@ class _OptionalAddOnsState extends State<_OptionalAddOns> {
                               color: p.textPrimary,
                             ),
                           ),
-                          const SizedBox(height: 2),
-                          Text(
-                            _addOns[i].subtitle,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontFamily: 'lao-mn',
-                              color: p.textMuted,
+                          if ((visible[i].priceModel ?? '').isNotEmpty) ...[
+                            const SizedBox(height: 2),
+                            Text(
+                              visible[i].priceModel!,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontFamily: 'lao-mn',
+                                color: p.textMuted,
+                              ),
                             ),
-                          ),
+                          ],
                         ],
                       ),
                     ),
-                    if (_addOns[i].isCustom)
-                      Icon(Icons.chevron_right, color: p.textMuted)
-                    else
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            _addOns[i].price,
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                              fontFamily: 'lao-mn',
-                              color: _blue,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            _addOns[i].priceUnit,
-                            style: TextStyle(
-                              fontSize: 10,
-                              fontFamily: 'lao-mn',
-                              color: p.textMuted,
-                            ),
-                          ),
-                        ],
+                    if (visible[i].estimatedPrice != null)
+                      Text(
+                        '+${_fmtPrice(visible[i].estimatedPrice)}',
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          fontFamily: 'lao-mn',
+                          color: _blue,
+                        ),
                       ),
                   ],
                 ),
@@ -1409,24 +1460,42 @@ class _OptionalAddOnsState extends State<_OptionalAddOns> {
   }
 }
 
-// ── Ship amenities grid ──────────────────────────────────────
-const _amenities = <(IconData, String)>[
-  (Icons.wifi, 'Free WiFi'),
-  (Icons.restaurant, 'Fine Dining'),
-  (Icons.wb_sunny_outlined, 'Sun Deck Pool'),
-  (Icons.spa_outlined, 'Spa Services'),
-  (Icons.music_note_outlined, 'Live Entertainment'),
-  (Icons.menu_book_outlined, 'Library Lounge'),
-  (Icons.card_giftcard, 'Gift Shop'),
-  (Icons.favorite_border, '24/7 Service'),
-];
-
+// ═══════════════════════════════════════════════════════════
+// AMENITIES (from highlights)
+// ═══════════════════════════════════════════════════════════
 class _AmenitiesGrid extends StatelessWidget {
-  const _AmenitiesGrid();
+  final List<BxPackageHighlight> highlights;
+  const _AmenitiesGrid({required this.highlights});
+
+  static IconData _iconFor(String? name) {
+    final s = (name ?? '').toLowerCase();
+    if (s.contains('wifi') || s.contains('internet')) return Icons.wifi;
+    if (s.contains('dining') || s.contains('restaurant')) {
+      return Icons.restaurant;
+    }
+    if (s.contains('pool') || s.contains('sun')) {
+      return Icons.wb_sunny_outlined;
+    }
+    if (s.contains('spa')) return Icons.spa_outlined;
+    if (s.contains('entertain') || s.contains('music')) {
+      return Icons.music_note_outlined;
+    }
+    if (s.contains('library') || s.contains('book')) {
+      return Icons.menu_book_outlined;
+    }
+    if (s.contains('gift') || s.contains('shop')) return Icons.card_giftcard;
+    return Icons.star_outline;
+  }
 
   @override
   Widget build(BuildContext context) {
     final p = _P.of(context);
+    final items = highlights
+        .map((h) => MapEntry(_iconFor(h.name), h.name ?? ''))
+        .where((e) => e.value.isNotEmpty)
+        .toList();
+    if (items.isEmpty) return const SizedBox.shrink();
+
     return LayoutBuilder(
       builder: (context, c) {
         final isWide = c.maxWidth >= 600;
@@ -1436,16 +1505,16 @@ class _AmenitiesGrid extends StatelessWidget {
           spacing: 8,
           runSpacing: 12,
           children: [
-            for (final a in _amenities)
+            for (final a in items)
               SizedBox(
                 width: itemWidth,
                 child: Row(
                   children: [
-                    Icon(a.$1, size: 18, color: _blue),
+                    Icon(a.key, size: 18, color: _blue),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        a.$2,
+                        a.value,
                         style: TextStyle(
                           fontSize: 12,
                           fontFamily: 'lao-mn',
@@ -1463,9 +1532,13 @@ class _AmenitiesGrid extends StatelessWidget {
   }
 }
 
-// ── Calendar section ─────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+// CALENDAR SECTION
+// ═══════════════════════════════════════════════════════════
 class _CalendarSection extends StatefulWidget {
-  const _CalendarSection();
+  final List<BxPackageAvailability> availability;
+  final int? basePrice;
+  const _CalendarSection({required this.availability, required this.basePrice});
 
   @override
   State<_CalendarSection> createState() => _CalendarSectionState();
@@ -1477,11 +1550,18 @@ class _CalendarSectionState extends State<_CalendarSection> {
   static const _weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   static const _firstWeekdayOffset = 3;
   static const _daysInMonth = 30;
-  static const _peakDays = {5, 6, 12, 13, 19, 20, 26, 27};
+
+  Set<int> get _departureDays => {
+    for (final a in widget.availability)
+      if (DateTime.tryParse(a.startDate ?? '') != null)
+        DateTime.parse(a.startDate!).day,
+  };
 
   @override
   Widget build(BuildContext context) {
     final p = _P.of(context);
+    final departureDays = _departureDays;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1516,9 +1596,9 @@ class _CalendarSectionState extends State<_CalendarSection> {
             if (index < _firstWeekdayOffset) return const SizedBox.shrink();
             final day = index - _firstWeekdayOffset + 1;
             final isSelected = _selectedDay == day;
-            final isPeak = _peakDays.contains(day);
+            final hasDeparture = departureDays.contains(day);
             final bg = isSelected
-                ? (isPeak ? _peak : _blue)
+                ? (hasDeparture ? _peak : _blue)
                 : Colors.transparent;
             return GestureDetector(
               onTap: () => setState(() => _selectedDay = day),
@@ -1563,7 +1643,7 @@ class _CalendarSectionState extends State<_CalendarSection> {
                 ),
                 const SizedBox(width: 6),
                 Text(
-                  'Standard Rate: \$1,200',
+                  'Standard Rate: ${_fmtPrice(widget.basePrice)}',
                   style: TextStyle(
                     fontSize: 12,
                     fontFamily: 'lao-mn',
@@ -1572,28 +1652,29 @@ class _CalendarSectionState extends State<_CalendarSection> {
                 ),
               ],
             ),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 10,
-                  height: 10,
-                  decoration: const BoxDecoration(
-                    color: _peak,
-                    shape: BoxShape.circle,
+            if (departureDays.isNotEmpty)
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 10,
+                    height: 10,
+                    decoration: const BoxDecoration(
+                      color: _peak,
+                      shape: BoxShape.circle,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  'Peak Season: \$1,500',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontFamily: 'lao-mn',
-                    color: p.textSecondary,
+                  const SizedBox(width: 6),
+                  Text(
+                    'Departures marked in orange',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontFamily: 'lao-mn',
+                      color: p.textSecondary,
+                    ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
           ],
         ),
       ],
@@ -1601,7 +1682,9 @@ class _CalendarSectionState extends State<_CalendarSection> {
   }
 }
 
-// ── Review form ──────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+// REVIEW FORM + CARD  (unchanged visual)
+// ═══════════════════════════════════════════════════════════
 class _ReviewForm extends StatefulWidget {
   const _ReviewForm();
 
@@ -1729,13 +1812,13 @@ class _ReviewFormState extends State<_ReviewForm> {
   }
 }
 
-// ── Review card ──────────────────────────────────────────────
 class _ReviewCard extends StatelessWidget {
   const _ReviewCard();
 
   @override
   Widget build(BuildContext context) {
     final p = _P.of(context);
+    // Reviews don't come from this API yet. Keep the visual placeholder.
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -1748,8 +1831,10 @@ class _ReviewCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              ClipOval(
-                child: _NetImage(url: _reviewerAvatar, width: 44, height: 44),
+              CircleAvatar(
+                radius: 22,
+                backgroundColor: p.chipBg,
+                child: Icon(Icons.person, color: p.textMuted),
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -1757,7 +1842,7 @@ class _ReviewCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Sarah Mitchell',
+                      'Traveler',
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
@@ -1770,25 +1855,7 @@ class _ReviewCard extends StatelessWidget {
                   ],
                 ),
               ),
-              Text(
-                'March 2024',
-                style: TextStyle(
-                  fontSize: 11,
-                  fontFamily: 'lao-mn',
-                  color: p.textMuted,
-                ),
-              ),
             ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            _reviewText,
-            style: TextStyle(
-              fontSize: 13,
-              height: 1.5,
-              fontFamily: 'lao-mn',
-              color: p.textSecondary,
-            ),
           ),
         ],
       ),
@@ -1796,9 +1863,13 @@ class _ReviewCard extends StatelessWidget {
   }
 }
 
-// ── Booking form (no submit button — summary card handles it) ──
+// ═══════════════════════════════════════════════════════════
+// BOOKING FORM
+// ═══════════════════════════════════════════════════════════
 class _BookingForm extends StatefulWidget {
-  const _BookingForm();
+  final List<BxPackageHotel> hotels;
+  final List<BxPackageRequiredField> requiredFields;
+  const _BookingForm({required this.hotels, required this.requiredFields});
 
   @override
   State<_BookingForm> createState() => _BookingFormState();
@@ -1806,10 +1877,6 @@ class _BookingForm extends StatefulWidget {
 
 class _BookingFormState extends State<_BookingForm> {
   int _cabin = 0;
-  static const _cabins = [
-    ('Single room', '\$1,200'),
-    ('Deluxe room', '\$1,400'),
-  ];
 
   InputDecoration _dec(_P p, String hint) => InputDecoration(
     hintText: hint,
@@ -1849,6 +1916,7 @@ class _BookingFormState extends State<_BookingForm> {
       fontFamily: 'lao-mn',
       color: p.textSecondary,
     );
+    final cabins = widget.hotels;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1904,56 +1972,62 @@ class _BookingFormState extends State<_BookingForm> {
             ),
           ],
         ),
-        const SizedBox(height: 12),
-        Text('Cabin Type', style: labelStyle),
-        const SizedBox(height: 6),
-        Row(
-          children: [
-            for (var i = 0; i < _cabins.length; i++) ...[
-              if (i > 0) const SizedBox(width: 8),
-              Expanded(
-                child: GestureDetector(
-                  onTap: () => setState(() => _cabin = i),
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: p.card,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: _cabin == i ? _blue : p.border,
-                        width: _cabin == i ? 1.5 : 1,
+        if (cabins.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          Text('Cabin Type', style: labelStyle),
+          const SizedBox(height: 6),
+          Row(
+            children: [
+              for (var i = 0; i < cabins.length; i++) ...[
+                if (i > 0) const SizedBox(width: 8),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => setState(() => _cabin = i),
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: p.card,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: _cabin == i ? _blue : p.border,
+                          width: _cabin == i ? 1.5 : 1,
+                        ),
                       ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          _cabins[i].$1,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            fontFamily: 'lao-mn',
-                            color: p.textPrimary,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            cabins[i].optionName ??
+                                cabins[i].roomType ??
+                                'Room',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              fontFamily: 'lao-mn',
+                              color: p.textPrimary,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          _cabins[i].$2,
-                          style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w700,
-                            fontFamily: 'lao-mn',
-                            color: _blue,
+                          const SizedBox(height: 2),
+                          Text(
+                            cabins[i].pricePerNightEst != null
+                                ? _fmtPrice(cabins[i].pricePerNightEst)
+                                : '—',
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              fontFamily: 'lao-mn',
+                              color: _blue,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
+              ],
             ],
-          ],
-        ),
+          ),
+        ],
         const SizedBox(height: 12),
         Text('Special Requests', style: labelStyle),
         const SizedBox(height: 6),
@@ -1981,13 +2055,18 @@ class _BookingFormState extends State<_BookingForm> {
   }
 }
 
-// ── Booking summary card (sticky-style side panel on tablet) ──
+// ═══════════════════════════════════════════════════════════
+// BOOKING SUMMARY CARD
+// ═══════════════════════════════════════════════════════════
 class _BookingSummaryCard extends StatelessWidget {
   final _P p;
-  const _BookingSummaryCard({required this.p});
+  final BxGetPackageDetailData data;
+  const _BookingSummaryCard({required this.p, required this.data});
 
   @override
   Widget build(BuildContext context) {
+    final unit = data.displayPrice ?? 0;
+    final total = unit * 2;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -2008,7 +2087,7 @@ class _BookingSummaryCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 14),
-          _summaryRow(p, 'Package', '\$1,104 × 2'),
+          _summaryRow(p, 'Package', '${_fmtPrice(data.displayPrice)} × 2'),
           const SizedBox(height: 8),
           _summaryRow(p, 'Cabin upgrade', '\$0'),
           const SizedBox(height: 8),
@@ -2028,7 +2107,7 @@ class _BookingSummaryCard extends StatelessWidget {
                 ),
               ),
               Text(
-                '\$2,208',
+                _fmtPrice(total),
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
@@ -2217,78 +2296,7 @@ class _BookingSummaryCard extends StatelessWidget {
                     color: p.chipBg,
                     borderRadius: BorderRadius.circular(14),
                   ),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Total',
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontFamily: 'lao-mn',
-                              color: p.textSecondary,
-                            ),
-                          ),
-                          Text(
-                            '\$2,208',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
-                              fontFamily: 'lao-mn',
-                              color: p.textPrimary,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 2),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          '2 persons',
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontFamily: 'lao-mn',
-                            color: p.textMuted,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 14),
-                      SizedBox(
-                        width: 118.97,
-                        height: 45,
-                        child: ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: _blue,
-                            foregroundColor: Colors.white,
-                            elevation: 0,
-                            padding: EdgeInsets.zero,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          child: const Text(
-                            'Pay Now',
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
-                              fontFamily: 'lao-mn',
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Secure payment via Stripe',
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontFamily: 'lao-mn',
-                          color: p.textMuted,
-                        ),
-                      ),
-                    ],
-                  ),
+                  child: const SizedBox.shrink(),
                 ),
               ],
             ),

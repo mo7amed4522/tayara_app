@@ -91,7 +91,11 @@ class BxRouteGenerator {
       case BxRouteNames.bxSearchScreen:
         return _buildRoute(settings, const BxSearchScreen());
       case BxRouteNames.bxPackageDetailScreen:
-        return _buildRoute(settings, const BxPackageDetailScreen());
+        final args = settings.arguments;
+        final id = (args is Map && args['packageId'] is int)
+            ? args['packageId'] as int
+            : null;
+        return _buildRoute(settings, BxPackageDetailScreen(packageId: id!));
       // Default route
       default:
         return _buildRoute(settings, const BxErrorScreen());
