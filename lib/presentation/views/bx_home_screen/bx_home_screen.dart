@@ -88,25 +88,31 @@ class _BxHomeScreenViewState extends State<_BxHomeScreenView> {
 
     return MultiBlocProvider(
       providers: [
-        BlocProvider<BxHomeBottomScreenControllerBloc>.value(value: homeTabBloc),
-        BlocProvider<BxExploreBottomScreenControllerBloc>.value(value: exploreTabBloc),
-        BlocProvider<BxBookingBottomScreenControllerBloc>.value(value: bookingTabBloc),
-        BlocProvider<BxProfileBottomScreenControllerBloc>.value(value: profileTabBloc),
-      ],
-      child: BlocListener<BxHomeScreenControllerBloc, BxHomeScreenControllerState>(
-        listener: _onTabChanged,
-        child: BxResponsiveBuilder(
-          mobileBuilder: (context) => const BxHomeWidgetMobile(),
-          tabletBuilder: (context) => const BxHomeWidgetTablet(),
+        BlocProvider<BxHomeBottomScreenControllerBloc>.value(
+          value: homeTabBloc,
         ),
-      ),
+        BlocProvider<BxExploreBottomScreenControllerBloc>.value(
+          value: exploreTabBloc,
+        ),
+        BlocProvider<BxBookingBottomScreenControllerBloc>.value(
+          value: bookingTabBloc,
+        ),
+        BlocProvider<BxProfileBottomScreenControllerBloc>.value(
+          value: profileTabBloc,
+        ),
+      ],
+      child:
+          BlocListener<BxHomeScreenControllerBloc, BxHomeScreenControllerState>(
+            listener: _onTabChanged,
+            child: BxResponsiveBuilder(
+              mobileBuilder: (context) => const BxHomeWidgetMobile(),
+              tabletBuilder: (context) => const BxHomeWidgetTablet(),
+            ),
+          ),
     );
   }
 
-  void _onTabChanged(
-    BuildContext context,
-    BxHomeScreenControllerState state,
-  ) {
+  void _onTabChanged(BuildContext context, BxHomeScreenControllerState state) {
     _loadTabIfNeeded(context, state.selectedIndex);
   }
 }
