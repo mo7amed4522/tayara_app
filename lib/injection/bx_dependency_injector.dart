@@ -10,6 +10,7 @@ import 'package:tayara/data/data_source/remote/bx_system_remote_data_source.dart
 import 'package:tayara/data/repositories/bx_active_top_banner_ads_repositories_impl.dart';
 import 'package:tayara/data/repositories/bx_agent_profile_details_repositories_impl.dart';
 import 'package:tayara/data/repositories/bx_custom_search_repositories_impl.dart';
+import 'package:tayara/data/repositories/bx_delete_user_data_repositories_impl.dart';
 import 'package:tayara/data/repositories/bx_firebase_login_repositories_impl.dart';
 import 'package:tayara/data/repositories/bx_get_destinations_repositories_impl.dart';
 import 'package:tayara/data/repositories/bx_get_explore_topic_repositories_impl.dart';
@@ -19,10 +20,13 @@ import 'package:tayara/data/repositories/bx_get_recommended_for_customer_reposit
 import 'package:tayara/data/repositories/bx_get_search_repositories_impl.dart';
 import 'package:tayara/data/repositories/bx_get_top_agent_reposotories_impl.dart';
 import 'package:tayara/data/repositories/bx_get_top_deals_repositories_impl.dart';
+import 'package:tayara/data/repositories/bx_get_user_data_repositories_impl.dart';
 import 'package:tayara/data/repositories/bx_login_user_repositories_impl.dart';
+import 'package:tayara/data/repositories/bx_update_user_data_repositories_impl.dart';
 import 'package:tayara/domain/repositories/bx_active_top_banner_ads_repositories.dart';
 import 'package:tayara/domain/repositories/bx_agent_profile_details_repositories.dart';
 import 'package:tayara/domain/repositories/bx_custom_search_repositories.dart';
+import 'package:tayara/domain/repositories/bx_delete_user_data_repositories.dart';
 import 'package:tayara/domain/repositories/bx_firebase_login_repositories.dart';
 import 'package:tayara/domain/repositories/bx_get_destinations_repositories.dart';
 import 'package:tayara/domain/repositories/bx_get_explore_topic_repositories.dart';
@@ -32,10 +36,13 @@ import 'package:tayara/domain/repositories/bx_get_recommended_for_customer_repos
 import 'package:tayara/domain/repositories/bx_get_search_repositories.dart';
 import 'package:tayara/domain/repositories/bx_get_top_agent_repositories.dart';
 import 'package:tayara/domain/repositories/bx_get_top_deals_repositories.dart';
+import 'package:tayara/domain/repositories/bx_get_user_data_repositories.dart';
 import 'package:tayara/domain/repositories/bx_login_user_repositories.dart';
+import 'package:tayara/domain/repositories/bx_update_user_data_repositories.dart';
 import 'package:tayara/domain/usecase/bx_active_top_banner_ads_usecase.dart';
 import 'package:tayara/domain/usecase/bx_agent_profile_details_usecase.dart';
 import 'package:tayara/domain/usecase/bx_custom_search_usecase.dart';
+import 'package:tayara/domain/usecase/bx_delete_user_data_usecase.dart';
 import 'package:tayara/domain/usecase/bx_firebase_login_usecase.dart';
 import 'package:tayara/domain/usecase/bx_get_destinations_usecase.dart';
 import 'package:tayara/domain/usecase/bx_get_explore_topic_usecase.dart';
@@ -45,7 +52,13 @@ import 'package:tayara/domain/usecase/bx_get_recommended_for_customer_usecase.da
 import 'package:tayara/domain/usecase/bx_get_search_usecase.dart';
 import 'package:tayara/domain/usecase/bx_get_top_agent_usecase.dart';
 import 'package:tayara/domain/usecase/bx_get_top_deals_usecase.dart';
+import 'package:tayara/domain/usecase/bx_get_user_data_usecase.dart';
 import 'package:tayara/domain/usecase/bx_login_user_usecase.dart';
+import 'package:tayara/domain/usecase/bx_update_user_data_usecase.dart';
+import 'package:tayara/presentation/bloc/bx_booking_bottom_screen_controller/bx_booking_bottom_screen_controller_bloc.dart';
+import 'package:tayara/presentation/bloc/bx_explore_bottom_screen_controller/bx_explore_bottom_screen_controller_bloc.dart';
+import 'package:tayara/presentation/bloc/bx_home_bottom_screen_controller/bx_home_bottom_screen_controller_bloc.dart';
+import 'package:tayara/presentation/bloc/bx_profile_bottom_screen_controller/bx_profile_bottom_screen_controller_bloc.dart';
 
 /// Central dependency injection container based on [GetIt].
 ///
@@ -110,6 +123,17 @@ class BxDependencyInjector {
     );
     _getIt.registerLazySingleton<BxLoginUserRepositories>(
       () => BxLoginUserRepositoriesImpl(bxsystemRemoteDataSource: _getIt()),
+    );
+    _getIt.registerLazySingleton<BxGetUserDataRepositories>(
+      () => BxGetUserDataRepositoriesImpl(bxsystemRemoteDataSource: _getIt()),
+    );
+    _getIt.registerLazySingleton<BxUpdateUserDataRepositories>(
+      () =>
+          BxUpdateUserDataRepositoriesImpl(bxsystemRemoteDataSource: _getIt()),
+    );
+    _getIt.registerLazySingleton<BxDeleteUserDataRepositories>(
+      () =>
+          BxDeleteUserDataRepositoriesImpl(bxsystemRemoteDataSource: _getIt()),
     );
     _getIt.registerLazySingleton<BxActiveTopBannerAdsRepositories>(
       () => BxActiveTopBannerAdsRepositoriesImpl(
@@ -195,8 +219,46 @@ class BxDependencyInjector {
     _getIt.registerLazySingleton<BxGetPackageDetailUsecase>(
       () => BxGetPackageDetailUsecase(_getIt()),
     );
+    _getIt.registerLazySingleton<BxGetUserDataUsecase>(
+      () => BxGetUserDataUsecase(_getIt()),
+    );
+    _getIt.registerLazySingleton<BxUpdateUserDataUsecase>(
+      () => BxUpdateUserDataUsecase(_getIt()),
+    );
+    _getIt.registerLazySingleton<BxDeleteUserDataUsecase>(
+      () => BxDeleteUserDataUsecase(_getIt()),
+    );
     // Tab Blocs — singleton so data stays cached and is NOT re-fetched on tab switch/swipe.
     // They live as long as the app lives; RefreshIndicator / retry explicitly reloads them.
+    _getIt.registerLazySingleton<BxHomeBottomScreenControllerBloc>(
+      () => BxHomeBottomScreenControllerBloc(
+        adsUsecase: _getIt(),
+        destinationsUsecase: _getIt(),
+        exploreTripsUsecase: _getIt(),
+        recommendedUsecase: _getIt(),
+        searchUsecase: _getIt(),
+        topDealsUsecase: _getIt(),
+        topAgentsUsecase: _getIt(),
+      ),
+    );
+    _getIt.registerLazySingleton<BxExploreBottomScreenControllerBloc>(
+      () => BxExploreBottomScreenControllerBloc(
+        getExploreTopicUsecase: _getIt(),
+        getTopAgentsUsecase: _getIt(),
+        activeTopBannerAdsUsecase: _getIt(),
+        getExploreTripsUsecase: _getIt(),
+      ),
+    );
+    _getIt.registerLazySingleton<BxBookingBottomScreenControllerBloc>(
+      () => BxBookingBottomScreenControllerBloc(),
+    );
+    _getIt.registerLazySingleton<BxProfileBottomScreenControllerBloc>(
+      () => BxProfileBottomScreenControllerBloc(
+        sharedPreferencesDataSource: _getIt(),
+        getUserDataUsecase: _getIt(),
+        deleteUserDataUsecase: _getIt(),
+      ),
+    );
   }
 
   /// Whether [T] is already registered in GetIt.

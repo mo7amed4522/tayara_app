@@ -34,7 +34,10 @@ import 'package:tayara/domain/model/response/bx_get_recommended_for_customer_res
 import 'package:tayara/domain/model/response/bx_get_search_response.dart';
 import 'package:tayara/domain/model/response/bx_get_top_agent_response.dart';
 import 'package:tayara/domain/model/response/bx_get_top_deals_response.dart';
+import 'package:tayara/domain/model/response/bx_get_user_data_response.dart';
 import 'package:tayara/domain/model/response/bx_login_user_response.dart';
+import 'package:tayara/domain/model/response/bx_delete_user_data_response.dart';
+import 'package:tayara/domain/model/response/bx_update_user_data_response.dart';
 
 /// Defines the contract for remote API calls related to the core system
 /// functionalities: authentication, services, reservations, doctors,
@@ -51,6 +54,24 @@ abstract class BxSystemRemoteDataSource {
   ///
   /// Returns a [BxLoginUserResponse] indicating success or failure.
   Future<BxLoginUserResponse> loginUser(BxLoginUserRequest request);
+
+  /// Fetches the current user's profile with the provided request.
+  ///
+  /// Returns a [BxGetUserDataResponse] indicating success or failure.
+  Future<BxGetUserDataResponse> fetchUserData(String token);
+
+  /// Updates the current user's profile.
+  ///
+  /// Returns a [BxUpdateUserDataResponse] indicating success or failure.
+  Future<BxUpdateUserDataResponse> updateUserData({
+    required String token,
+    required Map<String, dynamic> body,
+  });
+
+  /// Deletes the current user's account.
+  ///
+  /// Returns a [BxDeleteUserDataResponse] indicating success or failure.
+  Future<BxDeleteUserDataResponse> deleteUserData({required String token});
 
   /// Fetches the active top banner ads with the provided request.
   ///
@@ -177,6 +198,141 @@ class BxSystemRemoteDataSourceImpl implements BxSystemRemoteDataSource {
         code: 7,
         msg: 'login failed. Please try again.',
         data: null,
+      );
+    }
+  }
+
+  @override
+  Future<BxGetUserDataResponse> fetchUserData(String token) async {
+    try {
+      final options = Options(
+        headers: {'Content-Type': 'application/json', 'X-token': token},
+      );
+      final response = await _dioClient.get(
+        BxApiEndpoints.getUserData,
+        options: options,
+      );
+      if (response is Map<String, dynamic> && response['code'] == 0) {
+        return BxGetUserDataResponse.fromJson(response);
+      }
+
+      if (response is String) {
+        try {
+          final decoded = jsonDecode(response);
+          if (decoded is Map<String, dynamic>) {
+            return BxGetUserDataResponse.fromJson(decoded);
+          }
+        } catch (_) {
+          // Fall through to return failure below.
+        }
+      }
+
+      return BxGetUserDataResponse(
+        code: 1,
+        data: null,
+        msg:
+            response['msg'] ??
+            'Unknown error occurred while fetching user data.',
+      );
+    } on BxNetworkException catch (e) {
+      return BxGetUserDataResponse(code: 1, data: null, msg: e.message);
+    } catch (e) {
+      return BxGetUserDataResponse(
+        code: 2,
+        data: null,
+        msg: 'Unknown error occurred while fetching user data.',
+      );
+    }
+  }
+
+  @override
+  Future<BxUpdateUserDataResponse> updateUserData({
+    required String token,
+    required Map<String, dynamic> body,
+  }) async {
+    try {
+      final options = Options(
+        headers: {'Content-Type': 'application/json', 'X-token': token},
+      );
+      final response = await _dioClient.put(
+        BxApiEndpoints.updateUserProfileUrl,
+        options: options,
+        data: body,
+      );
+      if (response is Map<String, dynamic> && response['code'] == 0) {
+        return BxUpdateUserDataResponse.fromJson(response);
+      }
+
+      if (response is String) {
+        try {
+          final decoded = jsonDecode(response);
+          if (decoded is Map<String, dynamic>) {
+            return BxUpdateUserDataResponse.fromJson(decoded);
+          }
+        } catch (_) {
+          // Fall through to return failure below.
+        }
+      }
+
+      return BxUpdateUserDataResponse(
+        code: 1,
+        data: null,
+        msg:
+            response['msg'] ??
+            'Unknown error occurred while updating user data.',
+      );
+    } on BxNetworkException catch (e) {
+      return BxUpdateUserDataResponse(code: 1, data: null, msg: e.message);
+    } catch (e) {
+      return BxUpdateUserDataResponse(
+        code: 2,
+        data: null,
+        msg: 'Unknown error occurred while updating user data.',
+      );
+    }
+  }
+
+  @override
+  Future<BxDeleteUserDataResponse> deleteUserData({
+    required String token,
+  }) async {
+    try {
+      final options = Options(
+        headers: {'Content-Type': 'application/json', 'X-token': token},
+      );
+      final response = await _dioClient.delete(
+        BxApiEndpoints.deleteUserAccountUrl,
+        options: options,
+      );
+      if (response is Map<String, dynamic> && response['code'] == 0) {
+        return BxDeleteUserDataResponse.fromJson(response);
+      }
+
+      if (response is String) {
+        try {
+          final decoded = jsonDecode(response);
+          if (decoded is Map<String, dynamic>) {
+            return BxDeleteUserDataResponse.fromJson(decoded);
+          }
+        } catch (_) {
+          // Fall through to return failure below.
+        }
+      }
+
+      return BxDeleteUserDataResponse(
+        code: 1,
+        data: null,
+        msg:
+            response['msg'] ??
+            'Unknown error occurred while deleting user account.',
+      );
+    } on BxNetworkException catch (e) {
+      return BxDeleteUserDataResponse(code: 1, data: null, msg: e.message);
+    } catch (e) {
+      return BxDeleteUserDataResponse(
+        code: 2,
+        data: null,
+        msg: 'Unknown error occurred while deleting user account.',
       );
     }
   }

@@ -18,18 +18,8 @@
 /// Purpose: Handle Apple Sign‑In via Firebase Authentication
 library;
 
-import 'dart:io';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-
-/// Returns `true` when running on the iOS simulator.
-bool get _isSimulator =>
-    Platform.isIOS &&
-    Process.runSync('sysctl', [
-      '-n',
-      'hw.model',
-    ]).stdout.toString().contains('Simulator');
 
 /// Represents the outcome of an Apple authentication attempt.
 ///
@@ -78,9 +68,10 @@ class BxAppleAuthResult {
 /// - [FirebaseAuth] to exchange that token for a Firebase credential
 ///   and create / link a Firebase user.
 ///
-/// **Platform note:** Apple Sign‑In is only available on iOS 13+,
-/// macOS, and iPadOS. On unsupported platforms the service returns
-/// a failure result immediately.
+/// **Platform note:** Apple Sign‑In is available on iOS 13+, macOS, and
+/// iPadOS, including the iOS Simulator (provided a Sandbox Apple ID with
+/// two-factor authentication is signed into the simulator). On
+/// unsupported platforms the service returns a failure result.
 ///
 /// Usage:
 /// ```dart
@@ -134,12 +125,9 @@ class BxAppleAuthFirebaseServices {
   /// - The `Sign in with Apple` capability must be enabled in Xcode.
   /// - The reversed client ID must be registered in `Info.plist`
   ///   under `CFBundleURLSchemes`.
+  /// - For the simulator: sign in with a Sandbox Apple ID that has
+  ///   two-factor authentication enabled.
   Future<BxAppleAuthResult> signIn() async {
-    if (_isSimulator) {
-      return BxAppleAuthResult.failure(
-        'Apple Sign‑In is not available on the iOS simulator. Please use a physical device.',
-      );
-    }
     try {
       // 1. Request credential from Apple with email and full name scopes.
       final AuthorizationCredentialAppleID appleCredential =
@@ -197,10 +185,11 @@ class BxAppleAuthFirebaseServices {
   /// Returns a user‑friendly error message for Apple sign‑in failures.
   ///
   /// Handles the common cases:
-  /// - Simulator: Apple Sign‑In is not supported on the iOS simulator.
   /// - Cancelled: the user dismissed the Apple sign‑in dialog.
-  /// - Unknown error (error 1000): typically means the Sign in with Apple
-  ///   capability is not enabled in the Xcode project.
+  /// - No credentials: Sign in with Apple is not configured.
+  /// - Error 1000: typically means the Sign in with Apple capability is
+  ///   not enabled in the Xcode project, or — on the simulator — no
+  ///   Sandbox Apple ID with 2FA is signed in.
   String _appleSignInErrorMessage(Exception e) {
     final String msg = e.toString().toLowerCase();
     if (msg.contains('cancel') || msg.contains('denied')) {
@@ -210,16 +199,12 @@ class BxAppleAuthFirebaseServices {
       return 'Apple sign‑in is not authorised on this device.';
     }
     if (msg.contains('no-credentials')) {
-      return 'No Apple ID credentials available. Make sure Sign in with Apple is configured.';
+      return 'No Apple ID credentials available. Make sure Sign in with Apple is configured and a Sandbox Apple ID (with 2FA) is signed into the simulator.';
     }
-    if (msg.contains('simulator') ||
-        msg.contains('ios simulator') ||
-        msg.contains('error 1000') ||
-        msg.contains('authorizationerrorunknown')) {
-      return 'Apple Sign‑In is not supported on the iOS simulator. Please test on a physical device or use Google / Facebook / Phone sign‑in.';
-    }
-    if (msg.contains('authorizationerror') || msg.contains('authorization')) {
-      return 'Apple Sign‑In failed. Make sure the "Sign in with Apple" capability is enabled in Xcode and the app is running on a physical device.';
+    if (msg.contains('error 1000') ||
+        msg.contains('authorizationerrorunknown') ||
+        msg.contains('authorizationerror')) {
+      return 'Apple Sign‑In failed (error 1000). Make sure the "Sign in with Apple" capability is enabled in Xcode, and — for the simulator — a Sandbox Apple ID with 2FA is signed in.';
     }
     return 'Apple sign‑in error: ${e.toString()}';
   }

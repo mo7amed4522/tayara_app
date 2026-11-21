@@ -24,3 +24,13 @@ class BxToggleProfileThemeEvent extends BxProfileBottomScreenControllerEvent {
 class BxLoadProfileEvent extends BxProfileBottomScreenControllerEvent {
   const BxLoadProfileEvent();
 }
+
+/// Triggered when the user toggles the notifications switch.
+class BxToggleNotificationsEvent extends BxProfileBottomScreenControllerEvent {
+  const BxToggleNotificationsEvent();
+}
+
+/// Triggered when the user confirms account deletion.
+class BxDeleteAccountEvent extends BxProfileBottomScreenControllerEvent {
+  const BxDeleteAccountEvent();
+}

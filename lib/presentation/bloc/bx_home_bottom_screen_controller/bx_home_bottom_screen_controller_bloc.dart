@@ -80,6 +80,11 @@ class BxHomeBottomScreenControllerBloc
     BxLoadHomeContentEvent event,
     Emitter<BxHomeBottomScreenControllerState> emit,
   ) async {
+    if (state.status == BxHomeBottomScreenControllerStatus.loading ||
+        state.status == BxHomeBottomScreenControllerStatus.success) {
+      return;
+    }
+
     // Load all sections in parallel (ads, destinations, explore trips, recommended, top deals, top agents)
     emit(state.copyWith(status: BxHomeBottomScreenControllerStatus.loading));
 

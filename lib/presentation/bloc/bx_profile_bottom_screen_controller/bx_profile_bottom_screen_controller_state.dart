@@ -18,29 +18,73 @@ class BxProfileBottomScreenControllerState extends Equatable {
   final BxProfileBottomScreenControllerStatus status;
   final String? errorMessage;
   final bool isDarkMode;
-  final BxLoginUserResponse? firebaseUser;
+  final bool isNotificationsEnabled;
+
+  /// The current user's profile returned by `GET /api/v1/user/profile`.
+  final BxGetUserDataUser? user;
+
+  /// Counters returned alongside the profile.
+  final int pastTrips;
+  final int upcoming;
+  final int favorites;
+
+  /// True while a `DELETE /api/v1/user/account` request is in-flight.
+  final bool isDeleting;
+
+  /// Set to true once the account deletion succeeded; UI should log out + route.
+  final bool isAccountDeleted;
 
   const BxProfileBottomScreenControllerState({
     required this.status,
     this.errorMessage,
     this.isDarkMode = false,
-    this.firebaseUser,
+    this.isNotificationsEnabled = true,
+    this.user,
+    this.pastTrips = 0,
+    this.upcoming = 0,
+    this.favorites = 0,
+    this.isDeleting = false,
+    this.isAccountDeleted = false,
   });
 
   BxProfileBottomScreenControllerState copyWith({
     BxProfileBottomScreenControllerStatus? status,
     String? errorMessage,
     bool? isDarkMode,
-    BxLoginUserResponse? firebaseUser,
+    bool? isNotificationsEnabled,
+    BxGetUserDataUser? user,
+    int? pastTrips,
+    int? upcoming,
+    int? favorites,
+    bool? isDeleting,
+    bool? isAccountDeleted,
   }) {
     return BxProfileBottomScreenControllerState(
       status: status ?? this.status,
       errorMessage: errorMessage ?? this.errorMessage,
       isDarkMode: isDarkMode ?? this.isDarkMode,
-      firebaseUser: firebaseUser ?? this.firebaseUser,
+      isNotificationsEnabled:
+          isNotificationsEnabled ?? this.isNotificationsEnabled,
+      user: user ?? this.user,
+      pastTrips: pastTrips ?? this.pastTrips,
+      upcoming: upcoming ?? this.upcoming,
+      favorites: favorites ?? this.favorites,
+      isDeleting: isDeleting ?? this.isDeleting,
+      isAccountDeleted: isAccountDeleted ?? this.isAccountDeleted,
     );
   }
 
   @override
-  List<Object?> get props => [status, errorMessage, isDarkMode, firebaseUser];
+  List<Object?> get props => [
+    status,
+    errorMessage,
+    isDarkMode,
+    isNotificationsEnabled,
+    user,
+    pastTrips,
+    upcoming,
+    favorites,
+    isDeleting,
+    isAccountDeleted,
+  ];
 }

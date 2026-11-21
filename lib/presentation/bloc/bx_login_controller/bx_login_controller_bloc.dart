@@ -4,7 +4,7 @@
 // Architecture: Presentation Layer - Login Controller
 // Purpose: BLoC for managing login state and actions
 
-// ignore_for_file: prefer_initializing_formals
+// ignore_for_file: non_constant_identifier_names, avoid_types_as_parameter_names, prefer_initializing_formals
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,6 +12,7 @@ import 'package:tayara/core/services/bx_apple_auth_firebase_services.dart';
 import 'package:tayara/core/services/bx_facebook_auth_firebase_services.dart';
 import 'package:tayara/core/services/bx_google_auth_firebase_services.dart';
 import 'package:tayara/core/services/bx_phone_auth_firebase_services.dart';
+import 'package:tayara/data/data_source/local/bx_shared_preferences_datasource.dart';
 import 'package:tayara/domain/model/request/bx_login_user_request.dart';
 import 'package:tayara/domain/model/response/bx_login_user_response.dart';
 import 'package:tayara/domain/usecase/bx_firebase_login_usecase.dart';
@@ -22,10 +23,14 @@ part 'bx_login_controller_state.dart';
 class BxLoginControllerBloc
     extends Bloc<BxLoginControllerEvent, BxLoginControllerState> {
   final BxFirebaseLoginUsecase _useCase;
+  final BxSharedPreferencesDataSource _sharedPreferencesDataSource;
 
-  BxLoginControllerBloc({required BxFirebaseLoginUsecase useCase})
-    : _useCase = useCase,
-      super(const BxLoginControllerState()) {
+  BxLoginControllerBloc({
+    required BxFirebaseLoginUsecase useCase,
+    required BxSharedPreferencesDataSource sharedPreferencesDataSource,
+  }) : _useCase = useCase,
+       _sharedPreferencesDataSource = sharedPreferencesDataSource,
+       super(const BxLoginControllerState()) {
     on<BxLoginWithGoogle>((event, emit) async {
       emit(state.copyWith(status: BxLoginControllerStatus.loading));
       try {
@@ -234,6 +239,7 @@ class BxLoginControllerBloc
             errorMessage: null,
           ),
         );
+        await _sharedPreferencesDataSource.saveUserData(response);
       } else {
         emit(
           state.copyWith(

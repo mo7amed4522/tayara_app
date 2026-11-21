@@ -5,6 +5,7 @@
 // Purpose: BLoC for managing splash screen state and persistence
 // ignore_for_file: prefer_initializing_formals, use_build_context_synchronously
 
+import 'package:tayara/core/constant/bx_app_constant.dart';
 import 'package:tayara/core/constant/bx_shared_preferences_keys.dart';
 import 'package:tayara/data/data_source/local/bx_shared_preferences_datasource.dart';
 import 'package:equatable/equatable.dart';
@@ -36,6 +37,7 @@ class BxSplashScreenControllerBloc
           BxSharedPreferencesKeys.onboardingCompleted,
         ) ??
         false;
+    BxAppData.currentUser = await _sharedPreferencesDataSource.getUserData();
     if (state.status == BxSplashScreenStatus.success) {
       emit(
         state.copyWith(
