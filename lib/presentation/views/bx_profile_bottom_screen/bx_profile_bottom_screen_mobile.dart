@@ -288,21 +288,25 @@ class BxProfileBottomScreenMobile extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-      child: Row(
-        children: [
-          Icon(icon, size: 20, color: iconColor),
-          const SizedBox(width: 12),
-          Text(text, style: theme.textTheme.bodyMedium),
-          const Spacer(),
-          trailing,
-        ],
+      // ✅ Wrap in Material so ink is not hidden by an ancestor DecoratedBox.
+      child: Material(
+        type: MaterialType.transparency,
+        child: Row(
+          children: [
+            Icon(icon, size: 20, color: iconColor),
+            const SizedBox(width: 12),
+            Text(text, style: theme.textTheme.bodyMedium),
+            const Spacer(),
+            trailing,
+          ],
+        ),
       ),
     );
   }
 }
 
 // =============================================================================
-// LOGGED IN VIEW — StatelessWidget, all state handled by BLoC
+// LOGGED IN VIEW
 // =============================================================================
 class _LoggedInProfileView extends StatelessWidget {
   const _LoggedInProfileView();
@@ -360,7 +364,6 @@ class _LoggedInProfileView extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // 1. Header
                       Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16.0,
@@ -378,7 +381,6 @@ class _LoggedInProfileView extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
 
-                      // 2. Avatar with Edit Icon
                       Center(
                         child: Stack(
                           children: [
@@ -397,16 +399,36 @@ class _LoggedInProfileView extends StatelessWidget {
                             Positioned(
                               bottom: 0,
                               right: 0,
-                              child: Container(
-                                padding: const EdgeInsets.all(6),
-                                decoration: const BoxDecoration(
-                                  color: Colors.blue,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(
-                                  Icons.edit,
-                                  size: 16,
-                                  color: Colors.white,
+                              child: InkWell(
+                                onTap: () async {
+                                  await BxAppRouter.push(
+                                    context,
+                                    BxRouteNames.bxUpdateProfileScreen,
+                                  );
+                                  if (context.mounted) {
+                                    context
+                                        .read<
+                                          BxProfileBottomScreenControllerBloc
+                                        >()
+                                        .add(
+                                          const BxLoadProfileEvent(
+                                            //forceRefresh: true,
+                                          ),
+                                        );
+                                  }
+                                },
+                                borderRadius: BorderRadius.circular(20),
+                                child: Container(
+                                  padding: const EdgeInsets.all(6),
+                                  decoration: const BoxDecoration(
+                                    color: Colors.blue,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.edit,
+                                    size: 16,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
                             ),
@@ -415,7 +437,6 @@ class _LoggedInProfileView extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
 
-                      // 3. Name & Email
                       if (fullName.isNotEmpty)
                         Center(
                           child: Text(
@@ -437,7 +458,6 @@ class _LoggedInProfileView extends StatelessWidget {
                       ),
                       const SizedBox(height: 24),
 
-                      // 4. Stats Row — real counters from GET /user/profile
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
@@ -473,7 +493,6 @@ class _LoggedInProfileView extends StatelessWidget {
                       ),
                       const SizedBox(height: 24),
 
-                      // 5. List Items (Cards)
                       _buildListItem(
                         context,
                         icon: Icons.calendar_month,
@@ -509,7 +528,6 @@ class _LoggedInProfileView extends StatelessWidget {
                       ),
                       const SizedBox(height: 24),
 
-                      // 6. Section header
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         child: Text(
@@ -522,7 +540,6 @@ class _LoggedInProfileView extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
 
-                      // 7. Settings List
                       _buildSettingsRow(
                         context,
                         icon: Icons.notifications_none,
@@ -588,7 +605,7 @@ class _LoggedInProfileView extends StatelessWidget {
                         iconColor: const Color.fromARGB(255, 237, 126, 118),
                         text: 'Logout',
                         textColor: const Color.fromARGB(255, 237, 126, 118),
-                        onTap: () {
+                        onTap: () async {
                           if (context.mounted) {
                             BxAppRouter.pushReplacement(
                               context,
@@ -670,20 +687,25 @@ class _LoggedInProfileView extends StatelessWidget {
     required Widget trailing,
   }) {
     final theme = Theme.of(context);
-    return ListTile(
-      leading: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(color: iconBgColor, shape: BoxShape.circle),
-        child: Icon(icon, color: iconColor, size: 20),
-      ),
-      title: Text(
-        text,
-        style: theme.textTheme.bodyMedium?.copyWith(
-          fontWeight: FontWeight.w500,
+    // ✅ Wrap ListTile in Material so ink renders on top of any ancestor
+    //    DecoratedBox instead of being hidden underneath it.
+    return Material(
+      type: MaterialType.transparency,
+      child: ListTile(
+        leading: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(color: iconBgColor, shape: BoxShape.circle),
+          child: Icon(icon, color: iconColor, size: 20),
         ),
+        title: Text(
+          text,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        trailing: trailing,
+        onTap: () {},
       ),
-      trailing: trailing,
-      onTap: () {},
     );
   }
 
@@ -697,14 +719,19 @@ class _LoggedInProfileView extends StatelessWidget {
     VoidCallback? onTap,
   }) {
     final theme = Theme.of(context);
-    return ListTile(
-      leading: Icon(icon, color: iconColor),
-      title: Text(
-        text,
-        style: theme.textTheme.bodyMedium?.copyWith(color: textColor),
+    // ✅ Wrap ListTile in Material so ink renders on top of any ancestor
+    //    DecoratedBox instead of being hidden underneath it.
+    return Material(
+      type: MaterialType.transparency,
+      child: ListTile(
+        leading: Icon(icon, color: iconColor),
+        title: Text(
+          text,
+          style: theme.textTheme.bodyMedium?.copyWith(color: textColor),
+        ),
+        trailing: trailing,
+        onTap: onTap ?? () {},
       ),
-      trailing: trailing,
-      onTap: onTap ?? () {},
     );
   }
 

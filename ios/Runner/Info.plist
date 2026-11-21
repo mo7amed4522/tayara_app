@@ -45,6 +45,10 @@
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>We need camera access to let you change your profile picture.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>We need photo library access to let you change your profile picture.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
