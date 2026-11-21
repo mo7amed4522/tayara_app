@@ -9,7 +9,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tayara/core/constant/bx_app_constant.dart';
-
+import 'package:tayara/core/routes/bx_app_routes.dart';
+import 'package:tayara/core/routes/bx_route_names.dart';
 import '../../bloc/bx_profile_bottom_screen_controller/bx_profile_bottom_screen_controller_bloc.dart';
 import '../../bloc/bx_theme_controller/bx_theme_controller_bloc.dart';
 
@@ -18,23 +19,31 @@ class BxProfileBottomScreenMobile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (BxAppData.currentUser == null) {
+      return _buildLoggedOutState(context);
+    } else {
+      return const _LoggedInProfileView();
+    }
+  }
+
+  // ===========================================================================
+  // LOGGED OUT STATE
+  // ===========================================================================
+  Widget _buildLoggedOutState(BuildContext context) {
     final theme = Theme.of(context);
 
     return Column(
       children: [
-        // Fixed top section (logo, title, button) — does not scroll
         Padding(
           padding: const EdgeInsets.only(top: 35),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // 2. Top center logo
               Image.asset(BxAppConstant.settingLogo, width: 333, height: 313),
               const SizedBox(height: 16),
             ],
           ),
         ),
-        // Scrollable section below the fixed header
         Expanded(
           child:
               BlocBuilder<
@@ -50,7 +59,6 @@ class BxProfileBottomScreenMobile extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        // 3. Title
                         Text(
                           'Log in to start your journey',
                           textAlign: TextAlign.center,
@@ -59,7 +67,6 @@ class BxProfileBottomScreenMobile extends StatelessWidget {
                             fontFamily: 'lao-mn',
                           ),
                         ),
-                        // 4. Subtitle
                         Text(
                           'Access your trips, payments, and saved experiences',
                           textAlign: TextAlign.center,
@@ -72,12 +79,14 @@ class BxProfileBottomScreenMobile extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 10),
-                        // 5. Log In / Sign Up button
                         SizedBox(
                           width: 324,
                           height: 48,
                           child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () => BxAppRouter.pushReplacement(
+                              context,
+                              BxRouteNames.bxLoginScreen,
+                            ),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: theme.colorScheme.primary,
                               foregroundColor: theme.colorScheme.onPrimary,
@@ -96,7 +105,6 @@ class BxProfileBottomScreenMobile extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 32),
-                        // 6. My Bookings card
                         _buildProfileCard(
                           context,
                           shadowColor: theme.colorScheme.primary,
@@ -110,7 +118,6 @@ class BxProfileBottomScreenMobile extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 12),
-                        // 7. Payments & Wallet card
                         _buildProfileCard(
                           context,
                           shadowColor: const Color(0xFF10B981),
@@ -124,7 +131,6 @@ class BxProfileBottomScreenMobile extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 12),
-                        // 8. Dark/Light mode card
                         _buildProfileCard(
                           context,
                           shadowColor: theme.colorScheme.primary,
@@ -154,7 +160,6 @@ class BxProfileBottomScreenMobile extends StatelessWidget {
                           },
                         ),
                         const SizedBox(height: 12),
-                        // 9. Saved Trips card
                         _buildProfileCard(
                           context,
                           shadowColor: const Color(0xFFFFEDD5),
@@ -168,7 +173,6 @@ class BxProfileBottomScreenMobile extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 32),
-                        // 10. Settings & Support section header
                         Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
@@ -179,7 +183,6 @@ class BxProfileBottomScreenMobile extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        // 11. Notifications row
                         _buildSettingsRow(
                           context,
                           icon: Icons.notifications,
@@ -187,7 +190,6 @@ class BxProfileBottomScreenMobile extends StatelessWidget {
                           text: 'Notifications',
                           trailing: const Icon(Icons.chevron_right),
                         ),
-                        // 12. Settings row
                         _buildSettingsRow(
                           context,
                           icon: Icons.settings,
@@ -195,7 +197,6 @@ class BxProfileBottomScreenMobile extends StatelessWidget {
                           text: 'Settings',
                           trailing: const Icon(Icons.chevron_right),
                         ),
-                        // 13. Help & Support row
                         _buildSettingsRow(
                           context,
                           icon: Icons.help,
@@ -203,7 +204,6 @@ class BxProfileBottomScreenMobile extends StatelessWidget {
                           text: 'Help & Support',
                           trailing: const Icon(Icons.chevron_right),
                         ),
-                        // 14. Logout row
                         _buildSettingsRow(
                           context,
                           icon: Icons.logout,
@@ -220,6 +220,8 @@ class BxProfileBottomScreenMobile extends StatelessWidget {
       ],
     );
   }
+
+  // -- Helpers for Logged Out State -------------------------------------------
 
   Widget _buildProfileCard(
     BuildContext context, {
@@ -296,5 +298,443 @@ class BxProfileBottomScreenMobile extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+// =============================================================================
+// LOGGED IN VIEW — StatelessWidget, all state handled by BLoC
+// =============================================================================
+class _LoggedInProfileView extends StatelessWidget {
+  const _LoggedInProfileView();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return BlocListener<
+      BxProfileBottomScreenControllerBloc,
+      BxProfileBottomScreenControllerState
+    >(
+      listenWhen: (prev, curr) =>
+          (!prev.isAccountDeleted && curr.isAccountDeleted) ||
+          (prev.status != BxProfileBottomScreenControllerStatus.failure &&
+              curr.status == BxProfileBottomScreenControllerStatus.failure &&
+              curr.errorMessage != null &&
+              curr.errorMessage != prev.errorMessage),
+      listener: (context, state) async {
+        if (state.isAccountDeleted) {
+          if (context.mounted) {
+            BxAppRouter.pushReplacement(context, BxRouteNames.bxLoginScreen);
+          }
+          return;
+        }
+        if (state.errorMessage != null && state.errorMessage!.isNotEmpty) {
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(SnackBar(content: Text(state.errorMessage!)));
+        }
+      },
+      child:
+          BlocBuilder<
+            BxProfileBottomScreenControllerBloc,
+            BxProfileBottomScreenControllerState
+          >(
+            builder: (context, state) {
+              final isLoading =
+                  state.status == BxProfileBottomScreenControllerStatus.loading;
+              final headerImg =
+                  state.user?.headerImg ??
+                  BxAppData.currentUser?.data?.user?.headerImg ??
+                  'https://i.pravatar.cc/150?img=47';
+              final fullName =
+                  state.user?.fullName ??
+                  BxAppData.currentUser?.data?.user?.fullName ??
+                  '';
+              final email =
+                  state.user?.email ??
+                  BxAppData.currentUser?.data?.user?.email ??
+                  '';
+
+              return SafeArea(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // 1. Header
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0,
+                          vertical: 12.0,
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Profile',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      // 2. Avatar with Edit Icon
+                      Center(
+                        child: Stack(
+                          children: [
+                            Container(
+                              width: 100,
+                              height: 100,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.grey.shade200,
+                                image: DecorationImage(
+                                  image: NetworkImage(headerImg),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              bottom: 0,
+                              right: 0,
+                              child: Container(
+                                padding: const EdgeInsets.all(6),
+                                decoration: const BoxDecoration(
+                                  color: Colors.blue,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.edit,
+                                  size: 16,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      // 3. Name & Email
+                      if (fullName.isNotEmpty)
+                        Center(
+                          child: Text(
+                            fullName,
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
+                          ),
+                        ),
+                      const SizedBox(height: 4),
+                      Center(
+                        child: Text(
+                          email,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      // 4. Stats Row — real counters from GET /user/profile
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _buildStatColumn(
+                            context,
+                            isLoading ? '—' : '${state.pastTrips}',
+                            'Past Trips',
+                            Colors.blue,
+                          ),
+                          Container(
+                            height: 40,
+                            width: 1,
+                            color: Colors.grey.withOpacity(0.2),
+                          ),
+                          _buildStatColumn(
+                            context,
+                            isLoading ? '—' : '${state.upcoming}',
+                            'Upcoming',
+                            Colors.green,
+                          ),
+                          Container(
+                            height: 40,
+                            width: 1,
+                            color: Colors.grey.withOpacity(0.2),
+                          ),
+                          _buildStatColumn(
+                            context,
+                            isLoading ? '—' : '${state.favorites}',
+                            'Favorites',
+                            Colors.orange,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+
+                      // 5. List Items (Cards)
+                      _buildListItem(
+                        context,
+                        icon: Icons.calendar_month,
+                        iconColor: Colors.blue,
+                        iconBgColor: Colors.blue.withOpacity(0.1),
+                        text: 'My Bookings',
+                        trailing: const Icon(
+                          Icons.chevron_right,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      _buildListItem(
+                        context,
+                        icon: Icons.account_balance_wallet,
+                        iconColor: Colors.green,
+                        iconBgColor: Colors.green.withOpacity(0.1),
+                        text: 'Payments & Wallet',
+                        trailing: const Icon(
+                          Icons.chevron_right,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      _buildListItem(
+                        context,
+                        icon: Icons.favorite_border,
+                        iconColor: Colors.orange,
+                        iconBgColor: Colors.orange.withOpacity(0.1),
+                        text: 'Saved Trips',
+                        trailing: const Icon(
+                          Icons.keyboard_arrow_down,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      // 6. Section header
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Text(
+                          'Settings & Support',
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+
+                      // 7. Settings List
+                      _buildSettingsRow(
+                        context,
+                        icon: Icons.notifications_none,
+                        iconColor: Colors.blue,
+                        text: 'Notifications',
+                        trailing: Switch(
+                          value: state.isNotificationsEnabled,
+                          onChanged: (_) {
+                            context
+                                .read<BxProfileBottomScreenControllerBloc>()
+                                .add(const BxToggleNotificationsEvent());
+                          },
+                          activeColor: Colors.blue,
+                        ),
+                      ),
+                      _buildSettingsRow(
+                        context,
+                        icon: Icons.brightness_6,
+                        iconColor: theme.colorScheme.primary,
+                        text: 'Dark/Light mode',
+                        trailing: Switch(
+                          value: state.isDarkMode,
+                          onChanged: (_) {
+                            final isDark = context
+                                .read<BxProfileBottomScreenControllerBloc>()
+                                .state
+                                .isDarkMode;
+                            context
+                                .read<BxProfileBottomScreenControllerBloc>()
+                                .add(BxToggleProfileThemeEvent());
+                            context.read<BxThemeControllerBloc>().add(
+                              BxChangeThemeEvent(
+                                isDark ? ThemeMode.light : ThemeMode.dark,
+                              ),
+                            );
+                          },
+                          activeColor: Colors.blue,
+                        ),
+                      ),
+                      _buildSettingsRow(
+                        context,
+                        icon: Icons.settings_outlined,
+                        iconColor: Colors.blue,
+                        text: 'Settings',
+                        trailing: const Icon(
+                          Icons.chevron_right,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      _buildSettingsRow(
+                        context,
+                        icon: Icons.headphones,
+                        iconColor: Colors.blue,
+                        text: 'Help & Support',
+                        trailing: const Icon(
+                          Icons.chevron_right,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      _buildSettingsRow(
+                        context,
+                        icon: Icons.logout,
+                        iconColor: const Color.fromARGB(255, 237, 126, 118),
+                        text: 'Logout',
+                        textColor: const Color.fromARGB(255, 237, 126, 118),
+                        onTap: () {
+                          if (context.mounted) {
+                            BxAppRouter.pushReplacement(
+                              context,
+                              BxRouteNames.bxLoginScreen,
+                            );
+                          }
+                        },
+                        trailing: const Icon(
+                          Icons.chevron_right,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      _buildSettingsRow(
+                        context,
+                        icon: Icons.delete,
+                        iconColor: Colors.red,
+                        text: 'Delete Account',
+                        textColor: Colors.red,
+                        onTap: state.isDeleting
+                            ? null
+                            : () => _confirmDeleteAccount(context),
+                        trailing: state.isDeleting
+                            ? const SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Icon(
+                                Icons.chevron_right,
+                                color: Colors.grey,
+                              ),
+                      ),
+
+                      const SizedBox(height: 40),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+    );
+  }
+
+  // -- Helpers for Logged In State --------------------------------------------
+
+  Widget _buildStatColumn(
+    BuildContext context,
+    String value,
+    String label,
+    Color color,
+  ) {
+    final theme = Theme.of(context);
+    return Column(
+      children: [
+        Text(
+          value,
+          style: theme.textTheme.headlineSmall?.copyWith(
+            color: color,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          label,
+          style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildListItem(
+    BuildContext context, {
+    required IconData icon,
+    required Color iconColor,
+    required Color iconBgColor,
+    required String text,
+    required Widget trailing,
+  }) {
+    final theme = Theme.of(context);
+    return ListTile(
+      leading: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(color: iconBgColor, shape: BoxShape.circle),
+        child: Icon(icon, color: iconColor, size: 20),
+      ),
+      title: Text(
+        text,
+        style: theme.textTheme.bodyMedium?.copyWith(
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      trailing: trailing,
+      onTap: () {},
+    );
+  }
+
+  Widget _buildSettingsRow(
+    BuildContext context, {
+    required IconData icon,
+    required Color iconColor,
+    required String text,
+    Color? textColor,
+    required Widget trailing,
+    VoidCallback? onTap,
+  }) {
+    final theme = Theme.of(context);
+    return ListTile(
+      leading: Icon(icon, color: iconColor),
+      title: Text(
+        text,
+        style: theme.textTheme.bodyMedium?.copyWith(color: textColor),
+      ),
+      trailing: trailing,
+      onTap: onTap ?? () {},
+    );
+  }
+
+  Future<void> _confirmDeleteAccount(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogCtx) => AlertDialog(
+        title: const Text('Delete Account'),
+        content: const Text(
+          'This action permanently deletes your account and cannot be undone. '
+          'Are you sure you want to continue?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogCtx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogCtx).pop(true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && context.mounted) {
+      context.read<BxProfileBottomScreenControllerBloc>().add(
+        const BxDeleteAccountEvent(),
+      );
+    }
   }
 }

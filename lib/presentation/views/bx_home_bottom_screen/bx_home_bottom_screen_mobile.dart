@@ -28,16 +28,9 @@ class BxHomeBottomScreenMobile extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
-    // Trigger initial data load when widget is built
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<BxHomeBottomScreenControllerBloc>().add(
-        const BxLoadHomeContentEvent(),
-      );
-    });
-
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
-      body: SafeArea(
+    return ColoredBox(
+      color: Theme.of(context).colorScheme.background,
+      child: SafeArea(
         child: Column(
           children: [
             // Fixed header
@@ -131,7 +124,6 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
     return Row(
@@ -144,31 +136,27 @@ class _Header extends StatelessWidget {
             fontWeight: FontWeight.bold,
             color: BxAppColors.primary,
             fontSize: 24,
+            fontFamily: BxAppFonts.bxAppFontInter,
           ),
         ),
         // Notification bell + Profile avatar
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            IconButton(
-              onPressed: () {},
-              icon: Icon(
-                Icons.notifications_outlined,
-                size: 24,
-                color: colorScheme.onSurface,
-              ),
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
-            ),
-            const SizedBox(width: 8),
             Container(
-              width: 36,
-              height: 36,
+              width: 50,
+              height: 50,
               decoration: BoxDecoration(
-                color: BxAppColors.primary,
                 shape: BoxShape.circle,
+                color: Colors.grey.shade200,
+                image: DecorationImage(
+                  image: NetworkImage(
+                    BxAppData.currentUser?.data?.user?.headerImg ??
+                        'https://i.pravatar.cc/150?img=47',
+                  ),
+                  fit: BoxFit.cover,
+                ),
               ),
-              child: const Icon(Icons.person, size: 20, color: Colors.white),
             ),
           ],
         ),
@@ -471,7 +459,7 @@ class _AdPageView extends StatelessWidget {
                   // Content
                   Positioned(
                     left: 16,
-                    bottom: 48,
+                    bottom: 20,
                     right: 16,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

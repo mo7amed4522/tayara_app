@@ -4,10 +4,7 @@
 <dict>
 	<key>com.apple.developer.applesignin</key>
 	<array>
-		<dict>
-			<key>Environment</key>
-			<string>Production</string>
-		</dict>
+		<string>Default</string>
 	</array>
 </dict>
 </plist>

@@ -12,25 +12,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tayara/core/constant/bx_app_constant.dart';
 import 'package:tayara/core/theme/bx_app_colors.dart';
-import 'package:tayara/domain/usecase/bx_active_top_banner_ads_usecase.dart';
-import 'package:tayara/domain/usecase/bx_get_destinations_usecase.dart';
-import 'package:tayara/domain/usecase/bx_get_explore_topic_usecase.dart';
-import 'package:tayara/domain/usecase/bx_get_explore_trips_usecase.dart';
-import 'package:tayara/domain/usecase/bx_get_recommended_for_customer_usecase.dart';
-import 'package:tayara/domain/usecase/bx_get_search_usecase.dart';
-import 'package:tayara/domain/usecase/bx_get_top_agent_usecase.dart';
-import 'package:tayara/domain/usecase/bx_get_top_deals_usecase.dart';
-import 'package:tayara/presentation/bloc/bx_explore_bottom_screen_controller/bx_explore_bottom_screen_controller_bloc.dart';
-import 'package:tayara/presentation/bloc/bx_home_bottom_screen_controller/bx_home_bottom_screen_controller_bloc.dart';
 import 'package:tayara/presentation/bloc/bx_home_screen_controller/bx_home_screen_controller_bloc.dart';
 import 'package:tayara/presentation/views/bx_booking_bottom_screen/bx_booking_bottom_screen_mobile.dart';
 import 'package:tayara/presentation/views/bx_explore_bottom_screen/bx_explore_bottom_screen_mobile.dart';
 import 'package:tayara/presentation/views/bx_home_bottom_screen/bx_home_bottom_screen_mobile.dart';
 import 'package:tayara/presentation/views/bx_profile_bottom_screen/bx_profile_bottom_screen_mobile.dart';
-import '../../bloc/bx_profile_bottom_screen_controller/bx_profile_bottom_screen_controller_bloc.dart';
-import '../../bloc/bx_booking_bottom_screen_controller/bx_booking_bottom_screen_controller_bloc.dart';
-import '../../../data/data_source/local/bx_shared_preferences_datasource.dart';
-import '../../../injection/bx_dependency_injector.dart';
 
 /// Mobile home screen with custom bottom navigation bar.
 class BxHomeWidgetMobile extends StatefulWidget {
@@ -50,19 +36,6 @@ class _BxHomeWidgetMobileState extends State<BxHomeWidgetMobile>
   static const double _circleRadius = 24.0;
 
   int _previousIndex = 0;
-
-  BxHomeBottomScreenControllerBloc createHomeBottomController() {
-    final injector = BxDependencyInjector.instance;
-    return BxHomeBottomScreenControllerBloc(
-      adsUsecase: injector.get<BxActiveTopBannerAdsUsecase>(),
-      destinationsUsecase: injector.get<BxGetDestinationsUsecase>(),
-      exploreTripsUsecase: injector.get<BxGetExploreTripsUsecase>(),
-      recommendedUsecase: injector.get<BxGetRecommendedForCustomerUsecase>(),
-      searchUsecase: injector.get<BxGetSearchUsecase>(),
-      topDealsUsecase: injector.get<BxGetTopDealsUsecase>(),
-      topAgentsUsecase: injector.get<BxGetTopAgentsUsecase>(),
-    );
-  }
 
   @override
   void initState() {
@@ -114,37 +87,11 @@ class _BxHomeWidgetMobileState extends State<BxHomeWidgetMobile>
                 BxChangeHomeTab(tabIndex: index),
               );
             },
-            children: [
-              BlocProvider(
-                create: (context) => createHomeBottomController(),
-                child: const BxHomeBottomScreenMobile(),
-              ),
-              BlocProvider(
-                create: (_) => BxExploreBottomScreenControllerBloc(
-                  getExploreTopicUsecase: BxDependencyInjector.instance
-                      .get<BxGetExploreTopicUsecase>(),
-                  getTopAgentsUsecase: BxDependencyInjector.instance
-                      .get<BxGetTopAgentsUsecase>(),
-                  activeTopBannerAdsUsecase: BxDependencyInjector.instance
-                      .get<BxActiveTopBannerAdsUsecase>(),
-                  getExploreTripsUsecase: BxDependencyInjector.instance
-                      .get<BxGetExploreTripsUsecase>(),
-                )..add(const BxLoadExploreContent()),
-                child: const BxExploreBottomScreenMobile(),
-              ),
-              BlocProvider(
-                create: (_) =>
-                    BxBookingBottomScreenControllerBloc()
-                      ..add(const BxLoadBookings()),
-                child: const BxBookingBottomScreenMobile(),
-              ),
-              BlocProvider(
-                create: (context) => BxProfileBottomScreenControllerBloc(
-                  sharedPreferencesDataSource: BxDependencyInjector.instance
-                      .get<BxSharedPreferencesDataSource>(),
-                )..add(BxLoadProfileThemeEvent()),
-                child: const BxProfileBottomScreenMobile(),
-              ),
+            children: const [
+              BxHomeBottomScreenMobile(),
+              BxExploreBottomScreenMobile(),
+              BxBookingBottomScreenMobile(),
+              BxProfileBottomScreenMobile(),
             ],
           ),
           bottomNavigationBar: _buildBottomNavBar(currentIndex),

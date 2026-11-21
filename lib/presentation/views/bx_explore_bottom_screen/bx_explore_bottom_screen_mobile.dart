@@ -14,11 +14,6 @@ import 'package:tayara/core/constant/bx_app_constant.dart';
 import 'package:tayara/core/theme/bx_app_colors.dart';
 import 'package:tayara/domain/model/response/bx_active_top_banner_ads_response.dart';
 import 'package:tayara/domain/model/response/bx_get_explore_trips_response.dart';
-import 'package:tayara/domain/usecase/bx_active_top_banner_ads_usecase.dart';
-import 'package:tayara/domain/usecase/bx_get_explore_topic_usecase.dart';
-import 'package:tayara/domain/usecase/bx_get_explore_trips_usecase.dart';
-import 'package:tayara/domain/usecase/bx_get_top_agent_usecase.dart';
-import 'package:tayara/injection/bx_dependency_injector.dart';
 import 'package:tayara/presentation/bloc/bx_explore_bottom_screen_controller/bx_explore_bottom_screen_controller_bloc.dart';
 
 class BxExploreBottomScreenMobile extends StatelessWidget {
@@ -26,19 +21,7 @@ class BxExploreBottomScreenMobile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => BxExploreBottomScreenControllerBloc(
-        getExploreTopicUsecase: BxDependencyInjector.instance
-            .get<BxGetExploreTopicUsecase>(),
-        getTopAgentsUsecase: BxDependencyInjector.instance
-            .get<BxGetTopAgentsUsecase>(),
-        activeTopBannerAdsUsecase: BxDependencyInjector.instance
-            .get<BxActiveTopBannerAdsUsecase>(),
-        getExploreTripsUsecase: BxDependencyInjector.instance
-            .get<BxGetExploreTripsUsecase>(),
-      )..add(const BxLoadExploreContent()),
-      child: const _ExploreBody(),
-    );
+    return const _ExploreBody();
   }
 }
 
@@ -171,9 +154,6 @@ class _HeroCarouselState extends State<_HeroCarousel> {
   void initState() {
     super.initState();
     _pageController = PageController();
-    context.read<BxExploreBottomScreenControllerBloc>().add(
-      const BxLoadExploreContent(),
-    );
   }
 
   @override

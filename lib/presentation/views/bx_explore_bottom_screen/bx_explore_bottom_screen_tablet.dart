@@ -12,12 +12,10 @@ class BxExploreBottomScreenTablet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 480),
-          child: const BxExploreBottomScreenMobile(),
-        ),
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 480),
+        child: const BxExploreBottomScreenMobile(),
       ),
     );
   }

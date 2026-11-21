@@ -29,15 +29,21 @@ class BxLoginControllerState extends Equatable {
     phoneVerificationId,
   ];
 
+  /// Sentinel used by [copyWith] to distinguish "not provided" from
+  /// "explicitly set to null".
+  static const Object _sentinel = Object();
+
   BxLoginControllerState copyWith({
     BxLoginControllerStatus? status,
-    String? errorMessage,
+    Object? errorMessage = _sentinel,
     BxLoginUserResponse? loginResponse,
     String? phoneVerificationId,
   }) {
     return BxLoginControllerState(
       status: status ?? this.status,
-      errorMessage: errorMessage ?? this.errorMessage,
+      errorMessage: identical(errorMessage, _sentinel)
+          ? this.errorMessage
+          : errorMessage as String?,
       loginResponse: loginResponse ?? this.loginResponse,
       phoneVerificationId: phoneVerificationId ?? this.phoneVerificationId,
     );

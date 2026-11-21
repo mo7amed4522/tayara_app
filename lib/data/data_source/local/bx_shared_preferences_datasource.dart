@@ -4,7 +4,10 @@
 // Architecture: Core -> Data -> Data Sources -> Local -> Bx Shared Preferences Data Source
 // Purpose: Provides methods to save and retrieve data using SharedPreferences
 
+import 'dart:convert';
+
 import 'package:tayara/core/constant/bx_shared_preferences_keys.dart';
+import 'package:tayara/domain/model/response/bx_login_user_response.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Abstraction over [SharedPreferences] that provides typed read/write
@@ -51,6 +54,28 @@ abstract class BxSharedPreferencesDataSource {
 
   /// Retrieves the saved theme mode, or `null` if not set.
   Future<String?> getThemeMode();
+
+  // -- User data ---------------------------------------------------------
+
+  /// Persists the full [BxLoginUserResponse] as a JSON string using the
+  /// predefined key [BxSharedPreferencesKeys.userData].
+  ///
+  /// Returns `true` if the data was saved successfully.
+  Future<bool> saveUserData(BxLoginUserResponse userData);
+
+  /// Retrieves the saved [BxLoginUserResponse], or `null` if none is
+  /// stored or the stored JSON is malformed.
+  Future<BxLoginUserResponse?> getUserData();
+
+  /// Updates the saved user data. This is a thin, intention-revealing
+  /// wrapper around [saveUserData] for callers that are patching an
+  /// existing record (e.g. after refreshing the profile).
+  Future<bool> updateUserData(BxLoginUserResponse userData);
+
+  /// Removes the saved user data from shared preferences.
+  ///
+  /// Use this on logout. Does **not** clear language/theme settings.
+  Future<bool> cleanUserData();
 }
 
 /// Concrete implementation of [BxSharedPreferencesDataSource] that uses
@@ -129,5 +154,45 @@ class BxSharedPreferencesDataSourceImpl
   @override
   Future<String?> getThemeMode() async {
     return _sharedPreferences.getString(BxSharedPreferencesKeys.themeMode);
+  }
+
+  // -- User data ---------------------------------------------------------
+
+  @override
+  Future<bool> saveUserData(BxLoginUserResponse userData) async {
+    try {
+      final jsonString = jsonEncode(userData.toJson());
+      return await _sharedPreferences.setString(
+        BxSharedPreferencesKeys.userData,
+        jsonString,
+      );
+    } catch (_) {
+      return false;
+    }
+  }
+
+  @override
+  Future<BxLoginUserResponse?> getUserData() async {
+    try {
+      final jsonString = _sharedPreferences.getString(
+        BxSharedPreferencesKeys.userData,
+      );
+      if (jsonString == null || jsonString.isEmpty) return null;
+      final Map<String, dynamic> json = jsonDecode(jsonString);
+      return BxLoginUserResponse.fromJson(json);
+    } catch (_) {
+      // Corrupt or incompatible stored JSON – treat as absent.
+      return null;
+    }
+  }
+
+  @override
+  Future<bool> updateUserData(BxLoginUserResponse userData) {
+    return saveUserData(userData);
+  }
+
+  @override
+  Future<bool> cleanUserData() async {
+    return _sharedPreferences.remove(BxSharedPreferencesKeys.userData);
   }
 }

@@ -41,6 +41,20 @@ class BxApiEndpoints {
   static String get loginCustomerUrl =>
       '/api/${BxAppData.appVersion}/user/login';
 
+  /// get user data url endpoint
+  /// [GET] endpoint for customer data.
+  static String get getUserData => '/api/${BxAppData.appVersion}/user/profile';
+
+  /// update user data url endpoint
+  /// [PUT] endpoint for update customer data.
+  static String get updateUserProfileUrl =>
+      '/api/${BxAppData.appVersion}/user/profile';
+
+  /// delete user data url endpoint
+  /// [DELETE] endpoint for delete customer data.
+  static String get deleteUserAccountUrl =>
+      '/api/${BxAppData.appVersion}/user/profile';
+
   /// home ads url endpoint
   /// [GET] endpoint for fetching home ads.
   static String get homeAdsUrl =>

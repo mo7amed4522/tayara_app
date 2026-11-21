@@ -51,6 +51,11 @@ class BxExploreBottomScreenControllerBloc
     BxLoadExploreContent event,
     Emitter<BxExploreBottomScreenControllerState> emit,
   ) async {
+    if (state.status == BxExploreBottomScreenControllerStatus.loading ||
+        state.status == BxExploreBottomScreenControllerStatus.success) {
+      return;
+    }
+
     emit(state.copyWith(status: BxExploreBottomScreenControllerStatus.loading));
     try {
       // Fetch all data in parallel
