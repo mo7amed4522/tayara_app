@@ -24,6 +24,9 @@ class BxRouteNames {
   /// Login screen route.
   static const String bxLoginScreen = '/bx-login-screen';
 
+  /// update profile screen route.
+  static const String bxUpdateProfileScreen = '/bx-update-profile-screen';
+
   /// Home screen route.
   static const String bxHomeScreen = '/bx-home-screen';
 
@@ -74,6 +77,7 @@ class BxRouteNames {
     bxSplashScreen,
     bxOnBoardingScreen,
     bxLoginScreen,
+    bxUpdateProfileScreen,
     bxSignUpScreen,
     bxEnterPhoneScreen,
     bxHomeScreen,
@@ -202,6 +206,8 @@ class BxRouteNames {
         return 'Bx-Enter-Phone-Number-Screen';
       case bxLoginScreen:
         return 'Bx-Login-screen';
+      case bxUpdateProfileScreen:
+        return 'Bx-Update-Profile-Screen';
       case bxHomeScreen:
         return 'Bx-Home-screen';
       case bxBookingDetailScreen:

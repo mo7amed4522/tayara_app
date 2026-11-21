@@ -7,6 +7,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:tayara/core/constant/bx_app_constant.dart';
 import 'package:tayara/core/network/bx_api_endpoints.dart';
 import 'package:tayara/core/network/bx_dio_client.dart';
@@ -62,10 +63,15 @@ abstract class BxSystemRemoteDataSource {
 
   /// Updates the current user's profile.
   ///
+  /// [token] is the authentication token.
+  /// [body] contains the profile fields to update.
+  /// [headerImage] is optional for profile image upload.
+  ///
   /// Returns a [BxUpdateUserDataResponse] indicating success or failure.
   Future<BxUpdateUserDataResponse> updateUserData({
     required String token,
     required Map<String, dynamic> body,
+    XFile? headerImage,
   });
 
   /// Deletes the current user's account.
@@ -249,16 +255,44 @@ class BxSystemRemoteDataSourceImpl implements BxSystemRemoteDataSource {
   Future<BxUpdateUserDataResponse> updateUserData({
     required String token,
     required Map<String, dynamic> body,
+    XFile? headerImage,
   }) async {
     try {
+      FormData formData;
+
+      if (headerImage != null) {
+        // Multipart form data with image upload
+        final fileName = headerImage.path.split('/').last;
+        final multipartFile = await MultipartFile.fromFile(
+          headerImage.path,
+          filename: fileName,
+        );
+
+        // Build form data with all fields
+        final Map<String, dynamic> formFields = {
+          ...body,
+          'headerImg': multipartFile,
+        };
+
+        formData = FormData.fromMap(formFields);
+      } else {
+        // JSON body without image
+        formData = FormData.fromMap(body);
+      }
+
       final options = Options(
-        headers: {'Content-Type': 'application/json', 'X-token': token},
+        headers: {
+          'X-token': token,
+          // Content-Type is automatically set by Dio when using FormData
+        },
       );
+
       final response = await _dioClient.put(
         BxApiEndpoints.updateUserProfileUrl,
         options: options,
-        data: body,
+        data: formData,
       );
+
       if (response is Map<String, dynamic> && response['code'] == 0) {
         return BxUpdateUserDataResponse.fromJson(response);
       }

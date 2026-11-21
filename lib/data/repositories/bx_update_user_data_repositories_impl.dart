@@ -7,6 +7,7 @@
 ///
 library;
 
+import 'package:image_picker/image_picker.dart';
 import 'package:tayara/core/network/interceptors/bx_network_exception.dart';
 import 'package:tayara/data/data_source/remote/bx_system_remote_data_source.dart';
 import 'package:tayara/domain/model/response/bx_update_user_data_response.dart';
@@ -35,11 +36,13 @@ class BxUpdateUserDataRepositoriesImpl implements BxUpdateUserDataRepositories {
   Future<BxUpdateUserDataResponse> updateUserData({
     required String token,
     required Map<String, dynamic> body,
+    XFile? headerImage,
   }) async {
     try {
       final result = await _bxsystemRemoteDataSource.updateUserData(
         token: token,
         body: body,
+        headerImage: headerImage,
       );
       return result;
     } on BxNetworkException catch (e) {

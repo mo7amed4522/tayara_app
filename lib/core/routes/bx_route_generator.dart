@@ -34,6 +34,7 @@ import 'package:tayara/presentation/views/bx_similar_trips_screen/bx_similar_tri
 import 'package:tayara/presentation/views/bx_custom_trip_screen/bx_custom_trip_screen.dart';
 import 'package:tayara/presentation/views/bx_review_travelers_screen/bx_review_travelers_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:tayara/presentation/views/bx_update_profile_screen/bx_update_profile_screen.dart';
 
 /// Central route generator that maps route names to screens and
 /// provides reusable transition builders and navigation utilities.
@@ -62,6 +63,8 @@ class BxRouteGenerator {
         return _buildRoute(settings, const BxOnBoardingScreen());
       case BxRouteNames.bxLoginScreen:
         return _buildRoute(settings, const BxLoginScreen());
+      case BxRouteNames.bxUpdateProfileScreen:
+        return _buildRoute(settings, const BxUpdateProfileScreen());
       case BxRouteNames.bxHomeScreen:
         return _buildRoute(settings, const BxHomeScreen());
       case BxRouteNames.bxSignUpScreen:
@@ -333,6 +336,7 @@ class BxRouteGenerator {
       BxRouteNames.bxSplashScreen,
       BxRouteNames.bxOnBoardingScreen,
       BxRouteNames.bxLoginScreen,
+      BxRouteNames.bxUpdateProfileScreen,
       BxRouteNames.bxHomeScreen,
       BxRouteNames.bxSignUpScreen,
       BxRouteNames.bxEnterPhoneScreen,
@@ -366,6 +370,8 @@ class BxRouteGenerator {
         return 'Bx-On-boarding-screen';
       case BxRouteNames.bxLoginScreen:
         return 'Bx-Login-screen';
+      case BxRouteNames.bxUpdateProfileScreen:
+        return 'Bx-Update-Profile-Screen';
       case BxRouteNames.bxHomeScreen:
         return 'Bx-Home-screen';
       case BxRouteNames.bxSignUpScreen:
@@ -409,6 +415,8 @@ class BxRouteGenerator {
         return Icons.home;
       case BxRouteNames.bxLoginScreen:
         return Icons.login;
+      case BxRouteNames.bxUpdateProfileScreen:
+        return Icons.upload_outlined;
       case BxRouteNames.bxSignUpScreen:
         return Icons.sign_language_outlined;
       case BxRouteNames.bxEnterPhoneScreen:
