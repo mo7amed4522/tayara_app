@@ -13,6 +13,7 @@ import 'package:tayara/core/routes/bx_app_routes.dart';
 import 'package:tayara/core/routes/bx_route_names.dart';
 import 'package:tayara/core/theme/bx_app_colors.dart';
 import 'package:tayara/presentation/bloc/bx_booking_bottom_screen_controller/bx_booking_bottom_screen_controller_bloc.dart';
+import 'package:tayara/domain/model/response/bx_get_my_booking_list_response.dart';
 
 class BxBookingBottomScreenMobile extends StatelessWidget {
   const BxBookingBottomScreenMobile({super.key});
@@ -23,8 +24,35 @@ class BxBookingBottomScreenMobile extends StatelessWidget {
   }
 }
 
-class _BookingBody extends StatelessWidget {
+class _BookingBody extends StatefulWidget {
   const _BookingBody();
+
+  @override
+  State<_BookingBody> createState() => _BookingBodyState();
+}
+
+class _BookingBodyState extends State<_BookingBody> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    // Load initial bookings when screen opens
+    context.read<BxBookingBottomScreenControllerBloc>().add(const BxLoadBookings(isRefresh: true));
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent - 200) {
+        context.read<BxBookingBottomScreenControllerBloc>().add(const BxLoadBookings());
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +75,32 @@ class _BookingBody extends StatelessWidget {
                   builder: (context, state) {
                     if (state.status ==
                         BxBookingBottomScreenControllerStatus.loading) {
-                      return const Center(child: CircularProgressIndicator());
+                      if (state.bookings.isEmpty) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      // Show loading indicator at bottom while appending more
+                      return Column(
+                        children: [
+                          Expanded(
+                            child: ListView.builder(
+                              controller: _scrollController,
+                              itemCount: state.bookings.length,
+                              itemBuilder: (context, index) {
+                                final booking = state.bookings[index];
+                                return _BookingCard(
+                                  booking: booking,
+                                  textTheme: textTheme,
+                                  colorScheme: colorScheme,
+                                );
+                              },
+                            ),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.all(16),
+                            child: Center(child: CircularProgressIndicator()),
+                          ),
+                        ],
+                      );
                     }
                     if (state.status ==
                         BxBookingBottomScreenControllerStatus.failure) {
@@ -55,42 +108,26 @@ class _BookingBody extends StatelessWidget {
                         child: Text('Failed to load bookings'),
                       );
                     }
-                    final allBookings = state.bookings;
-                    final activeTab = state.selectedTab;
-                    final filteredBookings = activeTab == 0
-                        ? allBookings
-                              .where(
-                                (b) =>
-                                    b['status'] == 'pending' ||
-                                    b['status'] == 'confirmed',
-                              )
-                              .toList()
-                        : activeTab == 1
-                        ? allBookings
-                              .where((b) => b['status'] == 'confirmed')
-                              .toList()
-                        : allBookings
-                              .where((b) => b['status'] == 'expired')
-                              .toList();
 
-                    if (filteredBookings.isEmpty) {
+                    if (state.bookings.isEmpty) {
                       return _buildEmptyState(
                         context,
                         textTheme,
                         colorScheme,
-                        activeTab,
+                        state.selectedTab,
                       );
                     }
 
                     return ListView.separated(
+                      controller: _scrollController,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 12,
                       ),
-                      itemCount: filteredBookings.length,
+                      itemCount: state.bookings.length,
                       separatorBuilder: (_, _) => const SizedBox(height: 12),
                       itemBuilder: (context, index) {
-                        final booking = filteredBookings.elementAt(index);
+                        final booking = state.bookings[index];
                         return _BookingCard(
                           booking: booking,
                           textTheme: textTheme,
@@ -280,7 +317,7 @@ class _BookingBody extends StatelessWidget {
 }
 
 class _BookingCard extends StatelessWidget {
-  final Map<String, String?> booking;
+  final BxMyBookingItem booking;
   final TextTheme textTheme;
   final ColorScheme colorScheme;
 
@@ -292,24 +329,25 @@ class _BookingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final status = booking['status'] ?? 'pending';
-    final image = booking['image'] ?? 'assets/images/recommend_image1.png';
-    final name = booking['name'] ?? 'Trip';
-    final days = booking['days'] ?? '';
-    final date = booking['date'] ?? '';
-    final agency = booking['agency'] ?? '';
-    final agencyRating = booking['agencyRating'] ?? '';
-    final priceLabel = booking['priceLabel'] ?? '';
-    final price = booking['price'] ?? '';
-    final timeLeft = booking['timeLeft'];
-    final expiredDate = booking['expiredDate'];
+    final status = booking.bookingStatus ?? 'unknown';
+    final image = 'assets/images/recommend_image1.png';
+    final name = booking.bookingCode ?? 'No Booking Code';
+    final days = '';
+    final date = booking.startDate != null && booking.endDate != null
+        ? '${booking.startDate!.split('T').first} - ${booking.endDate!.split('T').first}'
+        : 'No date';
+    final agency = 'Agency Name';
+    final agencyRating = '';
+    final priceLabel = booking.currency ?? '';
+    final price = booking.amountGross?.toStringAsFixed(2) ?? '0.00';
+    final expiredDate = booking.holdExpiresAt;
 
     return InkWell(
       onTap: () {
         BxAppRouter.push(
           context,
           BxRouteNames.bxBookingDetailScreen,
-          arguments: {'status': status},
+          arguments: {'bookingId': booking.id, 'status': status},
         );
       },
       borderRadius: BorderRadius.circular(16),
@@ -328,8 +366,7 @@ class _BookingCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // For expired cards, show the expire illustration instead of the image
-            if (status == 'expired')
+            if (status == 'price_expired' || status == 'cancelled' || status == 'refunded')
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Center(
@@ -342,14 +379,12 @@ class _BookingCard extends StatelessWidget {
                 ),
               )
             else
-              _buildImageSection(image, status, timeLeft, expiredDate),
-            // Card body
+              _buildImageSection(image, status, null, expiredDate),
             Padding(
               padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Trip name + days badge
                   Row(
                     children: [
                       Expanded(
@@ -368,24 +403,22 @@ class _BookingCard extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 6),
-                  // Date
                   Text(
                     date,
                     style: textTheme.bodySmall?.copyWith(
-                      color: status == 'expired'
+                      color: (status == 'price_expired' || status == 'cancelled' || status == 'refunded')
                           ? BxAppColors.mutedLight
                           : colorScheme.onSurface.withOpacity(0.55),
                       fontFamily: 'lao-mn',
                     ),
                   ),
                   const SizedBox(height: 6),
-                  // Agency with rating
                   Row(
                     children: [
                       Icon(
                         Icons.business_rounded,
                         size: 13,
-                        color: status == 'expired'
+                        color: (status == 'price_expired' || status == 'cancelled' || status == 'refunded')
                             ? BxAppColors.mutedLight
                             : colorScheme.onSurface.withOpacity(0.5),
                       ),
@@ -394,7 +427,7 @@ class _BookingCard extends StatelessWidget {
                         child: Text(
                           agency,
                           style: textTheme.bodySmall?.copyWith(
-                            color: status == 'expired'
+                            color: (status == 'price_expired' || status == 'cancelled' || status == 'refunded')
                                 ? BxAppColors.mutedLight
                                 : colorScheme.onSurface.withOpacity(0.55),
                             fontFamily: 'lao-mn',
@@ -422,11 +455,10 @@ class _BookingCard extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  // Price
                   Text(
                     '$priceLabel $price',
                     style: textTheme.bodyMedium?.copyWith(
-                      color: status == 'expired'
+                      color: (status == 'price_expired' || status == 'cancelled' || status == 'refunded')
                           ? BxAppColors.mutedLight
                           : BxAppColors.primary,
                       fontWeight: FontWeight.w600,
@@ -434,7 +466,6 @@ class _BookingCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  // Action button
                   _buildActionButton(context, status, expiredDate),
                 ],
               ),
@@ -464,7 +495,6 @@ class _BookingCard extends StatelessWidget {
             height: 140,
             fit: BoxFit.cover,
           ),
-          // Status badge
           Positioned(
             top: 10,
             right: 10,
@@ -476,18 +506,18 @@ class _BookingCard extends StatelessWidget {
   }
 
   Widget _buildStatusBadge(String status, String? timeLeft) {
-    if (status == 'pending' && timeLeft != null) {
+    if (status == 'requested' || status == 'agent_reviewing' || status == 'awaiting_payment' || status == 'docs_pending' || status == 'kyc_pending') {
       return _Badge(
-        label: timeLeft,
+        label: 'Pending',
         backgroundColor: const Color(0xFF374151).withOpacity(0.7),
       );
     }
-    if (status == 'confirmed') {
-      return _Badge(label: '✓ Confirmed', backgroundColor: BxAppColors.success);
+    if (status == 'price_confirmed' || status == 'payment_authorized' || status == 'paid_confirmed' || status == 'docs_submitted' || status == 'kyc_approved' || status == 'booking_confirmed' || status == 'processing' || status == 'issued_ready' || status == 'completed') {
+      return _Badge(label: 'Confirmed', backgroundColor: BxAppColors.success);
     }
-    if (status == 'expired') {
+    if (status == 'price_expired' || status == 'cancelled' || status == 'refunded') {
       return _Badge(
-        label: 'No response',
+        label: 'Expired',
         backgroundColor: const Color(0xFF6B7280).withOpacity(0.8),
       );
     }
@@ -519,14 +549,13 @@ class _BookingCard extends StatelessWidget {
     String status,
     String? expiredDate,
   ) {
-    final textTheme = this.textTheme;
     String label;
     Color backgroundColor;
 
-    if (status == 'pending') {
+    if (status == 'requested' || status == 'agent_reviewing' || status == 'awaiting_payment' || status == 'docs_pending' || status == 'kyc_pending') {
       label = 'Waiting for Agency';
       backgroundColor = BxAppColors.primary;
-    } else if (status == 'confirmed') {
+    } else if (status == 'price_confirmed' || status == 'payment_authorized' || status == 'paid_confirmed' || status == 'docs_submitted' || status == 'kyc_approved' || status == 'booking_confirmed' || status == 'processing' || status == 'issued_ready') {
       label = 'Proceed to Payment';
       backgroundColor = BxAppColors.brown;
     } else {
@@ -539,17 +568,17 @@ class _BookingCard extends StatelessWidget {
       height: 42,
       child: ElevatedButton(
         onPressed: () {
-          if (status == 'expired') {
+          if (status == 'price_expired' || status == 'cancelled' || status == 'refunded') {
             BxAppRouter.push(
               context,
               BxRouteNames.bxSimilarTripsScreen,
-              arguments: {'tripName': booking['name'] ?? ''},
+              arguments: {'tripName': booking.bookingCode ?? ''},
             );
           } else {
             BxAppRouter.push(
               context,
               BxRouteNames.bxBookingDetailScreen,
-              arguments: {'status': status},
+              arguments: {'bookingId': booking.id, 'status': status},
             );
           }
         },

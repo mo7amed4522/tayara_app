@@ -109,4 +109,8 @@ class BxApiEndpoints {
   /// [GET] endpoint for fetching package details results.
   static String get packageDetail =>
       '/api/${BxAppData.appVersion}/catalog/public/packages/detail';
+
+  /// get my booking url endpoint
+  /// [GET] endpoint for fetching my booking details results.
+  static String get myBookingsUrl => '/api/${BxAppData.appVersion}/booking';
 }
