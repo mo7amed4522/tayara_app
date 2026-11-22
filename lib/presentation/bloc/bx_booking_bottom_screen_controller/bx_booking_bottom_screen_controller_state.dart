@@ -17,30 +17,36 @@ enum BxBookingBottomScreenControllerStatus {
 class BxBookingBottomScreenControllerState extends Equatable {
   final BxBookingBottomScreenControllerStatus status;
   final String? errorMessage;
-  final List<Map<String, String?>> bookings;
+  // Updated to hold the actual list of booking items
+  final List<BxMyBookingItem> bookings;
   final int selectedTab;
+  final BxPaginationResponse? pagination;
 
   const BxBookingBottomScreenControllerState({
     required this.status,
     this.errorMessage,
     this.bookings = const [],
     this.selectedTab = 0,
+    this.pagination,
   });
 
   BxBookingBottomScreenControllerState copyWith({
     BxBookingBottomScreenControllerStatus? status,
     String? errorMessage,
-    List<Map<String, String?>>? bookings,
+    List<BxMyBookingItem>? bookings,
+    bool clearBookings = false,
     int? selectedTab,
+    BxPaginationResponse? pagination,
   }) {
     return BxBookingBottomScreenControllerState(
       status: status ?? this.status,
       errorMessage: errorMessage ?? this.errorMessage,
-      bookings: bookings ?? this.bookings,
+      bookings: clearBookings ? [] : (bookings ?? this.bookings),
       selectedTab: selectedTab ?? this.selectedTab,
+      pagination: pagination ?? this.pagination,
     );
   }
 
   @override
-  List<Object?> get props => [status, errorMessage, bookings, selectedTab];
+  List<Object?> get props => [status, errorMessage, bookings, selectedTab, pagination];
 }

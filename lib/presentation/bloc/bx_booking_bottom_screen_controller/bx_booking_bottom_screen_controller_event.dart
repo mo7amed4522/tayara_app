@@ -13,7 +13,10 @@ abstract class BxBookingBottomScreenControllerEvent extends Equatable {
 }
 
 class BxLoadBookings extends BxBookingBottomScreenControllerEvent {
-  const BxLoadBookings();
+  final bool isRefresh;
+  const BxLoadBookings({this.isRefresh = false});
+  @override
+  List<Object?> get props => [isRefresh];
 }
 
 class BxFilterBookings extends BxBookingBottomScreenControllerEvent {

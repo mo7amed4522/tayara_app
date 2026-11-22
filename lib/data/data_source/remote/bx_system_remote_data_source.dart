@@ -18,6 +18,7 @@ import 'package:tayara/domain/model/request/bx_custom_search_request.dart';
 import 'package:tayara/domain/model/request/bx_get_destinations_request.dart';
 import 'package:tayara/domain/model/request/bx_get_explore_topic_request.dart';
 import 'package:tayara/domain/model/request/bx_get_explore_trips_request.dart';
+import 'package:tayara/domain/model/request/bx_get_my_booking_list_request.dart';
 import 'package:tayara/domain/model/request/bx_get_package_detail_request.dart';
 import 'package:tayara/domain/model/request/bx_get_recommended_for_customer_request.dart';
 import 'package:tayara/domain/model/request/bx_get_search_request.dart';
@@ -30,6 +31,7 @@ import 'package:tayara/domain/model/response/bx_custom_search_response.dart';
 import 'package:tayara/domain/model/response/bx_get_destinations_response.dart';
 import 'package:tayara/domain/model/response/bx_get_explore_topic_response.dart';
 import 'package:tayara/domain/model/response/bx_get_explore_trips_response.dart';
+import 'package:tayara/domain/model/response/bx_get_my_booking_list_response.dart';
 import 'package:tayara/domain/model/response/bx_get_package_detail_response.dart';
 import 'package:tayara/domain/model/response/bx_get_recommended_for_customer_response.dart';
 import 'package:tayara/domain/model/response/bx_get_search_response.dart';
@@ -148,6 +150,13 @@ abstract class BxSystemRemoteDataSource {
   /// Returns a [BxGetPackageDetailResponse] indicating success or failure.
   Future<BxGetPackageDetailResponse> fetchPackageDetails(
     BxGetPackageDetailRequest request,
+  );
+
+  /// Fetches the current user's booking list with the provided request.
+  ///
+  /// Returns a [BxGetMyBookingListResponse] indicating success or failure.
+  Future<BxGetMyBookingListResponse> fetchMyBookingList(
+    BxGetMyBookingListRequest request,
   );
 }
 
@@ -921,6 +930,64 @@ class BxSystemRemoteDataSourceImpl implements BxSystemRemoteDataSource {
         data: null,
         msg:
             'Unknown error occurred while fetching explore package detail data .',
+      );
+    }
+  }
+
+  @override
+  Future<BxGetMyBookingListResponse> fetchMyBookingList(
+    BxGetMyBookingListRequest request,
+  ) async {
+    try {
+      final options = Options(
+        headers: {
+          'Content-Type': 'application/json',
+          'X-token': BxAppData.currentUser?.data?.token,
+        },
+      );
+      final response = await _dioClient.get(
+        BxApiEndpoints.myBookingsUrl,
+        options: options,
+        queryParameters: request.toJson(),
+      );
+      if (response is Map<String, dynamic> && response['code'] == 0) {
+        return BxGetMyBookingListResponse.fromJson(response);
+      }
+
+      if (response is String) {
+        try {
+          final decoded = jsonDecode(response);
+          if (decoded is Map<String, dynamic>) {
+            return BxGetMyBookingListResponse.fromJson(decoded);
+          }
+        } catch (_) {
+          // Fall through to return failure below.
+        }
+      }
+
+      final int code = (response is Map<String, dynamic>)
+          ? (response['code'] as int?) ?? 1
+          : 1;
+      final String? msg =
+          (response is Map<String, dynamic> && response['msg'] != null)
+          ? response['msg'] as String?
+          : null;
+      return BxGetMyBookingListResponse(
+        code: code,
+        data: null,
+        msg: msg ?? 'Unknown error occurred while fetching booking list.',
+      );
+    } on BxNetworkException catch (e) {
+      return BxGetMyBookingListResponse(
+        code: e.statusCode,
+        data: null,
+        msg: e.message,
+      );
+    } catch (e) {
+      return BxGetMyBookingListResponse(
+        code: 2,
+        data: null,
+        msg: 'Unknown error occurred while fetching booking list.',
       );
     }
   }

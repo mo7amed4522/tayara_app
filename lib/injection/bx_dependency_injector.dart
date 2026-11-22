@@ -15,6 +15,7 @@ import 'package:tayara/data/repositories/bx_firebase_login_repositories_impl.dar
 import 'package:tayara/data/repositories/bx_get_destinations_repositories_impl.dart';
 import 'package:tayara/data/repositories/bx_get_explore_topic_repositories_impl.dart';
 import 'package:tayara/data/repositories/bx_get_explore_trips_repositories_impl.dart';
+import 'package:tayara/data/repositories/bx_get_my_booking_list_repositories_impl.dart';
 import 'package:tayara/data/repositories/bx_get_package_detail_repositories_impl.dart';
 import 'package:tayara/data/repositories/bx_get_recommended_for_customer_repositories_impl.dart';
 import 'package:tayara/data/repositories/bx_get_search_repositories_impl.dart';
@@ -31,6 +32,7 @@ import 'package:tayara/domain/repositories/bx_firebase_login_repositories.dart';
 import 'package:tayara/domain/repositories/bx_get_destinations_repositories.dart';
 import 'package:tayara/domain/repositories/bx_get_explore_topic_repositories.dart';
 import 'package:tayara/domain/repositories/bx_get_explore_trips_repositories.dart';
+import 'package:tayara/domain/repositories/bx_get_my_booking_list_repositories.dart';
 import 'package:tayara/domain/repositories/bx_get_package_detail_repositories.dart';
 import 'package:tayara/domain/repositories/bx_get_recommended_for_customer_repositories.dart';
 import 'package:tayara/domain/repositories/bx_get_search_repositories.dart';
@@ -47,6 +49,7 @@ import 'package:tayara/domain/usecase/bx_firebase_login_usecase.dart';
 import 'package:tayara/domain/usecase/bx_get_destinations_usecase.dart';
 import 'package:tayara/domain/usecase/bx_get_explore_topic_usecase.dart';
 import 'package:tayara/domain/usecase/bx_get_explore_trips_usecase.dart';
+import 'package:tayara/domain/usecase/bx_get_my_booking_list_usecase.dart';
 import 'package:tayara/domain/usecase/bx_get_package_detail_usecase.dart';
 import 'package:tayara/domain/usecase/bx_get_recommended_for_customer_usecase.dart';
 import 'package:tayara/domain/usecase/bx_get_search_usecase.dart';
@@ -179,6 +182,11 @@ class BxDependencyInjector {
         bxsystemRemoteDataSource: _getIt(),
       ),
     );
+    _getIt.registerLazySingleton<BxGetMyBookingListRepositories>(
+      () => BxGetMyBookingListRepositoriesImpl(
+        bxsystemRemoteDataSource: _getIt(),
+      ),
+    );
     // UseCases
     _getIt.registerLazySingleton<BxFirebaseLoginUsecase>(
       () => BxFirebaseLoginUsecase(_getIt()),
@@ -228,6 +236,9 @@ class BxDependencyInjector {
     _getIt.registerLazySingleton<BxDeleteUserDataUsecase>(
       () => BxDeleteUserDataUsecase(_getIt()),
     );
+    _getIt.registerLazySingleton<BxGetMyBookingListUsecase>(
+      () => BxGetMyBookingListUsecase(_getIt()),
+    );
     // Tab Blocs — singleton so data stays cached and is NOT re-fetched on tab switch/swipe.
     // They live as long as the app lives; RefreshIndicator / retry explicitly reloads them.
     _getIt.registerLazySingleton<BxHomeBottomScreenControllerBloc>(
@@ -250,7 +261,9 @@ class BxDependencyInjector {
       ),
     );
     _getIt.registerLazySingleton<BxBookingBottomScreenControllerBloc>(
-      () => BxBookingBottomScreenControllerBloc(),
+      () => BxBookingBottomScreenControllerBloc(
+        getMyBookingListUsecase: _getIt(),
+      ),
     );
     _getIt.registerLazySingleton<BxProfileBottomScreenControllerBloc>(
       () => BxProfileBottomScreenControllerBloc(
