@@ -38,12 +38,16 @@ class _BookingBodyState extends State<_BookingBody> {
   void initState() {
     super.initState();
     // Load initial bookings when screen opens
-    context.read<BxBookingBottomScreenControllerBloc>().add(const BxLoadBookings(isRefresh: true));
+    context.read<BxBookingBottomScreenControllerBloc>().add(
+      const BxLoadBookings(isRefresh: true),
+    );
 
     _scrollController.addListener(() {
       if (_scrollController.position.pixels >=
           _scrollController.position.maxScrollExtent - 200) {
-        context.read<BxBookingBottomScreenControllerBloc>().add(const BxLoadBookings());
+        context.read<BxBookingBottomScreenControllerBloc>().add(
+          const BxLoadBookings(),
+        );
       }
     });
   }
@@ -366,7 +370,9 @@ class _BookingCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (status == 'price_expired' || status == 'cancelled' || status == 'refunded')
+            if (status == 'price_expired' ||
+                status == 'cancelled' ||
+                status == 'refunded')
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Center(
@@ -406,7 +412,10 @@ class _BookingCard extends StatelessWidget {
                   Text(
                     date,
                     style: textTheme.bodySmall?.copyWith(
-                      color: (status == 'price_expired' || status == 'cancelled' || status == 'refunded')
+                      color:
+                          (status == 'price_expired' ||
+                              status == 'cancelled' ||
+                              status == 'refunded')
                           ? BxAppColors.mutedLight
                           : colorScheme.onSurface.withOpacity(0.55),
                       fontFamily: 'lao-mn',
@@ -418,7 +427,10 @@ class _BookingCard extends StatelessWidget {
                       Icon(
                         Icons.business_rounded,
                         size: 13,
-                        color: (status == 'price_expired' || status == 'cancelled' || status == 'refunded')
+                        color:
+                            (status == 'price_expired' ||
+                                status == 'cancelled' ||
+                                status == 'refunded')
                             ? BxAppColors.mutedLight
                             : colorScheme.onSurface.withOpacity(0.5),
                       ),
@@ -427,7 +439,10 @@ class _BookingCard extends StatelessWidget {
                         child: Text(
                           agency,
                           style: textTheme.bodySmall?.copyWith(
-                            color: (status == 'price_expired' || status == 'cancelled' || status == 'refunded')
+                            color:
+                                (status == 'price_expired' ||
+                                    status == 'cancelled' ||
+                                    status == 'refunded')
                                 ? BxAppColors.mutedLight
                                 : colorScheme.onSurface.withOpacity(0.55),
                             fontFamily: 'lao-mn',
@@ -458,7 +473,10 @@ class _BookingCard extends StatelessWidget {
                   Text(
                     '$priceLabel $price',
                     style: textTheme.bodyMedium?.copyWith(
-                      color: (status == 'price_expired' || status == 'cancelled' || status == 'refunded')
+                      color:
+                          (status == 'price_expired' ||
+                              status == 'cancelled' ||
+                              status == 'refunded')
                           ? BxAppColors.mutedLight
                           : BxAppColors.primary,
                       fontWeight: FontWeight.w600,
@@ -506,16 +524,30 @@ class _BookingCard extends StatelessWidget {
   }
 
   Widget _buildStatusBadge(String status, String? timeLeft) {
-    if (status == 'requested' || status == 'agent_reviewing' || status == 'awaiting_payment' || status == 'docs_pending' || status == 'kyc_pending') {
+    if (status == 'requested' ||
+        status == 'agent_reviewing' ||
+        status == 'awaiting_payment' ||
+        status == 'docs_pending' ||
+        status == 'kyc_pending') {
       return _Badge(
         label: 'Pending',
         backgroundColor: const Color(0xFF374151).withOpacity(0.7),
       );
     }
-    if (status == 'price_confirmed' || status == 'payment_authorized' || status == 'paid_confirmed' || status == 'docs_submitted' || status == 'kyc_approved' || status == 'booking_confirmed' || status == 'processing' || status == 'issued_ready' || status == 'completed') {
+    if (status == 'price_confirmed' ||
+        status == 'payment_authorized' ||
+        status == 'paid_confirmed' ||
+        status == 'docs_submitted' ||
+        status == 'kyc_approved' ||
+        status == 'booking_confirmed' ||
+        status == 'processing' ||
+        status == 'issued_ready' ||
+        status == 'completed') {
       return _Badge(label: 'Confirmed', backgroundColor: BxAppColors.success);
     }
-    if (status == 'price_expired' || status == 'cancelled' || status == 'refunded') {
+    if (status == 'price_expired' ||
+        status == 'cancelled' ||
+        status == 'refunded') {
       return _Badge(
         label: 'Expired',
         backgroundColor: const Color(0xFF6B7280).withOpacity(0.8),
@@ -552,10 +584,21 @@ class _BookingCard extends StatelessWidget {
     String label;
     Color backgroundColor;
 
-    if (status == 'requested' || status == 'agent_reviewing' || status == 'awaiting_payment' || status == 'docs_pending' || status == 'kyc_pending') {
+    if (status == 'requested' ||
+        status == 'agent_reviewing' ||
+        status == 'awaiting_payment' ||
+        status == 'docs_pending' ||
+        status == 'kyc_pending') {
       label = 'Waiting for Agency';
       backgroundColor = BxAppColors.primary;
-    } else if (status == 'price_confirmed' || status == 'payment_authorized' || status == 'paid_confirmed' || status == 'docs_submitted' || status == 'kyc_approved' || status == 'booking_confirmed' || status == 'processing' || status == 'issued_ready') {
+    } else if (status == 'price_confirmed' ||
+        status == 'payment_authorized' ||
+        status == 'paid_confirmed' ||
+        status == 'docs_submitted' ||
+        status == 'kyc_approved' ||
+        status == 'booking_confirmed' ||
+        status == 'processing' ||
+        status == 'issued_ready') {
       label = 'Proceed to Payment';
       backgroundColor = BxAppColors.brown;
     } else {
@@ -568,7 +611,9 @@ class _BookingCard extends StatelessWidget {
       height: 42,
       child: ElevatedButton(
         onPressed: () {
-          if (status == 'price_expired' || status == 'cancelled' || status == 'refunded') {
+          if (status == 'price_expired' ||
+              status == 'cancelled' ||
+              status == 'refunded') {
             BxAppRouter.push(
               context,
               BxRouteNames.bxSimilarTripsScreen,

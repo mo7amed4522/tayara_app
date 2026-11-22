@@ -48,5 +48,11 @@ class BxBookingBottomScreenControllerState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [status, errorMessage, bookings, selectedTab, pagination];
+  List<Object?> get props => [
+    status,
+    errorMessage,
+    bookings,
+    selectedTab,
+    pagination,
+  ];
 }
