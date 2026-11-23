@@ -15,7 +15,7 @@ import 'package:tayara/core/constant/bx_app_constant.dart';
 class BxAppConfig {
   /// The Test URL of the backend API (staging environment).
   static const String baseUrl =
-      'http://localhost:8888'; // Base URL for the API, can be switched to production when needed
+      'https://imprecise-daintily-goes.ngrok-free.dev'; // Base URL for the API, can be switched to production when needed
 }
 
 /// Provides static getters for every API endpoint used by the application.
