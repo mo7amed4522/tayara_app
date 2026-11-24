@@ -27,7 +27,9 @@ pluginManagement {
 
 plugins {
     id("dev.flutter.flutter-plugin-loader") version "1.0.0"
-    id("com.android.application") version "9.0.1" apply false
+    // AGP 9.1.1 is required by flutter_local_notifications 23.x and
+    // androidx.core:core(-ktx):1.19.0 (AGP 9.1.0+ minimum).
+    id("com.android.application") version "9.1.1" apply false
     id("org.jetbrains.kotlin.android") version "2.3.20" apply false
 }
 

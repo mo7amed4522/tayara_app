@@ -7,7 +7,9 @@
 
 import 'package:tayara/core/constant/bx_app_constant.dart';
 import 'package:tayara/core/constant/bx_shared_preferences_keys.dart';
+import 'package:tayara/core/utils/bx_push_token_helper.dart';
 import 'package:tayara/data/data_source/local/bx_shared_preferences_datasource.dart';
+import 'package:tayara/domain/usecase/bx_upsert_push_token_usecase.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,10 +20,13 @@ part 'bx_splash_screen_controller_event.dart';
 class BxSplashScreenControllerBloc
     extends Bloc<BxSplashScreenControllerEvent, BxSplashScreenControllerState> {
   final BxSharedPreferencesDataSource _sharedPreferencesDataSource;
+  final BxUpsertPushTokenUsecase _upsertPushTokenUsecase;
 
   BxSplashScreenControllerBloc({
     required BxSharedPreferencesDataSource sharedPreferencesDataSource,
+    required BxUpsertPushTokenUsecase upsertPushTokenUsecase,
   }) : _sharedPreferencesDataSource = sharedPreferencesDataSource,
+       _upsertPushTokenUsecase = upsertPushTokenUsecase,
        super(BxSplashScreenControllerState()) {
     on<BxStartSplashTimer>(_onStartSplashTimer);
     on<BxResetSplashScreen>(_onResetSplashScreen);
@@ -55,9 +60,41 @@ class BxSplashScreenControllerBloc
         onBoardingCompleted: onBoardingCompleted,
       ),
     );
+
+    // Sync the push token on cold start — but only for a logged-in user.
+    // Guests have no token to associate with, and calling the endpoint
+    // without auth would just fail with 401.
+    await _syncPushTokenIfAuthenticated();
+
     await Future.delayed(const Duration(seconds: 3));
-    // Check user data and get APNs token if needed
     emit(state.copyWith(status: BxSplashScreenStatus.success));
+  }
+
+  /// Calls the upsert endpoint if a user is currently stored.
+  ///
+  /// Failures are logged and ignored — they must never block the splash
+  /// screen from completing. The token will be retried on the next
+  /// `onTokenRefresh` event or the next launch.
+  Future<void> _syncPushTokenIfAuthenticated() async {
+    final user = BxAppData.currentUser;
+    final token = user?.data?.token;
+    if (user == null || token == null || token.isEmpty) {
+      debugPrint('[Splash] No authenticated user — skipping push token sync.');
+      return;
+    }
+
+    final request = await BxPushTokenHelper.build();
+    if (request == null) {
+      debugPrint('[Splash] FCM token not ready — skipping push token sync.');
+      return;
+    }
+
+    final response = await _upsertPushTokenUsecase.execute(request);
+    if (response.code == 0) {
+      debugPrint('[Splash] Push token synced successfully.');
+    } else {
+      debugPrint('[Splash] Push token sync failed: ${response.msg}');
+    }
   }
 
   Future<void> _onResetSplashScreen(

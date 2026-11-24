@@ -14,12 +14,14 @@
 /// Architecture: Main entry point for the application
 /// purpose: To initialize the application and run the AppWidget
 library;
+
 // ignore_for_file: deprecated_member_use_from_same_package
 
 import 'package:tayara/bx_app_widget.dart';
 import 'package:tayara/firebase_options.dart';
 import 'package:tayara/injection/bx_dependency_injector.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -37,9 +39,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  await dotenv.load(fileName: '.env');
+
   // Initialize Firebase using the options from [DefaultFirebaseOptions].
-  // These options are derived from google-services.json (Android) and
-  // GoogleService-Info.plist (iOS) and ensure the correct project is used.
+  // These options are read from the local, untracked .env file.
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // Suppress keyboard assertion errors in debug mode

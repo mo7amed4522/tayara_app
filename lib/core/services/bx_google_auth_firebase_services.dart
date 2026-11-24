@@ -24,6 +24,7 @@ import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 /// Returns `true` when running on the iOS simulator.
@@ -69,8 +70,8 @@ class BxGoogleAuthResult {
 /// - [FirebaseAuth] to exchange those tokens for a Firebase credential
 ///   and create / link a Firebase user.
 ///
-/// **Note:** The iOS client ID is read automatically from
-/// `GoogleService-Info.plist`. No manual initialization is required.
+/// Client IDs are read from `.env` and passed to
+/// [GoogleSignIn.initialize].
 ///
 /// Usage:
 /// ```dart
@@ -105,14 +106,38 @@ class BxGoogleAuthFirebaseServices {
   /// The underlying [FirebaseAuth] instance.
   FirebaseAuth get _auth => FirebaseAuth.instance;
 
+  String _requiredEnv(String key) {
+    final value = dotenv.env[key];
+    if (value == null || value.isEmpty) {
+      throw StateError('Missing $key in the local .env file.');
+    }
+    return value;
+  }
+
+  /// Whether `GoogleSignIn.initialize()` has completed successfully.
+  bool _initialized = false;
+
+  /// Initializes [GoogleSignIn] once, on first use.
+  ///
+  /// `google_sign_in` v7 no longer initializes itself at startup. Calling
+  /// `authenticate()` before `initialize()` is the most common cause of
+  /// `clientConfigurationError`.
+  Future<void> _ensureInitialized() async {
+    if (_initialized) return;
+    await _googleSignIn.initialize(
+      clientId: _requiredEnv('GOOGLE_IOS_CLIENT_ID'),
+      serverClientId: _requiredEnv('GOOGLE_WEB_CLIENT_ID'),
+    );
+    _initialized = true;
+  }
+
   // -- Sign in ------------------------------------------------------------
 
   /// Signs the user in with Google and authenticates with Firebase.
   ///
   /// **Steps:**
   /// 1. Triggers the Google sign‑in UI via [GoogleSignIn.authenticate].
-  ///    The iOS client ID is read automatically from
-  ///    `GoogleService-Info.plist`.
+  ///    Client IDs are loaded from `.env` during initialization.
   /// 2. Extracts the `idToken` from the sign‑in result.
   /// 3. Creates a [GoogleAuthProvider.credential] from the token.
   /// 4. Calls [FirebaseAuth.signInWithCredential] to complete the
@@ -134,8 +159,11 @@ class BxGoogleAuthFirebaseServices {
       );
     }
     try {
+      // 0. Initialize the plugin (required since google_sign_in v7).
+      await _ensureInitialized();
+
       // 1. Trigger the Google sign‑in flow.
-      //    The iOS client ID is read automatically from GoogleService-Info.plist.
+      //    Client IDs are loaded from `.env` during initialization.
       final GoogleSignInAccount googleUser = await _googleSignIn.authenticate();
 
       // 2. Extract the ID token.
@@ -171,6 +199,7 @@ class BxGoogleAuthFirebaseServices {
   /// Returns `true` if both operations succeeded.
   Future<bool> signOut() async {
     try {
+      await _ensureInitialized();
       await _googleSignIn.signOut();
       await _auth.signOut();
       return true;
@@ -185,7 +214,20 @@ class BxGoogleAuthFirebaseServices {
   String _googleSignInErrorMessage(GoogleSignInException e) {
     switch (e.code) {
       case GoogleSignInExceptionCode.canceled:
-        return 'Sign‑in was cancelled.';
+        // google_sign_in v7 on Android uses Credential Manager, which also
+        // reports configuration errors (bad SHA-1 / wrong OAuth client) as
+        // "canceled". Show the native description so the real cause is visible.
+        final detail = e.description;
+        // Credential Manager reports a stale/broken on-device Google account
+        // as "account reauth failed". The fix is device-side, so say so.
+        if (detail != null && detail.toLowerCase().contains('reauth')) {
+          return 'Your Google account on this device needs to be verified again. '
+              'Open Android Settings → Google, remove the account, then add '
+              'it back and try again.';
+        }
+        return detail == null || detail.isEmpty
+            ? 'Sign‑in was cancelled.'
+            : 'Google sign‑in failed: $detail';
       case GoogleSignInExceptionCode.interrupted:
         return 'Sign‑in was interrupted.';
       case GoogleSignInExceptionCode.clientConfigurationError:

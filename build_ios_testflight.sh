@@ -23,6 +23,8 @@ if [ ! -f "pubspec.yaml" ]; then
     exit 1
 fi
 
+python3 scripts/configure_local_config.py
+
 # Function to display menu
 show_menu() {
     echo "Select build environment:"

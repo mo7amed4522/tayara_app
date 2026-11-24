@@ -34,6 +34,16 @@ migrate_working_dir/
 /build/
 /coverage/
 
+# Local application configuration
+.env
+.env.*
+!.env.example
+
+# Local Firebase configuration files
+/android/app/google-services.json
+/ios/Runner/GoogleService-Info.plist
+/ios/Flutter/Local.xcconfig
+
 # Symbolication related
 app.*.symbols
 
