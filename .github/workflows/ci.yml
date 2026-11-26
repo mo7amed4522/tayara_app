@@ -21,6 +21,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Create .env from template
+        # pubspec.yaml declares .env as an asset, but it is git-ignored so it is
+        # absent in a fresh checkout. Without it flutter analyzes with
+        # asset_does_not_exist and builds fail to bundle the asset.
+        run: cp .env.example .env
+
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
@@ -48,6 +54,9 @@ jobs:
     needs: analyze
     steps:
       - uses: actions/checkout@v4
+
+      - name: Create .env from template
+        run: cp .env.example .env
 
       - uses: subosito/flutter-action@v2
         with:
@@ -83,6 +92,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Create .env from template
+        run: cp .env.example .env
+
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
@@ -115,6 +127,18 @@ jobs:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
     steps:
       - uses: actions/checkout@v4
+
+      # Release builds need the real values; provide them as the ENV_FILE secret
+      # and fall back to the template for tag builds without secrets configured.
+      - name: Create .env
+        env:
+          ENV_FILE: ${{ secrets.ENV_FILE }}
+        run: |
+          if [ -n "$ENV_FILE" ]; then
+            printf '%s\n' "$ENV_FILE" > .env
+          else
+            cp .env.example .env
+          fi
 
       - uses: subosito/flutter-action@v2
         with:
@@ -159,6 +183,9 @@ jobs:
     if: github.event_name == 'push'
     steps:
       - uses: actions/checkout@v4
+
+      - name: Create .env from template
+        run: cp .env.example .env
 
       - uses: subosito/flutter-action@v2
         with:
