@@ -9,6 +9,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tayara/core/constant/bx_app_constant.dart';
 import 'package:tayara/core/services/bx_apple_auth_firebase_services.dart';
 import 'package:tayara/core/services/bx_facebook_auth_firebase_services.dart';
 import 'package:tayara/core/services/bx_google_auth_firebase_services.dart';
@@ -251,9 +252,10 @@ class BxLoginControllerBloc
           ),
         );
         await _sharedPreferencesDataSource.saveUserData(response);
+        BxAppData.currentUser = response;
 
         // Auth token is now persisted — register this device's push token.
-        await _syncPushTokenOnceAfterLogin();
+        await _syncPushTokenOnceAfterLogin(response.data?.token);
       } else {
         emit(
           state.copyWith(
@@ -277,8 +279,8 @@ class BxLoginControllerBloc
   /// Runs once per login. Failures are logged and ignored so that a
   /// transient FCM/backend issue never blocks the login success state.
   /// The next app launch (splash) or `onTokenRefresh` will retry.
-  Future<void> _syncPushTokenOnceAfterLogin() async {
-    final request = await BxPushTokenHelper.build();
+  Future<void> _syncPushTokenOnceAfterLogin(String? autToken) async {
+    final request = await BxPushTokenHelper.build(authToken: autToken);
     if (request == null) {
       debugPrint(
         '[Login] FCM token not ready yet — push token will sync on next launch.',

@@ -42,6 +42,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class BxAppWidget extends StatelessWidget {
   const BxAppWidget({super.key});
 
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
+
   /// Builds the application widget tree with multi‑bloc providers and
   /// nested [BlocBuilder]s to reactively configure the [MaterialApp].
   @override
@@ -81,6 +84,7 @@ class BxAppWidget extends StatelessWidget {
                 builder: (context, state) {
                   debugPrint(state.status.toString());
                   return MaterialApp(
+                    navigatorKey: navigatorKey,
                     title: BxAppConfiguration.bxAppName(context),
                     debugShowCheckedModeBanner: false,
                     theme: BxAppTheme.lightTheme,

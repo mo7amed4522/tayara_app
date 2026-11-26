@@ -41,10 +41,10 @@ class BxLoggingInterceptor extends Interceptor {
       debugPrint('┃ Params  : ${options.queryParameters}');
     }
     if (options.headers.isNotEmpty) {
-      debugPrint('┃ Headers : ${options.headers}');
+      debugPrint('┃ Headers : ${(options.headers)}');
     }
     if (options.data != null) {
-      debugPrint('┃ Body    : ${options.data}');
+      debugPrint('┃ Body    : ${(options.data)}');
     }
     debugPrint('┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     handler.next(options);

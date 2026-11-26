@@ -349,11 +349,17 @@ class BxSystemRemoteDataSourceImpl implements BxSystemRemoteDataSource {
     BxUpsertPushTokenRequest request,
   ) async {
     try {
+      final authToken = request.authToken ?? BxAppData.currentUser?.data?.token;
+      if (authToken == null || authToken.isEmpty) {
+        return BxUpsertPushTokenResponse(
+          code: 401,
+          data: null,
+          msg: 'Cannot register push token without an authenticated user.',
+        );
+      }
+
       final options = Options(
-        headers: {
-          'Content-Type': 'application/json',
-          'X-token': BxAppData.currentUser?.data?.token,
-        },
+        headers: {'Content-Type': 'application/json', 'X-token': authToken},
       );
       final response = await _dioClient.post(
         BxApiEndpoints.upsertPushToken,

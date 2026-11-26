@@ -20,6 +20,7 @@ library;
 import 'package:tayara/bx_app_widget.dart';
 import 'package:tayara/firebase_options.dart';
 import 'package:tayara/injection/bx_dependency_injector.dart';
+import 'package:tayara/core/services/bx_firebase_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/foundation.dart';
@@ -59,6 +60,8 @@ void main() async {
   }
   // 1. Initialize Dependency Injection
   await BxDependencyInjector.instance.setup();
+  BxFirebaseService.setNavigatorKey(BxAppWidget.navigatorKey);
+  await BxFirebaseService().init();
   runApp(
     ScreenUtilInit(
       designSize: const Size(375, 812),

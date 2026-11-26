@@ -83,7 +83,7 @@ class BxSplashScreenControllerBloc
       return;
     }
 
-    final request = await BxPushTokenHelper.build();
+    final request = await BxPushTokenHelper.build(authToken: token);
     if (request == null) {
       debugPrint('[Splash] FCM token not ready — skipping push token sync.');
       return;

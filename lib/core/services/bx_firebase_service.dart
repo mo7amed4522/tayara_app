@@ -23,7 +23,11 @@ _backgroundFlutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  if (Firebase.apps.isEmpty) {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  }
   await _initializeBackgroundNotifications();
   await _showBackgroundNotification(message);
   debugPrint('Handling background message: ${message.messageId}');
@@ -120,6 +124,7 @@ class BxFirebaseService {
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   static GlobalKey<NavigatorState>? _navigatorKey;
+  bool _initialized = false;
 
   // ---------------------------------------------------------------------------
   // Navigator key management
@@ -160,12 +165,16 @@ class BxFirebaseService {
   /// token retrieval (with graceful fallback for iOS first launch),
   /// and sets up all message listeners (foreground, background, terminated).
   Future<void> init() async {
+    if (_initialized) return;
     try {
-      await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-      );
+      if (Firebase.apps.isEmpty) {
+        await Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform,
+        );
+      }
       await _initLocalNotifications();
       await _initMessaging();
+      _initialized = true;
     } catch (e) {
       debugPrint('Error initializing Firebase: $e');
     }
@@ -253,7 +262,8 @@ class BxFirebaseService {
   /// Initializes Firebase Messaging, requests permissions, handles token refresh,
   /// and sets up message listeners for all app states.
   Future<void> _initMessaging() async {
-    FirebaseMessaging messaging = FirebaseMessaging.instance;
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    final messaging = FirebaseMessaging.instance;
 
     NotificationSettings settings = await messaging.requestPermission(
       alert: true,
@@ -264,14 +274,17 @@ class BxFirebaseService {
 
     if (settings.authorizationStatus != AuthorizationStatus.authorized &&
         settings.authorizationStatus != AuthorizationStatus.provisional) {
-      debugPrint('User declined notification permission');
-      return;
+      debugPrint(
+        'Notification permission not granted '
+        '(status: ${settings.authorizationStatus}); '
+        'FCM listeners will still be registered.',
+      );
     }
     // Try to get token, but don't crash if not available (expected on iOS first launch)
     try {
       String? token = await messaging.getToken();
       if (token != null) {
-        debugPrint('FCM Token: $token');
+        debugPrint('FCM registration token is available.');
       } else {
         debugPrint('FCM Token not available yet - using static config values');
       }
@@ -288,11 +301,13 @@ class BxFirebaseService {
     }
 
     messaging.onTokenRefresh.listen((String newToken) async {
-      debugPrint('FCM Token refreshed: $newToken');
+      debugPrint('FCM registration token refreshed.');
       // Only sync when a user is logged in.
       if (BxAppData.currentUser?.data?.token == null) return;
 
-      final request = await BxPushTokenHelper.build();
+      final request = await BxPushTokenHelper.build(
+        authToken: BxAppData.currentUser?.data?.token,
+      );
       if (request == null) return;
 
       final response = await BxDependencyInjector.instance
@@ -308,10 +323,12 @@ class BxFirebaseService {
       badge: true,
       sound: true,
     );
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      debugPrint('Received foreground message: ${message.messageId}');
+      debugPrint(
+        'Received foreground FCM message: ${message.messageId}, '
+        'hasNotification=${message.notification != null}, '
+        'dataKeys=${message.data.keys.toList()}',
+      );
       _showCustomNotification(message);
     });
 
@@ -363,17 +380,20 @@ class BxFirebaseService {
   /// Displays both a system notification and an in-app overlay.
   void _showCustomNotification(RemoteMessage message) {
     final notification = message.notification;
-    if (notification == null) {
-      debugPrint('No notification data in message');
+    final title = notification?.title ?? message.data['title']?.toString();
+    final body = notification?.body ?? message.data['body']?.toString();
+    if ((title == null || title.isEmpty) && (body == null || body.isEmpty)) {
+      debugPrint(
+        'Foreground FCM message has no notification title/body '
+        'and no title/body data fields.',
+      );
       return;
     }
 
-    debugPrint(
-      'Showing notification: title=${notification.title}, body=${notification.body}',
-    );
+    debugPrint('Showing notification: title=$title, body=$body');
     _showLocalNotification(
-      title: notification.title ?? 'Notification',
-      body: notification.body ?? '',
+      title: title ?? 'Notification',
+      body: body ?? '',
       payload: message.data.toString(),
     );
 
@@ -382,8 +402,8 @@ class BxFirebaseService {
       debugPrint('Showing in-app notification overlay');
       NotificationHelper.show(
         context: context,
-        title: notification.title ?? 'Notification',
-        message: notification.body ?? '',
+        title: title ?? 'Notification',
+        message: body ?? '',
         priority: NotificationPriority.normal,
         onTap: () => _handleNotificationNavigation(message.data.toString()),
         duration: const Duration(seconds: 5),

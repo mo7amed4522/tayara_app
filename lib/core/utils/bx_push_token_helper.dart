@@ -42,7 +42,8 @@ class BxDeviceInfo {
 /// Builds the upsert push token request payload using:
 /// - a stable `device_id` persisted in SharedPreferences,
 /// - the current platform (`ios` / `android`),
-/// - the current FCM token,
+/// - the current FCM/APNs push token (`token` in the request body),
+/// - the optional backend login token (`X-token` header only),
 /// - the app version.
 ///
 /// Returns `null` when the FCM token cannot be obtained (e.g. iOS first
@@ -52,7 +53,9 @@ class BxPushTokenHelper {
   static const String _deviceIdKey = 'bx_push_device_id';
 
   /// Builds the request, or returns `null` if no FCM token is available yet.
-  static Future<BxUpsertPushTokenRequest?> build() async {
+  ///
+  /// [authToken] is the backend login token and is excluded from the JSON body.
+  static Future<BxUpsertPushTokenRequest?> build({String? authToken}) async {
     try {
       final String? token = await FirebaseMessaging.instance.getToken();
       if (token == null || token.isEmpty) {
@@ -71,6 +74,7 @@ class BxPushTokenHelper {
         platform: deviceInfo.platform,
         token: token,
         appVersion: appVersion,
+        authToken: authToken,
       );
     } catch (e) {
       debugPrint('[BxPushTokenHelper] Failed to build request: $e');
