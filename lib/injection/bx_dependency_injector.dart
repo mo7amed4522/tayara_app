@@ -5,6 +5,9 @@
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tayara/core/network/bx_dio_client.dart';
+import 'package:tayara/core/services/bx_kafka_broker_service.dart';
+import 'package:tayara/core/services/bx_kafka_config.dart';
+import 'package:tayara/core/services/bx_kafka_event_bus.dart';
 import 'package:tayara/data/data_source/local/bx_shared_preferences_datasource.dart';
 import 'package:tayara/data/data_source/remote/bx_system_remote_data_source.dart';
 import 'package:tayara/data/repositories/bx_active_top_banner_ads_repositories_impl.dart';
@@ -110,6 +113,15 @@ class BxDependencyInjector {
   Future<void> setup() async {
     // Core
     _getIt.registerLazySingleton<BxDioClient>(() => BxDioClient.instance);
+    // Kafka-backed support chat transport. Registered lazily: nothing dials the
+    // stream until a conversation calls `connect`.
+    _getIt.registerLazySingleton<BxKafkaConfig>(BxKafkaConfig.fromEnvironment);
+    _getIt.registerLazySingleton<BxKafkaBrokerService>(
+      () => BxKafkaBrokerService(config: _getIt()),
+    );
+    _getIt.registerLazySingleton<BxKafkaEventBus>(
+      () => BxKafkaEventBus(_getIt()),
+    );
 
     // Initialize SharedPreferences first
     final sharedPreferences = await SharedPreferences.getInstance();
