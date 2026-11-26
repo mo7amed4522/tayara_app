@@ -8,6 +8,7 @@ import 'package:tayara/core/constant/bx_app_constant.dart';
 import 'package:tayara/core/routes/bx_route_generator.dart';
 import 'package:tayara/core/routes/bx_route_names.dart';
 import 'package:tayara/core/theme/bx_app_theme.dart';
+import 'package:tayara/domain/usecase/bx_upsert_push_token_usecase.dart';
 import 'package:tayara/injection/bx_dependency_injector.dart';
 import 'package:tayara/l10n/generated/app_localizations.dart';
 import 'package:tayara/presentation/bloc/bx_localization_controller/bx_localization_controller_bloc.dart';
@@ -41,6 +42,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class BxAppWidget extends StatelessWidget {
   const BxAppWidget({super.key});
 
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
+
   /// Builds the application widget tree with multi‑bloc providers and
   /// nested [BlocBuilder]s to reactively configure the [MaterialApp].
   @override
@@ -50,6 +54,8 @@ class BxAppWidget extends StatelessWidget {
         BlocProvider<BxSplashScreenControllerBloc>(
           create: (context) => BxSplashScreenControllerBloc(
             sharedPreferencesDataSource: BxDependencyInjector.instance.get(),
+            upsertPushTokenUsecase: BxDependencyInjector.instance
+                .get<BxUpsertPushTokenUsecase>(),
           )..add(const BxStartSplashTimer()),
         ),
         BlocProvider<BxThemeControllerBloc>(
@@ -78,6 +84,7 @@ class BxAppWidget extends StatelessWidget {
                 builder: (context, state) {
                   debugPrint(state.status.toString());
                   return MaterialApp(
+                    navigatorKey: navigatorKey,
                     title: BxAppConfiguration.bxAppName(context),
                     debugShowCheckedModeBanner: false,
                     theme: BxAppTheme.lightTheme,

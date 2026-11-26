@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tayara/data/data_source/local/bx_shared_preferences_datasource.dart';
 import 'package:tayara/domain/usecase/bx_firebase_login_usecase.dart';
+import 'package:tayara/domain/usecase/bx_upsert_push_token_usecase.dart';
 import 'package:tayara/injection/bx_dependency_injector.dart';
 import 'package:tayara/presentation/bloc/bx_login_controller/bx_login_controller_bloc.dart';
 import 'package:tayara/presentation/widgets/bx_login_widget/bx_login_widget_mobile.dart';
@@ -21,6 +22,8 @@ class BxLoginScreen extends StatelessWidget {
     return BlocProvider(
       create: (_) => BxLoginControllerBloc(
         useCase: BxDependencyInjector.instance.get<BxFirebaseLoginUsecase>(),
+        upsertPushTokenUsecase: BxDependencyInjector.instance
+            .get<BxUpsertPushTokenUsecase>(),
         sharedPreferencesDataSource: BxDependencyInjector.instance
             .get<BxSharedPreferencesDataSource>(),
       ),

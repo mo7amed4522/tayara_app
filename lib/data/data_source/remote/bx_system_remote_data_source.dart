@@ -25,6 +25,7 @@ import 'package:tayara/domain/model/request/bx_get_search_request.dart';
 import 'package:tayara/domain/model/request/bx_get_top_agent_request.dart';
 import 'package:tayara/domain/model/request/bx_get_top_deals_request.dart';
 import 'package:tayara/domain/model/request/bx_login_user_request.dart';
+import 'package:tayara/domain/model/request/bx_upsert_push_token_request.dart';
 import 'package:tayara/domain/model/response/bx_active_top_banner_ads_response.dart';
 import 'package:tayara/domain/model/response/bx_agent_profile_details_response.dart';
 import 'package:tayara/domain/model/response/bx_custom_search_response.dart';
@@ -41,6 +42,7 @@ import 'package:tayara/domain/model/response/bx_get_user_data_response.dart';
 import 'package:tayara/domain/model/response/bx_login_user_response.dart';
 import 'package:tayara/domain/model/response/bx_delete_user_data_response.dart';
 import 'package:tayara/domain/model/response/bx_update_user_data_response.dart';
+import 'package:tayara/domain/model/response/bx_upsert_push_token_response.dart';
 
 /// Defines the contract for remote API calls related to the core system
 /// functionalities: authentication, services, reservations, doctors,
@@ -75,6 +77,13 @@ abstract class BxSystemRemoteDataSource {
     required Map<String, dynamic> body,
     XFile? headerImage,
   });
+
+  /// Registers or updates the device push token with the provided request.
+  ///
+  /// Returns a [BxUpsertPushTokenResponse] indicating success or failure.
+  Future<BxUpsertPushTokenResponse> upsertPushToken(
+    BxUpsertPushTokenRequest request,
+  );
 
   /// Deletes the current user's account.
   ///
@@ -331,6 +340,70 @@ class BxSystemRemoteDataSourceImpl implements BxSystemRemoteDataSource {
         code: 2,
         data: null,
         msg: 'Unknown error occurred while updating user data.',
+      );
+    }
+  }
+
+  @override
+  Future<BxUpsertPushTokenResponse> upsertPushToken(
+    BxUpsertPushTokenRequest request,
+  ) async {
+    try {
+      final authToken = request.authToken ?? BxAppData.currentUser?.data?.token;
+      if (authToken == null || authToken.isEmpty) {
+        return BxUpsertPushTokenResponse(
+          code: 401,
+          data: null,
+          msg: 'Cannot register push token without an authenticated user.',
+        );
+      }
+
+      final options = Options(
+        headers: {'Content-Type': 'application/json', 'X-token': authToken},
+      );
+      final response = await _dioClient.post(
+        BxApiEndpoints.upsertPushToken,
+        options: options,
+        data: request.toJson(),
+      );
+      if (response is Map<String, dynamic> && response['code'] == 0) {
+        return BxUpsertPushTokenResponse.fromJson(response);
+      }
+
+      if (response is String) {
+        try {
+          final decoded = jsonDecode(response);
+          if (decoded is Map<String, dynamic>) {
+            return BxUpsertPushTokenResponse.fromJson(decoded);
+          }
+        } catch (_) {
+          // Fall through to return failure below.
+        }
+      }
+
+      final int code = (response is Map<String, dynamic>)
+          ? (response['code'] as int?) ?? 1
+          : 1;
+      final String? msg =
+          (response is Map<String, dynamic> && response['msg'] != null)
+          ? response['msg'] as String?
+          : null;
+      return BxUpsertPushTokenResponse(
+        code: code,
+        data: null,
+        msg: msg ?? 'Unknown error occurred while registering push token.',
+      );
+    } on BxNetworkException catch (e) {
+      return BxUpsertPushTokenResponse(
+        code: e.statusCode,
+        data: null,
+        msg: e.message,
+      );
+    } catch (e) {
+      return BxUpsertPushTokenResponse(
+        code: 2,
+        data: null,
+        msg: 'Unknown error occurred while registering push token.',
       );
     }
   }

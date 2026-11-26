@@ -7,15 +7,19 @@
 // ignore_for_file: non_constant_identifier_names, avoid_types_as_parameter_names, prefer_initializing_formals
 
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tayara/core/constant/bx_app_constant.dart';
 import 'package:tayara/core/services/bx_apple_auth_firebase_services.dart';
 import 'package:tayara/core/services/bx_facebook_auth_firebase_services.dart';
 import 'package:tayara/core/services/bx_google_auth_firebase_services.dart';
 import 'package:tayara/core/services/bx_phone_auth_firebase_services.dart';
+import 'package:tayara/core/utils/bx_push_token_helper.dart';
 import 'package:tayara/data/data_source/local/bx_shared_preferences_datasource.dart';
 import 'package:tayara/domain/model/request/bx_login_user_request.dart';
 import 'package:tayara/domain/model/response/bx_login_user_response.dart';
 import 'package:tayara/domain/usecase/bx_firebase_login_usecase.dart';
+import 'package:tayara/domain/usecase/bx_upsert_push_token_usecase.dart';
 
 part 'bx_login_controller_event.dart';
 part 'bx_login_controller_state.dart';
@@ -23,12 +27,15 @@ part 'bx_login_controller_state.dart';
 class BxLoginControllerBloc
     extends Bloc<BxLoginControllerEvent, BxLoginControllerState> {
   final BxFirebaseLoginUsecase _useCase;
+  final BxUpsertPushTokenUsecase _upsertPushTokenUsecase;
   final BxSharedPreferencesDataSource _sharedPreferencesDataSource;
 
   BxLoginControllerBloc({
     required BxFirebaseLoginUsecase useCase,
+    required BxUpsertPushTokenUsecase upsertPushTokenUsecase,
     required BxSharedPreferencesDataSource sharedPreferencesDataSource,
   }) : _useCase = useCase,
+       _upsertPushTokenUsecase = upsertPushTokenUsecase,
        _sharedPreferencesDataSource = sharedPreferencesDataSource,
        super(const BxLoginControllerState()) {
     on<BxLoginWithGoogle>((event, emit) async {
@@ -224,6 +231,11 @@ class BxLoginControllerBloc
   }
 
   /// Common handler: calls the login use case and maps the response to state.
+  ///
+  /// On success it persists the user and then performs a one-time upsert
+  /// of the push token. The upsert runs *after* the auth token has been
+  /// stored, so the `X-token` header used by the remote data source is
+  /// populated and the endpoint receives an authenticated request.
   Future<void> _callLoginUseCase(
     String idToken,
     Emitter<BxLoginControllerState> emit,
@@ -240,6 +252,10 @@ class BxLoginControllerBloc
           ),
         );
         await _sharedPreferencesDataSource.saveUserData(response);
+        BxAppData.currentUser = response;
+
+        // Auth token is now persisted — register this device's push token.
+        await _syncPushTokenOnceAfterLogin(response.data?.token);
       } else {
         emit(
           state.copyWith(
@@ -255,6 +271,28 @@ class BxLoginControllerBloc
           errorMessage: e.toString(),
         ),
       );
+    }
+  }
+
+  /// Registers the current device push token after a successful login.
+  ///
+  /// Runs once per login. Failures are logged and ignored so that a
+  /// transient FCM/backend issue never blocks the login success state.
+  /// The next app launch (splash) or `onTokenRefresh` will retry.
+  Future<void> _syncPushTokenOnceAfterLogin(String? autToken) async {
+    final request = await BxPushTokenHelper.build(authToken: autToken);
+    if (request == null) {
+      debugPrint(
+        '[Login] FCM token not ready yet — push token will sync on next launch.',
+      );
+      return;
+    }
+
+    final response = await _upsertPushTokenUsecase.execute(request);
+    if (response.code == 0) {
+      debugPrint('[Login] Push token registered successfully.');
+    } else {
+      debugPrint('[Login] Push token registration failed: ${response.msg}');
     }
   }
 }

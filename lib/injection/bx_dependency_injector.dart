@@ -5,6 +5,9 @@
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tayara/core/network/bx_dio_client.dart';
+import 'package:tayara/core/services/bx_kafka_broker_service.dart';
+import 'package:tayara/core/services/bx_kafka_config.dart';
+import 'package:tayara/core/services/bx_kafka_event_bus.dart';
 import 'package:tayara/data/data_source/local/bx_shared_preferences_datasource.dart';
 import 'package:tayara/data/data_source/remote/bx_system_remote_data_source.dart';
 import 'package:tayara/data/repositories/bx_active_top_banner_ads_repositories_impl.dart';
@@ -24,6 +27,7 @@ import 'package:tayara/data/repositories/bx_get_top_deals_repositories_impl.dart
 import 'package:tayara/data/repositories/bx_get_user_data_repositories_impl.dart';
 import 'package:tayara/data/repositories/bx_login_user_repositories_impl.dart';
 import 'package:tayara/data/repositories/bx_update_user_data_repositories_impl.dart';
+import 'package:tayara/data/repositories/bx_upsert_push_token_repositories_impl.dart';
 import 'package:tayara/domain/repositories/bx_active_top_banner_ads_repositories.dart';
 import 'package:tayara/domain/repositories/bx_agent_profile_details_repositories.dart';
 import 'package:tayara/domain/repositories/bx_custom_search_repositories.dart';
@@ -41,6 +45,7 @@ import 'package:tayara/domain/repositories/bx_get_top_deals_repositories.dart';
 import 'package:tayara/domain/repositories/bx_get_user_data_repositories.dart';
 import 'package:tayara/domain/repositories/bx_login_user_repositories.dart';
 import 'package:tayara/domain/repositories/bx_update_user_data_repositories.dart';
+import 'package:tayara/domain/repositories/bx_upsert_push_token_repositories.dart';
 import 'package:tayara/domain/usecase/bx_active_top_banner_ads_usecase.dart';
 import 'package:tayara/domain/usecase/bx_agent_profile_details_usecase.dart';
 import 'package:tayara/domain/usecase/bx_custom_search_usecase.dart';
@@ -58,6 +63,7 @@ import 'package:tayara/domain/usecase/bx_get_top_deals_usecase.dart';
 import 'package:tayara/domain/usecase/bx_get_user_data_usecase.dart';
 import 'package:tayara/domain/usecase/bx_login_user_usecase.dart';
 import 'package:tayara/domain/usecase/bx_update_user_data_usecase.dart';
+import 'package:tayara/domain/usecase/bx_upsert_push_token_usecase.dart';
 import 'package:tayara/presentation/bloc/bx_booking_bottom_screen_controller/bx_booking_bottom_screen_controller_bloc.dart';
 import 'package:tayara/presentation/bloc/bx_explore_bottom_screen_controller/bx_explore_bottom_screen_controller_bloc.dart';
 import 'package:tayara/presentation/bloc/bx_home_bottom_screen_controller/bx_home_bottom_screen_controller_bloc.dart';
@@ -107,6 +113,15 @@ class BxDependencyInjector {
   Future<void> setup() async {
     // Core
     _getIt.registerLazySingleton<BxDioClient>(() => BxDioClient.instance);
+    // Kafka-backed support chat transport. Registered lazily: nothing dials the
+    // stream until a conversation calls `connect`.
+    _getIt.registerLazySingleton<BxKafkaConfig>(BxKafkaConfig.fromEnvironment);
+    _getIt.registerLazySingleton<BxKafkaBrokerService>(
+      () => BxKafkaBrokerService(config: _getIt()),
+    );
+    _getIt.registerLazySingleton<BxKafkaEventBus>(
+      () => BxKafkaEventBus(_getIt()),
+    );
 
     // Initialize SharedPreferences first
     final sharedPreferences = await SharedPreferences.getInstance();
@@ -187,6 +202,10 @@ class BxDependencyInjector {
         bxsystemRemoteDataSource: _getIt(),
       ),
     );
+    _getIt.registerLazySingleton<BxUpsertPushTokenRepositories>(
+      () =>
+          BxUpsertPushTokenRepositoriesImpl(bxsystemRemoteDataSource: _getIt()),
+    );
     // UseCases
     _getIt.registerLazySingleton<BxFirebaseLoginUsecase>(
       () => BxFirebaseLoginUsecase(_getIt()),
@@ -238,6 +257,9 @@ class BxDependencyInjector {
     );
     _getIt.registerLazySingleton<BxGetMyBookingListUsecase>(
       () => BxGetMyBookingListUsecase(_getIt()),
+    );
+    _getIt.registerLazySingleton<BxUpsertPushTokenUsecase>(
+      () => BxUpsertPushTokenUsecase(_getIt()),
     );
     // Tab Blocs — singleton so data stays cached and is NOT re-fetched on tab switch/swipe.
     // They live as long as the app lives; RefreshIndicator / retry explicitly reloads them.

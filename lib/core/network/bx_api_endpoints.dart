@@ -41,6 +41,11 @@ class BxApiEndpoints {
   static String get loginCustomerUrl =>
       '/api/${BxAppData.appVersion}/user/login';
 
+  /// upsert push notification token url endpoint
+  /// [POST] endpoint for upsert push notification token .
+  static String get upsertPushToken =>
+      '/api/${BxAppData.appVersion}/push/token';
+
   /// get user data url endpoint
   /// [GET] endpoint for customer data.
   static String get getUserData => '/api/${BxAppData.appVersion}/user/profile';
