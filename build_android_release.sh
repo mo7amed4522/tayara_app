@@ -27,6 +27,19 @@ fi
 PROJECT_ROOT="$(cd "$(dirname "$0")" && pwd)"
 KEY_PROPS="$PROJECT_ROOT/android/key.properties"
 
+if [ ! -f "$PROJECT_ROOT/.env" ]; then
+    echo -e "${RED}Error: .env not found!${NC}"
+    echo "Create it from .env.example and configure API_BASE_URL and Firebase/OAuth values."
+    echo "The .env file is ignored by Git and must not contain backend secrets."
+    exit 1
+fi
+
+if ! grep -Eq '^API_BASE_URL=https://[^[:space:]#]+' "$PROJECT_ROOT/.env"; then
+    echo -e "${RED}Error: API_BASE_URL is missing or invalid in .env!${NC}"
+    echo "Set it to an absolute HTTPS API origin, for example: API_BASE_URL=https://api.example.com"
+    exit 1
+fi
+
 # Setup Java - Force set JAVA_HOME for this session
 echo -e "${GREEN}Setting up Java environment...${NC}"
 

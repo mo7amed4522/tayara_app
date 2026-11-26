@@ -13,7 +13,7 @@
 [![Architecture](https://img.shields.io/badge/Architecture-Clean%20Architecture-FF8A65)]()
 [![Backend](https://img.shields.io/badge/Backend-Go%20%2B%20Gin-00ADD8?logo=go&logoColor=white)](https://go.dev)
 [![License](https://img.shields.io/badge/License-Proprietary-red)]()
-[![Version](https://img.shields.io/badge/Version-1.0.1-blue)]()
+[![Version](https://img.shields.io/badge/Version-1.0.3-blue)]()
 
 ---
 
@@ -97,7 +97,7 @@
 | **Domain** | Travel & tourism |
 | **Framework** | Flutter 3.x |
 | **Language** | Dart 3.12.2 |
-| **Current version** | 1.0.1 |
+| **Current version** | 1.0.3 |
 | **Platforms** | Android, iOS |
 | **State management** | `flutter_bloc` (BLoC / Cubit pattern) |
 | **Dependency injection** | `get_it` service locator |
@@ -970,11 +970,11 @@ Defined in `lib/core/network/bx_api_endpoints.dart`:
 
 ```dart
 class BxAppConfig {
-  static const String baseUrl = 'https://imprecise-daintily-goes.ngrok-free.dev';
+  static String get baseUrl => dotenv.env['API_BASE_URL']!;
 }
 ```
 
-> ⚠️ This is currently a **tunneling/staging URL**. Replace it with a stable staging or production endpoint before release.
+`API_BASE_URL` is read from `.env`; configure the environment-specific API origin there.
 
 ### Endpoint Catalog
 
@@ -1470,6 +1470,7 @@ Copy `.env.example` to `.env` and fill in:
 
 | Variable | Purpose |
 |---|---|
+| `API_BASE_URL` | HTTPS origin of the Tayara API |
 | `FIREBASE_ANDROID_API_KEY` | Android Firebase API key |
 | `FIREBASE_ANDROID_APP_ID` | Android Firebase app ID |
 | `FIREBASE_IOS_API_KEY` | iOS Firebase API key |
@@ -1489,9 +1490,12 @@ Copy `.env.example` to `.env` and fill in:
 ### Security Notes
 
 - `.env` is ignored by Git.
+- `.env` is bundled as an app asset so the app can read these values at runtime.
 - Firebase/OAuth client IDs are **public application identifiers**, not server secrets.
 - API keys should still be restricted by package/bundle ID and API in the provider console.
-- Never commit keystores, signing passwords, or service-account credentials.
+- Never put backend credentials, service-account credentials, signing passwords, or other private keys in `.env`: values shipped in an APK can be extracted.
+- The API origin and Firebase/OAuth client identifiers cannot be kept secret inside a client app; enforce access controls and authorization on the backend/provider.
+- Never commit keystores or signing credentials.
 
 ---
 
@@ -1519,14 +1523,10 @@ flutter build apk --debug
 ### Release APK
 
 ```bash
-flutter build apk --release --dart-define-from-file=.env
+./build_android_release.sh
 ```
 
-### App Bundle (recommended for Play Store)
-
-```bash
-flutter build appbundle --release --dart-define-from-file=.env
-```
+Use the script's prompts to select `prod` and the desired APK or AAB output.
 
 ### iOS
 
@@ -1541,18 +1541,18 @@ flutter build ipa --release
 Version is defined in `pubspec.yaml`:
 
 ```yaml
-version: 1.0.1
+version: 1.0.3
 ```
 
 Override per build:
 
 ```bash
-flutter build apk --build-name=1.0.2 --build-number=3
+flutter build apk --build-name=1.0.3 --build-number=3
 ```
 
 ### Release Checklist
 
-- [ ] Replace staging `baseUrl` with production URL.
+- [ ] Set `API_BASE_URL` in `.env` to the production HTTPS API origin.
 - [ ] Fill in real Facebook App ID in `strings.xml` / plist config.
 - [ ] Verify all Firebase files are present and correct.
 - [ ] Register release SHA-1/SHA-256 in Firebase.
@@ -1784,7 +1784,7 @@ Restrict Firebase/OAuth keys by:
 
 - Never commit real credentials.
 - Rotate keys if they were ever committed.
-- Use `--dart-define-from-file=.env` for build-time configuration.
+- Keep private credentials on the backend; application assets and binaries are inspectable.
 
 ---
 
@@ -1974,7 +1974,7 @@ Android OAuth clients are bound to the app's signing certificate. Without matchi
 
 ### Can I switch the API environment?
 
-Yes. Update `BxAppConfig.baseUrl` in `lib/core/network/bx_api_endpoints.dart` or make it environment-driven.
+Yes. Set `API_BASE_URL` in the ignored local `.env` file. It is app configuration, not a secret.
 
 ### How do I regenerate JSON models?
 
@@ -2059,8 +2059,7 @@ Unauthorized copying, distribution, modification, or public display of this soft
 | `flutter gen-l10n` | Generate localization classes |
 | `dart run build_runner build --delete-conflicting-outputs` | Generate JSON adapters |
 | `flutter build apk --debug` | Debug APK |
-| `flutter build apk --release --dart-define-from-file=.env` | Release APK |
-| `flutter build appbundle --release` | Play Store bundle |
+| `./build_android_release.sh` | Signed release APK or Play Store bundle |
 | `python3 scripts/configure_local_config.py` | Generate iOS local config |
 | `cd android && ./gradlew signingReport` | Show signing fingerprints |
 
