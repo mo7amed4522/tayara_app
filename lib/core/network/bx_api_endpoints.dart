@@ -1,5 +1,6 @@
 // Copyright (c) 2026 Tayara. All rights reserved.
 //
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:tayara/core/constant/bx_app_constant.dart';
 
 /// Centralised definition of the application's base URL and all REST API
@@ -13,9 +14,25 @@ import 'package:tayara/core/constant/bx_app_constant.dart';
 /// Architecture: Core Layer - Bx API Endpoints
 /// Purpose: Define the API endpoints for the application
 class BxAppConfig {
-  /// The Test URL of the backend API (staging environment).
-  static const String baseUrl =
-      'https://imprecise-daintily-goes.ngrok-free.dev'; // Base URL for the API, can be switched to production when needed
+  /// The backend API origin loaded from the local `.env` asset.
+  ///
+  /// This is public application configuration, not a secret. Do not store
+  /// backend credentials or private keys in `.env`.
+  static String get baseUrl {
+    final value = dotenv.env['API_BASE_URL']?.trim();
+    if (value == null || value.isEmpty) {
+      throw StateError('Missing API_BASE_URL in the local .env file.');
+    }
+
+    final uri = Uri.tryParse(value);
+    if (uri == null ||
+        !uri.hasAuthority ||
+        (uri.scheme != 'https' && uri.scheme != 'http')) {
+      throw FormatException('API_BASE_URL must be an absolute HTTP(S) URL.');
+    }
+
+    return value.endsWith('/') ? value.substring(0, value.length - 1) : value;
+  }
 }
 
 /// Provides static getters for every API endpoint used by the application.
